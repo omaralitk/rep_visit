@@ -15,9 +15,7 @@ class ReportsShimmerScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 60,
-              ),
+
               const SizedBox(height: 20),
               const CustomShimmer(width: 120, height: 20),
               const SizedBox(height: 8),

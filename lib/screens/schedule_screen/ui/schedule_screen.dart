@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
+import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/base/ui/widgets/main_header.dart';
 
 import '../../../base/constants/asset_images.dart';
@@ -36,7 +37,6 @@ class _SchedulePageState extends State<SchedulePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-
               const SizedBox(
                 height: 30,
               ),
@@ -243,6 +243,104 @@ class _SchedulePageState extends State<SchedulePage> {
                 textSize: 16,
                 fontWeight: FontWeight.w700,
                 textColor: AppColors.fontColor,
+              ),
+              TextWidget(
+                "Cardiology",
+                textSize: 12,
+                fontWeight: FontWeight.w500,
+                textColor: AppColors.typography500,
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(AssetImages.hospitalIcon),
+                      const SizedBox(width: 5,),
+                      TextWidget(
+                        "City Hospital",
+                        textSize: 12,
+                        fontWeight: FontWeight.w500,
+                        textColor: AppColors.typography500,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(AssetImages.mapPin),
+                      const SizedBox(width: 5,),
+                      SizedBox(
+                        width: Dimensions.fullWidth(context) * 0.3,
+                        child: TextWidget(
+                          "123 Medical Plaza,Suite 201",
+                          textSize: 12,
+                          fontWeight: FontWeight.w500,
+                          textColor: AppColors.typography500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // SvgPicture.asset(AssetImages.timerIcon),
+                     Icon(Icons.access_time_rounded,color: AppColors.mainColor,size: 22,),
+                      const SizedBox(width: 5,),
+                      Container(
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: AppColors.mainColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            children: [
+                              Icon(Icons.check,color: AppColors.whiteColor,size: 16,),
+                              TextWidget(
+                                "9:00 AM",
+                                textSize: 12,
+                                fontWeight: FontWeight.w500,
+                                textColor: AppColors.whiteColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(AssetImages.scheduleIcon),
+                      const SizedBox(width: 5,),
+                      SizedBox(
+                        width: Dimensions.fullWidth(context) * 0.3,
+                        child: TextWidget(
+                          "Last visit: 08-01-2025",
+                          textSize: 12,
+                          fontWeight: FontWeight.w500,
+                          textColor: AppColors.typography500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               )
             ],
           ),

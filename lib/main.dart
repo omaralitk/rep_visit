@@ -8,6 +8,7 @@ import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/screens/base_screen/providers/base_provider.dart';
 import 'package:rep_visit/screens/base_screen/ui/base_screen.dart';
+import 'package:rep_visit/screens/doctors_screen/providers/doctors_provider.dart';
 import 'package:rep_visit/screens/forget_password_screen/providers/forget_provider.dart';
 import 'package:rep_visit/screens/home_screen/providers/day_status_provider.dart';
 import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => HomeProvider()),
         ChangeNotifierProvider(create: (ctx) => DayStatusProvider()),
         ChangeNotifierProvider(create: (ctx) => ReportsProvider()),
+        ChangeNotifierProvider(create: (ctx) => DoctorsProvider()),
       ],
       child: MaterialApp(
         supportedLocales: context.supportedLocales,

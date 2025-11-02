@@ -29,4 +29,9 @@ class EndPoints {
   static const _reportsApi = '$_baseUrl/api/daily-report';
 
   static get reportsApi => _reportsApi;
+
+  /// Doctors
+  static const _doctorsList = '$_baseUrl/api/doctors';
+
+  static get doctorsList => _doctorsList;
 }
