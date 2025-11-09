@@ -25,4 +25,5 @@ class AssetImages {
   static const String mapPin = "assets/images/svg/map_pin.svg";
   static const String timerIcon = "assets/images/svg/timer_icon.svg";
   static const String filterIcon = "assets/images/svg/filter_icon.svg";
+  static const String emptyImage = "assets/images/svg/empty_image.svg";
 }

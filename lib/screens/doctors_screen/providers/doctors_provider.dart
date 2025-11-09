@@ -13,7 +13,7 @@ class DoctorsProvider extends ChangeNotifier {
     DoctorsRepo().getDoctors().then((val) {
       isLoading = false;
 
-      if (val.success == 1) {
+      if (val.status == 1) {
         doctorsList = val.data ?? [];
       } else {
         doctorsList.clear();

@@ -39,6 +39,7 @@ class HomeProvider extends ChangeNotifier {
         time=val?.data.nextVisit?.time??"";
         address=val?.data.nextVisit?.address??"";
         visits=val?.data.todaysVisits??[];
+
       } else {}
       notifyListeners();
     });

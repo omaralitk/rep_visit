@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +37,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
       var doctorsProvider =
           Provider.of<DoctorsProvider>(context, listen: false);
       await doctorsProvider.getDoctorsList();
+
     });
   }
 
@@ -58,7 +60,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           Row(
@@ -69,7 +71,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                       hint: "Search",
                                       controller: searchController),
                               ),
-                              SizedBox(width: 12,),
+                             const SizedBox(width: 12,),
                               Container(height: 56,
                               width: 85,
                               decoration: BoxDecoration(
@@ -100,6 +102,7 @@ SizedBox(width: 5,),
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: provider.doctorsList.length,
                                 itemBuilder: (context, index) {
+
                                   return doctorSection(index, provider);
                                 }),
                           )
@@ -133,9 +136,26 @@ SizedBox(width: 5,),
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.primary100)),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.primary100),
+                    ),
+                    clipBehavior: Clip.antiAlias, // important for rounded corners
+                    child: CachedNetworkImage(
+                      imageUrl: provider.doctorsList[index].image ?? "",
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.mainColor,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => SvgPicture.asset(
+                        AssetImages.emptyImage, // your fallback SVG or PNG
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
+
                   Row(
                     children: [
                       Container(
@@ -146,7 +166,7 @@ SizedBox(width: 5,),
                             borderRadius: BorderRadius.circular(8)),
                         child: Center(
                           child: TextWidget(
-                            provider.doctorsList[index].datumClass,
+                            provider.doctorsList[index].datumClass??"",
                             textSize: 12,
                             fontWeight: FontWeight.w700,
                             textColor: AppColors.whiteColor,
@@ -156,27 +176,7 @@ SizedBox(width: 5,),
                       const SizedBox(
                         width: 10,
                       ),
-                      Container(
-                        height: 33,
-                        decoration: BoxDecoration(
-                            color: AppColors.success50,
-                            border: Border.all(color: AppColors.success200),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Center(
-                            child: TextWidget(
-                              provider.doctorsList[index].status,
-                              textSize: 12,
-                              fontWeight: FontWeight.w700,
-                              textColor: AppColors.success200,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+
                       Icon(
                         Icons.star,
                         color: AppColors.starColor,
@@ -185,7 +185,7 @@ SizedBox(width: 5,),
                         width: 5,
                       ),
                       TextWidget(
-                        provider.doctorsList[index].rating,
+                        provider.doctorsList[index].rating??"",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -200,13 +200,13 @@ SizedBox(width: 5,),
 
               /// Name of doctor
               TextWidget(
-                provider.doctorsList[index].name,
+                provider.doctorsList[index].name??"",
                 textSize: 16,
                 fontWeight: FontWeight.w700,
                 textColor: AppColors.fontColor,
               ),
               TextWidget(
-                provider.doctorsList[index].speciality,
+                provider.doctorsList[index].speciality??"",
                 textSize: 12,
                 fontWeight: FontWeight.w500,
                 textColor: AppColors.typography500,
@@ -226,7 +226,7 @@ SizedBox(width: 5,),
                         width: 5,
                       ),
                       TextWidget(
-                        provider.doctorsList[index].hospitalName,
+                        provider.doctorsList[index].hospitalName??"",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -243,7 +243,7 @@ SizedBox(width: 5,),
                       SizedBox(
                         width: Dimensions.fullWidth(context) * 0.3,
                         child: TextWidget(
-                          provider.doctorsList[index].address,
+                          provider.doctorsList[index].address??"",
                           textSize: 12,
                           fontWeight: FontWeight.w500,
                           textColor: AppColors.typography500,
@@ -288,7 +288,7 @@ SizedBox(width: 5,),
                                 size: 16,
                               ),
                               TextWidget(
-                                provider.doctorsList[index].availableTime,
+                                provider.doctorsList[index].availableTime??"",
                                 textSize: 12,
                                 fontWeight: FontWeight.w500,
                                 textColor: AppColors.whiteColor,

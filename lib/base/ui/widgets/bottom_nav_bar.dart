@@ -32,13 +32,7 @@ class CustomBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
 
-        boxShadow:const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset:  Offset(0, -2),
-          )
-        ],
+      border: Border.fromBorderSide(BorderSide(color: AppColors.grey100))
       ),
       padding: const EdgeInsets.only(top: 8, bottom: 16),
       child: Row(

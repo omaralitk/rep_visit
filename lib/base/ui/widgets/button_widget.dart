@@ -16,7 +16,7 @@ class ButtonWidget extends StatelessWidget {
       this.textSize,
       this.fontWeight,
       required this.onTap,
-      this.svg,
+      this.icon,
       this.svgWidth,
       this.borderColor});
 
@@ -29,7 +29,7 @@ class ButtonWidget extends StatelessWidget {
   final double? textSize;
   final FontWeight? fontWeight;
   final Function onTap;
-  final String? svg;
+  final Widget? icon;
   final double? svgWidth;
   final Color? borderColor;
 
@@ -38,46 +38,46 @@ class ButtonWidget extends StatelessWidget {
     return GestureDetector(
       child: Container(
         height: height ?? 44,
-        width: width ,
+        width: width,
         decoration: BoxDecoration(
           border: Border.all(
               color: borderColor != null ? borderColor! : Colors.transparent,
               width: borderColor != null ? 1 : 0),
           color: backgroundColor ?? AppColors.mainColor,
           // boxShadow: [
-            // BoxShadow(
-            //   color: Colors.grey.withOpacity(0.1),
-            //   spreadRadius: 5,
-            //   blurRadius: 7,
-            //   offset: const Offset(0, 3),
-            // ),
+          // BoxShadow(
+          //   color: Colors.grey.withOpacity(0.1),
+          //   spreadRadius: 5,
+          //   blurRadius: 7,
+          //   offset: const Offset(0, 3),
+          // ),
           // ],
           borderRadius: BorderRadius.circular(borderRadius ?? 12),
-
         ),
         child: Center(
-          child: svg != null
+          child: icon != null
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    icon ?? const SizedBox(),
+                    const SizedBox(
+                      width: 5,
+                    ),
                     TextWidget(
                       text,
-                      textColor: textColor??AppColors.whiteColor,
-                      textSize: textSize??14,
+                      textColor: textColor ?? AppColors.whiteColor,
+                      textSize: textSize ?? 14,
                       fontWeight: fontWeight,
                     ),
-                 SizedBox(height: 5,),
-                    SvgPicture.asset(
-                      svg!,
-                      width: svgWidth,
-                    )
+
+
                   ],
                 )
               : TextWidget(
                   text,
                   textColor: textColor,
-                  textSize: textSize??14,
-                  fontWeight: fontWeight??FontWeight.w700,
+                  textSize: textSize ?? 14,
+                  fontWeight: fontWeight ?? FontWeight.w700,
                 ),
         ),
       ),
