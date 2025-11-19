@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 
 class NavigationService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
+  static Future<dynamic> pushAndRemoveUntilWithoutContext(Widget page) {
+    return navigatorKey.currentState!.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => page),
+          (route) => false,
+    );
+  }
   static pushAndRemoveUntil(BuildContext context, Widget widget) {
     return Navigator.of(context).pushAndRemoveUntil( MaterialPageRoute(builder: (context) => widget), (route) => false);
   }

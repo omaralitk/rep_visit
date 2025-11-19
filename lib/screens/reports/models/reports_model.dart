@@ -38,8 +38,8 @@ class ReportsModel {
 
 class Data {
   int visits;
-  String duration;
-  String distanceTraveled;
+  String? duration;
+  String? distanceTraveled;
 
   Data({
     required this.visits,

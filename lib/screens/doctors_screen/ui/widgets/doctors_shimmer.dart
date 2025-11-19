@@ -11,6 +11,8 @@ class DoctorCardShimmer extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ListView.builder(
+          shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
             itemCount: 3,
             itemBuilder: (context,index){
           return ShimmerCard();

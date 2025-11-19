@@ -44,11 +44,20 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title:  MainHeader(
-          title: homeProvider.title,
-          subTitle: homeProvider.subTitle,
+        title: Selector<HomeProvider, Map<String, String>>(
+          selector: (_, provider) => {
+            'title': provider.title,
+            'subTitle': provider.subTitle,
+          },
+          builder: (context, data, _) {
+            return MainHeader(
+              title: data['title'] ?? '',
+              subTitle: data['subTitle'] ?? '',
+            );
+          },
         ),
       ),
+
       body: Selector<HomeProvider, bool>(
           builder: (context, provider, widget) {
             return provider
@@ -63,7 +72,6 @@ class _HomePageState extends State<HomePage> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         child: Column(
                           children: [
-
                             const SizedBox(
                               height: 30,
                             ),
@@ -80,17 +88,19 @@ class _HomePageState extends State<HomePage> {
                                         homeProvider.completedVisits,
                                         homeProvider.percentage,
                                         homeProvider.allVisits)),
-                                const SizedBox(
-                                  width: 10,
+                                SizedBox(
+                                  width: homeProvider.time.isNotEmpty ? 10 : 0,
                                 ),
-                                Expanded(
-                                    child: nextVisit(
-                                        homeProvider.time,
-                                        homeProvider.doctorName,
-                                        homeProvider.address,
-                                        "0",
-                                        "0",
-                                        "0000000"))
+                                homeProvider.time.isNotEmpty
+                                    ? Expanded(
+                                        child: nextVisit(
+                                            homeProvider.time,
+                                            homeProvider.doctorName,
+                                            homeProvider.address,
+                                            "0",
+                                            "0",
+                                            "0000000"))
+                                    : const SizedBox()
                               ],
                             ),
                             const SizedBox(
@@ -135,20 +145,51 @@ class _HomePageState extends State<HomePage> {
                                     const SizedBox(
                                       height: 10,
                                     ),
-                                    ListView.builder(
-                                        padding: const EdgeInsets.all(0),
-                                        shrinkWrap: true,
-                                        itemCount: homeProvider.visits.length,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return todayVisitCard(
-                                              homeProvider.visits[index].doctor,
-                                              homeProvider.visits[index].address,
-                                              homeProvider.visits[index].time,
-                                              homeProvider.visits[index].status == "Completed",
-                                              index == 1);
-                                        })
+                                    homeProvider.visits.isEmpty
+                                        ? Center(
+                                            child: Column(
+                                              children: [
+                                                const SizedBox(
+                                                  height: 20,
+                                                ),
+                                                SvgPicture.asset(
+                                                    AssetImages.noData),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                TextWidget(
+                                                  "No schedule visits for today",
+                                                  textSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  textColor:
+                                                      AppColors.fontColor,
+                                                ),
+                                                const SizedBox(
+                                                  height: 20,
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : ListView.builder(
+                                            padding: const EdgeInsets.all(0),
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                homeProvider.visits.length,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemBuilder: (context, index) {
+                                              return todayVisitCard(
+                                                  homeProvider
+                                                      .visits[index].doctor,
+                                                  homeProvider
+                                                      .visits[index].address,
+                                                  homeProvider
+                                                      .visits[index].time,
+                                                  homeProvider.visits[index]
+                                                          .status ==
+                                                      "Completed",
+                                                  index == 1);
+                                            })
                                   ],
                                 ),
                               ),
@@ -169,7 +210,7 @@ class _HomePageState extends State<HomePage> {
   /// Today Progress widget
   todayProgress(String percentage, int numOfTasks, int totalTasks) {
     return Container(
-      height: Dimensions.isTablet(context) ? 230 : 200,
+      height: Dimensions.isTablet(context) ? 240 : 210,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: AppColors.primary500,
@@ -209,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 4),
                         child: TextWidget(
-                          "${(numOfTasks/totalTasks).toInt()}%",
+                          "${(numOfTasks == 0 && totalTasks == 0 ? 0 : numOfTasks / totalTasks).toInt()}%",
                           fontWeight: FontWeight.w700,
                           textColor: AppColors.whiteColor,
                           textSize: 12,
@@ -247,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.w400,
                     ),
                     TextWidget(
-                      percentage.toString(),
+                      percentage,
                       textSize: 12,
                       textColor: AppColors.mainColor,
                       fontWeight: FontWeight.w500,
@@ -260,7 +301,9 @@ class _HomePageState extends State<HomePage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: LinearProgressIndicator(
-                    value: numOfTasks / totalTasks,
+                    value: numOfTasks == 0 && totalTasks == 0
+                        ? 0
+                        : numOfTasks / totalTasks,
                     minHeight: 8,
                     backgroundColor: AppColors.primary100,
                     valueColor:
@@ -281,9 +324,9 @@ class _HomePageState extends State<HomePage> {
   /// Next Visit widget
   nextVisit(String time, String doctorName, String hospital, String lat,
       String long, String callNumber) {
-    String formattedTime = time.substring(0, 5);
+    String formattedTime = time.isNotEmpty ? time.substring(0, 5) : "";
     return Container(
-      height: Dimensions.isTablet(context) ? 230 : 200,
+      height: Dimensions.isTablet(context) ? 240 : 210,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: AppColors.success50,
@@ -430,7 +473,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    width: Dimensions.fullWidth(context)*0.4,
+                    width: Dimensions.fullWidth(context) * 0.4,
                     child: TextWidget(
                       doctorName,
                       textSize: 16,
@@ -443,24 +486,24 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       isNext
                           ? Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: AppColors.success100),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 3),
-                          child: Row(
-                            children: [
-                              TextWidget(
-                                "Next Visit",
-                                textSize: 12,
-                                fontWeight: FontWeight.w700,
-                                textColor: AppColors.success,
-                              )
-                            ],
-                          ),
-                        ),
-                      )
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: AppColors.success100),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 3),
+                                child: Row(
+                                  children: [
+                                    TextWidget(
+                                      "Next Visit",
+                                      textSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      textColor: AppColors.success,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
                           : const SizedBox(),
                       SizedBox(
                         width: isNext ? 5 : 0,
@@ -478,10 +521,10 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               isCompleted
                                   ? Icon(
-                                Icons.check,
-                                color: AppColors.whiteColor,
-                                size: 16,
-                              )
+                                      Icons.check,
+                                      color: AppColors.whiteColor,
+                                      size: 16,
+                                    )
                                   : const SizedBox(),
                               SizedBox(
                                 width: isCompleted ? 4 : 0,

@@ -3,7 +3,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
+import 'package:rep_visit/core/cach/cach_manager.dart';
+import 'package:rep_visit/core/navigation_service/navigation_service.dart';
 import 'package:rep_visit/core/network/constants/network_constants.dart';
+import 'package:rep_visit/screens/login_screen/ui/login_screen.dart';
 
 import 'models/api_response_handler.dart';
 
@@ -70,7 +74,14 @@ class HttpClient {
   _handleBody(http.Response response) {
     if (response.statusCode == HttpStatus.ok) {
       return response.body;
-    } else {
+    }
+    else if(response.statusCode == HttpStatus.unauthorized){
+      // final context = NavigationService.navigatorKey.currentContext;
+      // ToastService.showError(context!, "Session Expired");
+      UserCache.clearAll();
+      NavigationService.pushAndRemoveUntilWithoutContext( const LoginScreen());
+    }
+    else  {
       return Exception(response.body);
     }
   }

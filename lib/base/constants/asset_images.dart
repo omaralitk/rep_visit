@@ -26,4 +26,7 @@ class AssetImages {
   static const String timerIcon = "assets/images/svg/timer_icon.svg";
   static const String filterIcon = "assets/images/svg/filter_icon.svg";
   static const String emptyImage = "assets/images/svg/empty_image.svg";
+  static const String noData = "assets/images/svg/empty_icon.svg";
+  static const String navigateIcon = "assets/images/svg/navigate_icon.svg";
+  static const String callIcon = "assets/images/svg/call_icon.svg";
 }

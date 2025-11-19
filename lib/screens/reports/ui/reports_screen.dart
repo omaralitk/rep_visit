@@ -44,9 +44,7 @@ class _ReportsPageState extends State<ReportsPage> {
     var provider = Provider.of<ReportsProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title:
-
-            MainHeader(
+        title: MainHeader(
           title: "Reports",
           subTitle: "View and export your activity reports",
         ),

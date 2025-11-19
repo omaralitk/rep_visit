@@ -27,8 +27,8 @@ class HomeProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     homeRepo.getSummary().then((val) {
-      print(val?.data.nextVisit?.address.toString());
       isLoading = false;
+      notifyListeners();
       if (val?.status == 1) {
         title = val?.data.greeting ?? "";
         subTitle = val?.data.subgreeting ?? "";
@@ -39,9 +39,9 @@ class HomeProvider extends ChangeNotifier {
         time=val?.data.nextVisit?.time??"";
         address=val?.data.nextVisit?.address??"";
         visits=val?.data.todaysVisits??[];
-
+        notifyListeners();
       } else {}
-      notifyListeners();
+
     });
   }
 }

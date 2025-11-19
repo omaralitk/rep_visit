@@ -35,6 +35,7 @@ class TextWidget extends StatelessWidget {
       text,
       maxLines: maxLine,
       textAlign: textAlign,
+
       style: style ??
           TextStyle(
             fontSize: width >= 700 ? ((textSize ?? 0) + 4) : textSize,
@@ -43,9 +44,7 @@ class TextWidget extends StatelessWidget {
             fontFamily: 'Manrope',
             height: height??0,
             overflow: overflow,
-
             decoration:
-
             underline ? TextDecoration.underline : TextDecoration.none,
           ),
     );

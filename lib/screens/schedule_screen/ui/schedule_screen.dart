@@ -1,9 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/base/ui/widgets/main_header.dart';
+import 'package:rep_visit/screens/doctors_screen/ui/widgets/doctors_shimmer.dart';
+import 'package:rep_visit/screens/schedule_screen/provider/getScheduleProvider.dart';
+import 'package:rep_visit/screens/schedule_screen/ui/widgets/add_schedule_widget.dart';
 
 import '../../../base/constants/asset_images.dart';
 import '../../../base/ui/widgets/button_widget.dart';
@@ -27,176 +31,234 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ScheduleProvider>(context, listen: false).getVisits();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var scheduleProvider =
+        Provider.of<ScheduleProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: MainHeader(
             title: "Schedule", subTitle: "Manage your visit schedule"),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.grey100,
-                        border: Border.all(color: AppColors.grey200),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 20),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 42,
-                                height: 42,
-                                decoration: BoxDecoration(
-                                    color: AppColors.whiteColor,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border:
-                                        Border.all(color: AppColors.grey300)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SvgPicture.asset(
-                                      AssetImages.scheduleIcon),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TextWidget(
-                                    "Today's Schedule",
-                                    textSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    textColor: AppColors.fontColor,
-                                  ),
-                                  TextWidget(
-                                    // provider.date,
-                                    "1-1-2023",
-                                    textSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    textColor: AppColors.typography500,
-                                    textAlign: TextAlign.start,
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-
-                          /// AI Section
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
+      body: SizedBox(
+        height: double.maxFinite,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: AppColors.grey100,
+                          border: Border.all(color: AppColors.grey200),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 42,
+                                  height: 42,
                                   decoration: BoxDecoration(
                                       color: AppColors.whiteColor,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                          color: AppColors.mainColor)),
+                                      border:
+                                          Border.all(color: AppColors.grey300)),
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 6),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(AssetImages.aiIcon),
-                                        const SizedBox(
-                                          width: 12,
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SvgPicture.asset(
+                                        AssetImages.scheduleIcon),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextWidget(
+                                      "Today's Schedule",
+                                      textSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      textColor: AppColors.fontColor,
+                                    ),
+                                    TextWidget(
+                                      // provider.date,
+                                      "1-1-2023",
+                                      textSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      textColor: AppColors.typography500,
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            /// AI Section
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      scheduleProvider.getVisits();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: AppColors.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                              color: AppColors.mainColor)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 6),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                                AssetImages.aiIcon),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            TextWidget(
+                                              "Let AI Schedule".tr(),
+                                              textSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              textColor: AppColors.mainColor,
+                                            )
+                                          ],
                                         ),
-                                        TextWidget(
-                                          "Let AI Schedule".tr(),
-                                          textSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          textColor: AppColors.mainColor,
-                                        )
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              SvgPicture.asset(AssetImages.infoIcon)
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: 3,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: const EdgeInsets.all(0),
-                              itemBuilder: (context, index) {
-                                return doctorSection(index);
-                              })
-                        ],
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                SvgPicture.asset(AssetImages.infoIcon)
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Selector<ScheduleProvider, bool>(
+                                builder: (context, provider, widget) {
+                                  return provider
+                                      ? ListView.builder(
+                                          itemCount: 2,
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return const ShimmerCard();
+                                          })
+                                      : scheduleProvider.listOfVisits.isNotEmpty
+                                          ? ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: scheduleProvider
+                                                  .listOfVisits.length,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              padding: const EdgeInsets.all(0),
+                                              itemBuilder: (context, index) {
+                                                return doctorSection(index);
+                                              })
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0),
+                                              child: Column(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                      AssetImages.noData),
+                                                  TextWidget(
+                                                    "No schedule visits for today ",
+                                                    textSize: 16,
+                                                    fontWeight: FontWeight.w700,
+                                                    textColor:
+                                                        AppColors.fontColor,
+                                                  ),
+                                                  TextWidget(
+                                                    "Use the 'Add Visit' button to schedule visits",
+                                                    textSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    textColor:
+                                                        AppColors.typography700,
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                },
+                                selector: (context, selector) =>
+                                    selector.isLoading)
+                          ],
+                        ),
                       ),
                     ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            child: Container(
-              width: Dimensions.fullWidth(context),
-              height: 80,
-              decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  border: Border.all(color: AppColors.grey100)),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ButtonWidget(
-                    text: "Add Visit",
-                    icon: Icon(
-                      Icons.add,
-                      color: AppColors.whiteColor,
-                      size: 20,
+                    const SizedBox(
+                      height: 100,
                     ),
-                    onTap: () {
-
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return Container(
-                              width: Dimensions.fullWidth(context),
-                              height: Dimensions.fullHeight(context) * 0.9,
-                              color: AppColors.whiteColor,
-                              // child: SingleChildScrollView(
-                              //   child:,
-                              // ),
-                            );
-                          });
-                    },
-                    textColor: AppColors.whiteColor,
-                  ),
+                  ],
                 ),
               ),
             ),
-          )
-        ],
+            Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              child: Container(
+                width: Dimensions.fullWidth(context),
+                height: 80,
+                decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    border: Border.all(color: AppColors.grey100)),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ButtonWidget(
+                      text: "Add Visit",
+                      icon: Icon(
+                        Icons.add,
+                        color: AppColors.whiteColor,
+                        size: 20,
+                      ),
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return const AddScheduleWidget();
+                            });
+                      },
+                      textColor: AppColors.whiteColor,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

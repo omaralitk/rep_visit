@@ -18,8 +18,8 @@ class ReportsProvider extends ChangeNotifier {
       if (val.status == 1) {
         date = val.date;
         visits = val.data?.visits ?? 0;
-        duration = val.data?.duration ?? "";
-        distance = val.data?.distanceTraveled ?? "";
+        duration = val.data?.duration ?? "0";
+        distance = val.data?.distanceTraveled ?? "0";
       }
       notifyListeners();
     });
