@@ -49,7 +49,7 @@ dependencies:
   country_code_picker: ^3.4.1
   dio: ^5.0.0
   open_filex: ^4.3.2
-  image_picker: ^1.2.0
+#  image_picker: ^1.2.0
 
 
 dev_dependencies:
