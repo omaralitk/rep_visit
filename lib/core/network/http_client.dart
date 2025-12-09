@@ -80,6 +80,7 @@ class HttpClient {
       // ToastService.showError(context!, "Session Expired");
       UserCache.clearAll();
       NavigationService.pushAndRemoveUntilWithoutContext( const LoginScreen());
+      ToastService.showError( "Session Expired");
     }
     else  {
       return Exception(response.body);

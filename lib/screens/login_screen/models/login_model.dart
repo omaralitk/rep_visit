@@ -25,7 +25,7 @@ class LoginModel {
     status: json["status"],
     msg: json["msg"],
     token: json["token"],
-    data: Data.fromJson(json["data"]),
+    data: EmpData.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -36,7 +36,7 @@ class LoginModel {
   };
 }
 
-class Data {
+class EmpData {
   String empcode;
   String name;
   String email;
@@ -44,7 +44,7 @@ class Data {
   dynamic image;
   String companyCode;
 
-  Data({
+  EmpData({
     required this.empcode,
     required this.name,
     required this.email,
@@ -53,7 +53,7 @@ class Data {
     required this.companyCode,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory EmpData.fromJson(Map<String, dynamic> json) => EmpData(
     empcode: json["empcode"],
     name: json["name"],
     email: json["email"],

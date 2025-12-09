@@ -6,7 +6,7 @@ import '../../../core/navigation_service/navigation_service.dart';
 import '../ui/onboarding_page.dart';
 
 class OnboardingProvider extends ChangeNotifier {
-  OnboardingRepository _onboardingRepository = OnboardingRepository();
+  final OnboardingRepository _onboardingRepository = OnboardingRepository();
   int _pageIndex = 0;
 
   int get pageIndex => _pageIndex;
@@ -22,7 +22,7 @@ class OnboardingProvider extends ChangeNotifier {
     _onboardingRepository.getOnboardingScreens().then((val) {
       if (val?.status == 1) {
         screens = val?.data ?? [];
-        NavigationService.pushAndRemoveUntil(context, const OnboardingPage());
+        NavigationService.pushAndRemoveUntil(const OnboardingPage());
       }else{
         screens = [];
       }

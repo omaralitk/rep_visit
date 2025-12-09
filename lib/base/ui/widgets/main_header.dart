@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/dimensions.dart';
+import 'package:rep_visit/core/navigation_service/navigation_service.dart';
+import 'package:rep_visit/main.dart';
+import 'package:rep_visit/screens/base_screen/providers/base_provider.dart';
+import 'package:rep_visit/screens/profile_screen/ui/profile_screen.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/asset_images.dart';
 import 'text_widget.dart';
 
 class MainHeader extends StatelessWidget {
-  String title;
-  String subTitle;
+  final String title;
+  final String subTitle;
+  final bool? isProfile;
 
-  MainHeader({super.key, required this.title, required this.subTitle});
-
+  const MainHeader(
+      {super.key, required this.title, required this.subTitle, this.isProfile});
   @override
   Widget build(BuildContext context) {
+    var provider=Provider.of<BaseProvider>(context,listen: false);
 
     return Column(
-
       children: [
         // const SizedBox(
         //   height: 60,
@@ -35,7 +41,7 @@ class MainHeader extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
                 SizedBox(
-                  width: Dimensions.fullWidth(context)*0.63,
+                  width: Dimensions.fullWidth(context) * 0.63,
                   child: TextWidget(
                     subTitle,
                     textSize: 12,
@@ -49,10 +55,17 @@ class MainHeader extends StatelessWidget {
             Row(
               children: [
                 topIconWidget(AssetImages.notificationIcon, () {}),
-                const SizedBox(
-                  width: 20,
-                ),
-                topIconWidget(AssetImages.personIcon, () {})
+                isProfile == true
+                    ? const SizedBox()
+                    : const SizedBox(
+                        width: 20,
+                      ),
+                isProfile == true
+                    ? const SizedBox()
+                    : topIconWidget(AssetImages.personIcon, () {
+                        // NavigationService.push(const ProfileScreen());
+                  provider.setCurrentIndex(5);
+                      })
               ],
             )
           ],

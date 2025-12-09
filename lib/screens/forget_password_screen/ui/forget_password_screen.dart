@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/base/ui/widgets/button_widget.dart';
-import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/base/ui/widgets/text_widget.dart';
 import 'package:rep_visit/core/navigation_service/navigation_service.dart';
@@ -31,7 +30,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             ),
             IconButton(
                 onPressed: () {
-                  NavigationService.back(context);
+                  NavigationService.back();
                 },
                 icon: const Icon(Icons.arrow_back_ios_new)),
             const SizedBox(

@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
-import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/base/ui/widgets/button_widget.dart';
 import 'package:rep_visit/base/ui/widgets/custom_check_box.dart';
 import 'package:rep_visit/base/ui/widgets/lang_switcher.dart';
@@ -50,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   InkWell(
                     onTap: () {
-                      LoadingWidget.show(context);
+                      LoadingWidget.show();
                     },
                     child: TextWidget(
                       "welcome_back".tr(),
@@ -67,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               InkWell(
                 onTap: () {
-                  LoadingWidget.hide(context);
+                  LoadingWidget.hide();
                 },
                 child: TextWidget(
                   "please_enter_a_form".tr(),
@@ -112,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                       InkWell(
                         onTap: () {
                           NavigationService.push(
-                              context, const ForgetPasswordScreen());
+                               const ForgetPasswordScreen());
                         },
                         child: TextWidget(
                           "forget_pass".tr(),

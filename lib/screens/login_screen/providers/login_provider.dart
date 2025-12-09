@@ -39,16 +39,17 @@ class LoginProvider extends ChangeNotifier {
   }
 
   Future makeLogin(String email, String pass, BuildContext context) async {
-    LoadingWidget.show(context);
+    LoadingWidget.show();
     Map<String, dynamic> body = {"email": email, "password": pass};
     _loginRepo.makeLogin(body).then((val) {
-      LoadingWidget.hide(context);
+      LoadingWidget.hide();
       if (val.status == 1) {
         UserCache.setIsLogin(true);
         UserCache.setToken(val.token);
-        NavigationService.pushAndRemoveUntil(context, const BaseScreen());
-      }else{
-        ToastService.showError(context, "Wrong email or password");
+        UserCache.setEmpData(val.data);
+        NavigationService.pushAndRemoveUntil( const BaseScreen());
+      } else {
+        ToastService.showError( "Wrong email or password");
       }
     });
   }

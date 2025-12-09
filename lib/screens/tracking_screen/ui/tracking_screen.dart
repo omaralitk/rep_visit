@@ -6,6 +6,7 @@ import 'package:rep_visit/base/ui/widgets/text_widget.dart';
 import 'package:rep_visit/screens/tracking_screen/provider/tracking_provider.dart';
 import 'package:rep_visit/screens/tracking_screen/ui/widgets/completed_visits.dart';
 import 'package:rep_visit/screens/tracking_screen/ui/widgets/pinding_visits.dart';
+import 'package:rep_visit/screens/tracking_screen/ui/widgets/tracking_shimmer.dart';
 
 class TrackingScreen extends StatelessWidget {
   const TrackingScreen({super.key});
@@ -29,7 +30,7 @@ class _TrackingPageState extends State<TrackingPage> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<TrackingProvider>(context, listen: false).getVisits();
+      Provider.of<TrackingProvider>(context,listen: false).getVisits();
     });
   }
   @override
@@ -42,36 +43,42 @@ class _TrackingPageState extends State<TrackingPage> {
             title: "Visit Tracking", subTitle: "Monitor your daily visits"),
       ),
       body: Selector<TrackingProvider,bool>(builder: (context,provide,widget){
-        return provide?CircularProgressIndicator(): Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Selector<TrackingProvider, int>(
-                  selector: (_, provider) => provider.selectedTab,
-                  builder: (context, selectedIndex, _) {
-                    return Row(
-                      children: [
-                        _tabItem(context, "Pending", 0, selectedIndex,trackingProvider),
-                        const SizedBox(width: 12),
-                        _tabItem(context, "Completed", 1, selectedIndex,trackingProvider),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 20,),
-                Selector<TrackingProvider, int>(
-                    builder: (context, indexProvider, widget) {
-                      if (indexProvider == 0) {
-                        return const PendingVisits();
-                      } else if (indexProvider == 1) {
-                        return const CompletedVisits();
-                      } else {
-                        return  Container();
-                      }
+        return provide?const TrackingShimmer(): Padding(
+          padding:const EdgeInsets.symmetric(horizontal: 16.0),
+          child: RefreshIndicator(
+            onRefresh: (){
+              return trackingProvider.getVisits();
+            },
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  Selector<TrackingProvider, int>(
+                    selector: (_, provider) => provider.selectedTab,
+                    builder: (context, selectedIndex, _) {
+                      return Row(
+                        children: [
+                          _tabItem(context, "Pending", 0, selectedIndex,trackingProvider),
+                          const SizedBox(width: 12),
+                          _tabItem(context, "Completed", 1, selectedIndex,trackingProvider),
+                        ],
+                      );
                     },
-                    selector: (context, selector) => selector.selectedTab)
-              ],
+                  ),
+                  const SizedBox(height: 20,),
+                  Selector<TrackingProvider, int>(
+                      builder: (context, indexProvider, widget) {
+                        if (indexProvider == 0) {
+                          return const PendingVisits();
+                        } else if (indexProvider == 1) {
+                          return const CompletedVisits();
+                        } else {
+                          return  Container();
+                        }
+                      },
+                      selector: (context, selector) => selector.selectedTab)
+                ],
+              ),
             ),
           ),
         );
@@ -80,7 +87,8 @@ class _TrackingPageState extends State<TrackingPage> {
   }
 
   Widget _tabItem(
-      BuildContext context, String title, int index, int selectedIndex,TrackingProvider provider) {
+      BuildContext context, String title, int index, int selectedIndex,TrackingProvider provider)
+  {
     bool isSelected = selectedIndex == index;
 
     return GestureDetector(

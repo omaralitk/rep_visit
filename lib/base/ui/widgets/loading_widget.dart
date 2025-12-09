@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/navigation_service/navigation_service.dart';
+
 class LoadingWidget {
-  static void show(BuildContext context) {
+  static void show() {
     showDialog(
-      context: context,
+      context: NavigationService.navigatorKey.currentContext!,
       barrierDismissible:false,
       builder: (context) {
         return Dialog(
@@ -28,7 +30,7 @@ class LoadingWidget {
     );
   }
 
-  static void hide(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
+  static void hide() {
+    Navigator.of(NavigationService.navigatorKey.currentContext!, rootNavigator: true).pop();
   }
 }

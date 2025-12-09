@@ -15,14 +15,14 @@ class ForgetProvider extends ChangeNotifier {
     notifyListeners();
   }
   Future forgetPass(String email, BuildContext context) async {
-    LoadingWidget.show(context);
+    LoadingWidget.show();
     Map<String, dynamic> body = {"email": email, };
     ForgetPassRepo().forgetPass(body).then((val) {
-      LoadingWidget.hide(context);
+      LoadingWidget.hide();
       if (val.status == 1) {
-        ToastService.showSuccess(context,val.msg);
+        ToastService.showSuccess(val.msg);
       }else{
-        ToastService.showError(context,val.msg);
+        ToastService.showError(val.msg);
 
       }
     });

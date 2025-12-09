@@ -10,15 +10,15 @@ class NavigationService {
           (route) => false,
     );
   }
-  static pushAndRemoveUntil(BuildContext context, Widget widget) {
-    return Navigator.of(context).pushAndRemoveUntil( MaterialPageRoute(builder: (context) => widget), (route) => false);
+  static pushAndRemoveUntil( Widget widget) {
+    return Navigator.of(NavigationService.navigatorKey.currentContext!).pushAndRemoveUntil( MaterialPageRoute(builder: (context) => widget), (route) => false);
   }
 
-  static push(BuildContext context, Widget widget) {
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
+  static push( Widget widget) {
+    return Navigator.push(NavigationService.navigatorKey.currentContext!, MaterialPageRoute(builder: (context) => widget));
   }
-  static back(BuildContext context) {
-    return Navigator.pop(context);
+  static back() {
+    return Navigator.pop(NavigationService.navigatorKey.currentContext!);
   }
 
 

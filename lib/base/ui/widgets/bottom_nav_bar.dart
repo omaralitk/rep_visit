@@ -8,11 +8,12 @@ import 'package:rep_visit/screens/base_screen/providers/base_provider.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
-
+final bool? isProfile;
 
   const CustomBottomNavBar({
     super.key,
     required this.currentIndex,
+    this.isProfile
 
   });
 
@@ -26,6 +27,8 @@ class CustomBottomNavBar extends StatelessWidget {
       const _NavItem(icon: AssetImages.trackingIcon, label: "Tracking"),
       const _NavItem(icon: AssetImages.doctorsIcon, label: "Doctors"),
       const _NavItem(icon: AssetImages.reportsIcon, label: "Reports"),
+      const _NavItem(icon: AssetImages.personalInfoIcon, label: "Profile"),
+
     ];
 
     return Container(
@@ -37,12 +40,13 @@ class CustomBottomNavBar extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8, bottom: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (index) {
+        children: List.generate(items.length-1, (index) {
           final item = items[index];
           final isActive = currentIndex == index;
 
           return GestureDetector(
             onTap: (){
+
               baseProvider.setCurrentIndex(index);
             },
             behavior: HitTestBehavior.opaque,

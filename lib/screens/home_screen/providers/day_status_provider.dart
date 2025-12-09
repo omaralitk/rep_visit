@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
+import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
 import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
 import 'package:rep_visit/screens/home_screen/repo/home_repo.dart';
 
 class DayStatusProvider extends ChangeNotifier {
   DateTime? startTime;
   DateTime? endTime;
-bool isStart=false;
+  bool isStart = false;
+
   /// Keep history
   final List<DateTime> startHistory = [];
   final List<DateTime> endHistory = [];
@@ -19,34 +22,52 @@ bool isStart=false;
       ? DateFormat('hh:mm a').format(startTime!)
       : 'Not started';
 
-  String get formattedEndTime => endTime != null
-      ? DateFormat('hh:mm a').format(endTime!)
-      : 'Not ended';
+  String get formattedEndTime =>
+      endTime != null ? DateFormat('hh:mm a').format(endTime!) : 'Not ended';
 
   /// Handle Start/End button logic
-  void handleDayAction() {
-    if (isStart==false) {
+  void handleDayAction() async {
+    if (isStart == false) {
+      // Start Day
+      bool success = await workProcess(1);
 
-      isStart=true;
-      startTime = DateTime.now();
-      endTime = null;
+      if (success) {
+        isStart = true;
+        startTime = DateTime.now();
+        endTime = null;
+        notifyListeners();
+      }
 
-    } else if (isStart) {
-      // End current day
-      isStart=false;
-      endTime = DateTime.now();
+    } else {
+      // End Day
+      bool success = await workProcess(2);
 
+      if (success) {
+        isStart = false;
+        endTime = DateTime.now();
+        notifyListeners();
+      }
     }
-    notifyListeners();
   }
 
-  startDay(){
-    Map<String, dynamic> body={
+  Future<bool> workProcess(int val) async {
+    try {
+      LoadingWidget.show();
+      final response = await HomeRepo().workProcess(val);
+      LoadingWidget.hide();
 
-    };
-    HomeRepo().startVisit(body).then((val){
+      if (response?.status == 1) {
+        ToastService.showSuccess(response?.msg ?? "");
+        return true;
+      } else {
+        ToastService.showError(response?.msg ?? "Something went wrong");
+        return false;
+      }
 
-    });
+    } catch (e) {
+      LoadingWidget.hide();
+      ToastService.showError("Error occurred: $e");
+      return false;
+    }
   }
-
 }

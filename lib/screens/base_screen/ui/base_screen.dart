@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:rep_visit/screens/base_screen/providers/base_provider.dart';
 import 'package:rep_visit/screens/doctors_screen/ui/doctors_screen.dart';
 import 'package:rep_visit/screens/home_screen/ui/home_screen.dart';
+import 'package:rep_visit/screens/profile_screen/ui/profile_screen.dart';
 import 'package:rep_visit/screens/reports/ui/reports_screen.dart';
 
 import '../../../base/ui/widgets/bottom_nav_bar.dart';
@@ -42,6 +43,8 @@ class _BasePageState extends State<BasePage> {
                 return const DoctorsScreen();
               case 4:
                 return const ReportsScreen();
+              case 5:
+                return const ProfileScreen();
               default:
                 return const SizedBox();
             }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:rep_visit/base/ui/widgets/no_data_widget.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/screens/tracking_screen/provider/tracking_provider.dart';
 
@@ -65,13 +66,16 @@ class _CompletedVisitsState extends State<CompletedVisits> {
         const SizedBox(
           height: 20,
         ),
-        ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 1,
-            itemBuilder: (context, index) {
-              return visitSection(completedProvider, index);
-            })
+        completedProvider.completedVisits.isNotEmpty
+            ? ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: completedProvider.completedVisits.length,
+                itemBuilder: (context, index) {
+                  return visitSection(completedProvider, index);
+                })
+            : const NoDataWidget(
+                title: "You don't have any completed visits for today")
       ],
     );
   }
@@ -97,7 +101,7 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextWidget(
-                        provider.completedVisits[index].doctor.name,
+                        provider.completedVisits[index].doctor.name ?? "",
                         textSize: 16,
                         fontWeight: FontWeight.w700,
                         textColor: AppColors.fontColor,
@@ -114,7 +118,7 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     child: TextWidget(
-                      provider.completedVisits[index].totalDuration,
+                      provider.completedVisits[index].totalDuration??"",
                       textSize: 12,
                       textColor: AppColors.black,
                       fontWeight: FontWeight.w700,
@@ -149,7 +153,6 @@ class _CompletedVisitsState extends State<CompletedVisits> {
               ),
               Container(
                 height: 58,
-
               ),
               const SizedBox(
                 height: 10,

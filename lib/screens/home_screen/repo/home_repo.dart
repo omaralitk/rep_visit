@@ -1,5 +1,6 @@
 import 'package:rep_visit/core/network/models/general_response_model.dart';
 import 'package:rep_visit/screens/home_screen/models/summary_model.dart';
+import 'package:rep_visit/screens/home_screen/models/work_process_model.dart';
 
 import '../../../core/network/constants/end_points.dart';
 import '../../../core/network/http_client.dart';
@@ -31,13 +32,21 @@ class HomeRepo {
     }
   }
 
-  Future<GeneralResponseModel?> startVisit(Map<String, dynamic> body) async {
-    GeneralResponseModel generalResponseModel =
-        GeneralResponseModel(data: "", msg: "", status: 0);
+  Future<WorkProcessModel?> workProcess(int type) async {
 
-    final response =
-        await httpClient.post(endPoint: EndPoints.summaryPi, payload: body);
-    generalResponseModel = generalResponseModelFromJson(response.response);
-    return generalResponseModel;
+    WorkProcessModel workProcessModel =
+        WorkProcessModel(status: 0, msg: "", data: null);
+
+    /// When start visit (1)
+    /// When end visit (2)
+
+
+    final response = await httpClient.post(
+        endPoint: type == 1 ? EndPoints.startWork : EndPoints.endWork,
+        payload: {});
+    print("dddddd ${response.response}");
+    workProcessModel = workProcessModelFromJson(response.response);
+
+    return workProcessModel;
   }
 }

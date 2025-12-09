@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:rep_visit/base/ui/widgets/cached_image.dart';
 import 'package:rep_visit/base/ui/widgets/main_header.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/screens/doctors_screen/providers/doctors_provider.dart';
@@ -132,28 +133,8 @@ SizedBox(width: 5,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.primary100),
-                    ),
-                    clipBehavior: Clip.antiAlias, // important for rounded corners
-                    child: CachedNetworkImage(
-                      imageUrl: provider.doctorsList[index].image ?? "",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.mainColor,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => SvgPicture.asset(
-                        AssetImages.emptyImage, // your fallback SVG or PNG
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                  CachedImage(
+                    url: provider.doctorsList[index].image ?? "",
                   ),
 
                   Row(

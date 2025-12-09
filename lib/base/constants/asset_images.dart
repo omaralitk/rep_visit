@@ -29,4 +29,9 @@ class AssetImages {
   static const String noData = "assets/images/svg/empty_icon.svg";
   static const String navigateIcon = "assets/images/svg/navigate_icon.svg";
   static const String callIcon = "assets/images/svg/call_icon.svg";
+  static const String personalInfoIcon = "assets/images/svg/personal_info_icon.svg";
+  static const String settingsIcon = "assets/images/svg/settings_icon.svg";
+  static const String passIcon = "assets/images/svg/pass_icon.svg";
+  static const String editIcon = "assets/images/svg/edit_icon.svg";
+  static const String filesIcon = "assets/images/svg/files_icon.svg";
 }

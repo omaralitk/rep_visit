@@ -1,10 +1,10 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/core/navigation_service/navigation_service.dart';
+import 'package:rep_visit/core/utilities/main_utilities.dart';
 import 'package:rep_visit/screens/doctors_screen/models/doctors_model.dart';
 import 'package:rep_visit/screens/schedule_screen/repo/ai_schedule_repo.dart';
 
@@ -33,7 +33,7 @@ class ScheduleProvider extends ChangeNotifier {
 
   getLocation() async {
     try {
-      Position position = await determinePosition();
+      Position position = await MainUtilities.getPosition();
       lat = position.latitude;
       lng = position.longitude;
       notifyListeners();
@@ -44,35 +44,35 @@ class ScheduleProvider extends ChangeNotifier {
     }
   }
 
-  Future<Position> determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // 1️⃣ Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
-    }
-
-    // 2️⃣ Check permission
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception(
-          'Location permissions are permanently denied, cannot request permissions.');
-    }
-
-    // 3️⃣ Get current position
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-  }
+  // Future<Position> determinePosition() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
+  //
+  //   // 1️⃣ Check if location services are enabled
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     throw Exception('Location services are disabled.');
+  //   }
+  //
+  //   // 2️⃣ Check permission
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       throw Exception('Location permissions are denied');
+  //     }
+  //   }
+  //
+  //   if (permission == LocationPermission.deniedForever) {
+  //     throw Exception(
+  //         'Location permissions are permanently denied, cannot request permissions.');
+  //   }
+  //
+  //   // 3️⃣ Get current position
+  //   return await Geolocator.getCurrentPosition(
+  //     desiredAccuracy: LocationAccuracy.high,
+  //   );
+  // }
 
   int selectedIndex = 0;
 
@@ -103,34 +103,44 @@ class ScheduleProvider extends ChangeNotifier {
 
   List<Map<dynamic, dynamic>> listOfAddedSchedule = [];
 
-  addScheduleVisit(
-    int id,
-    String time,BuildContext context
-  ) {
-    listOfAddedSchedule.add({"doctor_id": id, "visit_time": time});
+  toggleScheduleVisit(int id, String time) {
+    /// Check if doctor already exists in list
+    final exists = listOfAddedSchedule
+        .any((item) => item["doctor_id"] == id);
+
+    if (exists) {
+      /// Remove doctor
+      listOfAddedSchedule.removeWhere((item) => item["doctor_id"] == id);
+    } else {
+      /// Add doctor
+      listOfAddedSchedule.add({
+        "doctor_id": id,
+        "visit_time": time,
+      });
+    }
+
     notifyListeners();
   }
 
 /// Save schedule list
   saveScheduleVisits(BuildContext context) {
-    LoadingWidget.show(context);
+    LoadingWidget.show();
 
     Map<String, dynamic> body = {
       "doctor_visits": listOfAddedSchedule,
     };
 
-print("ffff ${listOfAddedSchedule}");
     AiScheduleRepo().addVisits(body).then((val) {
-      LoadingWidget.hide(context);
+      LoadingWidget.hide();
 
       if (val.success == 1) {
-        ToastService.showSuccess(context, val.msg);
+        ToastService.showSuccess( val.msg);
         listOfAddedSchedule.clear();
         getVisits();
-        NavigationService.back(context);
+        NavigationService.back();
 
       } else {
-        ToastService.showError(context, val.msg);
+        ToastService.showError(val.msg);
       }
     });
   }

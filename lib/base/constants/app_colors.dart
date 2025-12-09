@@ -30,4 +30,6 @@ class AppColors {
   static Color info50 = const Color(0XFFEFF8FF);
   static Color info100 = const Color(0XFFD1E9FF);
   static Color starColor = const Color(0XFFF38744);
+  static Color signOutColor = const Color(0XFFfee4e2);
+  static Color signOutBorderColor = const Color(0XFFd92d20);
 }

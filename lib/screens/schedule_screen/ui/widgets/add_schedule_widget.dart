@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/ui/widgets/button_widget.dart';
+import 'package:rep_visit/base/ui/widgets/cached_image.dart';
 import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
-import 'package:rep_visit/screens/schedule_screen/provider/getScheduleProvider.dart';
+import 'package:rep_visit/screens/schedule_screen/provider/get_schedule_provider.dart';
 
 import '../../../../base/constants/app_colors.dart';
 import '../../../../base/constants/asset_images.dart';
@@ -21,6 +22,7 @@ class AddScheduleWidget extends StatefulWidget {
 
 class _AddScheduleWidgetState extends State<AddScheduleWidget> {
   late ScheduleProvider provider;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -29,6 +31,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
       Provider.of<ScheduleProvider>(context, listen: false).getDoctorsList();
     });
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -40,6 +43,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
     provider.listOfAddedSchedule.clear();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     var scheduleProvider =
@@ -160,7 +164,6 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
           return Expanded(
             child: InkWell(
               onTap: () {
-
                 provider.setSelectedTap(index);
               },
               child: Container(
@@ -203,29 +206,8 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.primary100),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    // important for rounded corners
-                    child: CachedNetworkImage(
-                      imageUrl: provider.doctorsList[index].image ?? "",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.mainColor,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => SvgPicture.asset(
-                        AssetImages.emptyImage, // your fallback SVG or PNG
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                  CachedImage(
+                    url: provider.doctorsList[index].image ?? "",
                   ),
                   Row(
                     children: [
@@ -393,39 +375,28 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                 height: 12,
               ),
               Selector<ScheduleProvider, bool>(
-                builder: (context, isAdded, v) {
-                  return isAdded
-                      ? ButtonWidget(
-                          text: "Added",
-                          onTap: () {},
-                          textColor: AppColors.mainColor,
-                          borderColor: AppColors.mainColor,
-                          backgroundColor: AppColors.whiteColor,
-                        )
-                      : ButtonWidget(
-                          text: "Add to schedule visits",
-                          onTap: () {
-                            provider.addScheduleVisit(
-                              provider.doctorsList[index].id ?? 0,
-                              provider.doctorsList[index].availableTime ??
-                                  "09:30:00",
-                              context,
-                            );
-                          },
-                          backgroundColor: AppColors.whiteColor,
-                          borderColor: AppColors.mainColor,
-                          textColor: AppColors.mainColor,
-                          fontWeight: FontWeight.w700,
-                          icon: Icon(
-                            Icons.add,
-                            size: 24,
-                            color: AppColors.mainColor,
-                          ),
-                        );
-                },
-                selector: (context, selector) => selector.listOfAddedSchedule
+                selector: (context, provider) => provider.listOfAddedSchedule
                     .any((item) =>
                         item["doctor_id"] == provider.doctorsList[index].id),
+                builder: (context, isAdded, _) {
+                  return ButtonWidget(
+                    text: isAdded ? "Added" : "Add to schedule visits",
+                    onTap: () {
+                      provider.toggleScheduleVisit(
+                        provider.doctorsList[index].id ?? 0,
+                        provider.doctorsList[index].availableTime ?? "09:30:00",
+                      );
+                    },
+                    textColor: AppColors.mainColor,
+                    borderColor: AppColors.mainColor,
+                    backgroundColor:
+                        isAdded ? AppColors.whiteColor : AppColors.whiteColor,
+                    icon: isAdded
+                        ? null
+                        : Icon(Icons.add, size: 24, color: AppColors.mainColor),
+                    fontWeight: FontWeight.w700,
+                  );
+                },
               )
             ],
           ),

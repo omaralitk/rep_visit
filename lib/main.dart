@@ -15,8 +15,9 @@ import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
 import 'package:rep_visit/screens/login_screen/providers/login_provider.dart';
 import 'package:rep_visit/screens/login_screen/ui/login_screen.dart';
 import 'package:rep_visit/screens/onboarding/providers/onboarding_provider.dart';
+import 'package:rep_visit/screens/profile_screen/provider/profile_provider.dart';
 import 'package:rep_visit/screens/reports/provider/reports_provider.dart';
-import 'package:rep_visit/screens/schedule_screen/provider/getScheduleProvider.dart';
+import 'package:rep_visit/screens/schedule_screen/provider/get_schedule_provider.dart';
 import 'package:rep_visit/screens/splash_screen/ui/splash_screen.dart';
 import 'package:rep_visit/screens/tracking_screen/provider/tracking_provider.dart';
 
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => DoctorsProvider()),
         ChangeNotifierProvider(create: (ctx) => ScheduleProvider()),
         ChangeNotifierProvider(create: (ctx) => TrackingProvider()),
+        ChangeNotifierProvider(create: (ctx) => ProfileProvider()),
       ],
       child: MaterialApp(
         supportedLocales: context.supportedLocales,

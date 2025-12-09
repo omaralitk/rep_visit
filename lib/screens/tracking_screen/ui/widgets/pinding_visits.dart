@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:rep_visit/screens/schedule_screen/provider/getScheduleProvider.dart';
+import 'package:rep_visit/base/constants/app_colors.dart';
+import 'package:rep_visit/base/constants/asset_images.dart';
+import 'package:rep_visit/base/ui/widgets/no_data_widget.dart';
+import 'package:rep_visit/base/ui/widgets/text_widget.dart';
 import 'package:rep_visit/screens/tracking_screen/provider/tracking_provider.dart';
+import 'package:rep_visit/screens/tracking_screen/models/traking_model.dart';
 
-import '../../../../base/constants/app_colors.dart';
-import '../../../../base/constants/asset_images.dart';
-import '../../../../base/ui/widgets/text_widget.dart';
+// Helper to format Duration -> mm:ss or hh:mm:ss if long
+String formatDurationSimple(Duration d) {
+  if (d.inHours > 0) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$h:$m:$s';
+  } else {
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+}
 
 class PendingVisits extends StatefulWidget {
   const PendingVisits({super.key});
@@ -17,251 +31,249 @@ class PendingVisits extends StatefulWidget {
 
 class _PendingVisitsState extends State<PendingVisits> {
   @override
+  void initState() {
+    super.initState();
+    // Optionally trigger load
+    final prov = Provider.of<TrackingProvider>(context, listen: false);
+    prov.getVisits();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var pendingProvider =Provider.of<TrackingProvider>(context,listen: false);
-    return Column(
-      children: [
-        Row(
+    return Consumer<TrackingProvider>(
+      builder: (context, provider, _) {
+        return Column(
           children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.grey300)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SvgPicture.asset(AssetImages.noData),
-              ),
-            ),
-            const SizedBox(
-              width: 12,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                TextWidget(
-                  "Pending Visits",
-                  textSize: 16,
-                  fontWeight: FontWeight.w700,
-                  textColor: AppColors.fontColor,
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                      color: AppColors.whiteColor,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.grey300)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SvgPicture.asset(AssetImages.noData),
+                  ),
                 ),
-                TextWidget(
-                  "${pendingProvider.pendingVisits.length.toString()} visits remaining today",
-                  textSize: 12,
-                  fontWeight: FontWeight.w500,
-                  textColor: AppColors.typography500,
-                  textAlign: TextAlign.start,
-                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextWidget(
+                      "Pending Visits",
+                      textSize: 16,
+                      fontWeight: FontWeight.w700,
+                      textColor: AppColors.fontColor,
+                    ),
+                    TextWidget(
+                      "${provider.pendingVisits.length.toString()} visits remaining today",
+                      textSize: 12,
+                      fontWeight: FontWeight.w500,
+                      textColor: AppColors.typography500,
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
+                )
               ],
-            )
+            ),
+            const SizedBox(height: 20),
+            provider.pendingVisits.isNotEmpty
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: provider.pendingVisits.length,
+                    itemBuilder: (context, idx) {
+                      final visit = provider.pendingVisits[idx];
+                      return visitCard(provider, visit);
+                    },
+                  )
+                : const NoDataWidget(
+                    title: "You don't have pending visits for today")
           ],
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: pendingProvider.pendingVisits.length,
-            itemBuilder: (context, index) {
-              return visitSection(pendingProvider,index);
-            })
-      ],
+        );
+      },
     );
   }
 
-  visitSection(TrackingProvider provider,int index) {
+  Widget visitCard(TrackingProvider provider, ScheduleVisits visit) {
+    final isActive = provider.visitActive[visit.id] ?? false;
+    final elapsed = provider.visitElapsed[visit.id] ?? Duration.zero;
+    final rating = provider.visitRating[visit.id] ?? 0;
+    final notesController = provider.notesControllerFor(visit.id);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Container(
         decoration: BoxDecoration(
-            color: AppColors.whiteColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.grey200)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.grey200),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              /// -------- HEADER ----------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextWidget(
-                        provider.pendingVisits[index].doctor.name,
-                        textSize: 16,
-                        fontWeight: FontWeight.w700,
-                        textColor: AppColors.fontColor,
+                      Text(
+                        visit.doctor.name,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.fontColor),
                       ),
-                      TextWidget(
-                        provider.pendingVisits[index].doctor.hospitalName,
-                        textSize: 12,
-                        fontWeight: FontWeight.w500,
-                        textColor: AppColors.typography500,
+                      Text(
+                        visit.doctor.hospitalName,
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.typography500),
                       ),
                     ],
                   ),
                   Container(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.darkGrey,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 2),
-                      child: TextWidget(
-                        provider.pendingVisits[index].visitTime,
-                        textSize: 12,
-                        textColor: AppColors.whiteColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                        color: AppColors.darkGrey,
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Text(
+                      isActive ? _formatDuration(elapsed) : visit.visitTime,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   )
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
+
+              const SizedBox(height: 15),
+
+              /// ---------- ADDRESS ----------
               Row(
                 children: [
-                  SvgPicture.asset(AssetImages.locationIcon),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  TextWidget(
-                    provider.pendingVisits[index].doctor.address,
-                    textSize: 12,
-                    fontWeight: FontWeight.w300,
-                    textColor: AppColors.typography500,
+                  Icon(Icons.location_on_outlined, size: 18),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      visit.doctor.address,
+                      style: TextStyle(
+                          fontSize: 12, color: AppColors.typography500),
+                    ),
                   )
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              // Button
-              GestureDetector(
-                // onTap: provider.handleDayAction,
-                child: Container(
-                  height: 48,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: true == true
-                        ? AppColors.primary900
-                        : AppColors.endDayButton,
-                    borderRadius: BorderRadius.circular(12),
+
+              const SizedBox(height: 15),
+
+              /// =============== IF VISIT IS NOT ACTIVE =============== ///
+              if (!isActive)
+                GestureDetector(
+                  onTap: () => provider.startVisit(
+                    context,
+                    visit.id,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 28,
-                        width: 28,
-                        decoration: BoxDecoration(
-                          color: true == true
-                              ? AppColors.primary700
-                              : AppColors.endDayIcon,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          true == true
-                              ? Icons.play_arrow_outlined
-                              : Icons.stop_outlined,
-                          color: AppColors.whiteColor,
-                        ),
+                  child: Container(
+                    height: 48,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary900,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.play_arrow, color: Colors.white),
+                          SizedBox(width: 8),
+                          TextWidget("Start Visit",
+                              textSize: 16,
+                              textColor: AppColors.whiteColor,
+                              ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        true == true ? "Start Visit" : "End Visit",
-                        style: TextStyle(
-                          color: AppColors.whiteColor,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: (){
 
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.grey200)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(AssetImages.navigateIcon),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                TextWidget(
-                                  "Navigate",
-                                  textSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  textColor: AppColors.fontColor,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+              /// =============== IF VISIT IS ACTIVE =============== ///
+              if (isActive) ...[
+                /// ---------- RATING ----------
+                Row( children: List.generate(5, (i) { final starIndex = i + 1; final filled = starIndex <= rating; return GestureDetector( onTap: () { provider.setRating(visit.id, starIndex); }, child: Container( margin: const EdgeInsets.only(right: 8), padding: const EdgeInsets.all(6), decoration: BoxDecoration( color: filled ? AppColors.starColor : AppColors.grey100, shape: BoxShape.circle, border: Border.all(color: AppColors.grey200), ), child: Icon( filled ? Icons.star : Icons.star_border, size: 18, color: filled ? AppColors.whiteColor : AppColors.typography500, ), ), ); }), ),
+
+                const SizedBox(height: 12),
+
+                /// ---------- NOTES ----------
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextWidget("Visit Notes",
+                      textSize: 14,
+                      fontWeight: FontWeight.bold,
+                      textColor: AppColors.fontColor),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 100,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.grey200),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: notesController,
+                    maxLines: null,
+                    onChanged: (v) => provider.setNotes(visit.id, v),
+                    decoration:
+                    const InputDecoration.collapsed(hintText: "Write notes..."),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// ---------- END VISIT ----------
+                GestureDetector(
+                  onTap: () =>
+                      provider.endVisit(context, visit.id),
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.endDayButton,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.grey200)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(AssetImages.callIcon),
-                              SizedBox(
-                                width: 5,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:  [
+                          const Icon( Icons.stop_outlined, color: Colors.white, ),
+                          const SizedBox(width: 8),
+                          TextWidget("End Visit",
+                              textSize: 16,
+                              textColor: AppColors.whiteColor,
+
                               ),
-                              TextWidget(
-                                "Call",
-                                textSize: 12,
-                                fontWeight: FontWeight.w500,
-                                textColor: AppColors.fontColor,
-                              )
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              )
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
   }
+
+  /// Format timer
+  String _formatDuration(Duration d) {
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$m:$s";
+  }
+
 }

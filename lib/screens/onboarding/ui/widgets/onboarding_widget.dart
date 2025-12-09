@@ -10,12 +10,12 @@ import '../../../../core/navigation_service/navigation_service.dart';
 import '../../../login_screen/ui/login_screen.dart';
 
 class OnboardingWidget extends StatefulWidget {
-  String urlImage;
-  String title;
-  List<String> body;
-  int index;
+  final String urlImage;
+  final String title;
+  final List<String> body;
+  final int index;
 
-  OnboardingWidget(
+  const OnboardingWidget(
       {super.key,
       required this.urlImage,
       required this.title,
@@ -124,7 +124,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                               onTap: () {
 
                                 NavigationService.pushAndRemoveUntil(
-                                    context, const LoginScreen());
+                                    const LoginScreen());
                               },
                             ),
                           ),
@@ -141,7 +141,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                                       onboardingProvider.pageIndex + 1);
                                 } else {
                                   NavigationService.pushAndRemoveUntil(
-                                      context, LoginScreen());
+                                      const LoginScreen());
                                 }
                               },
                               textColor: AppColors.whiteColor,

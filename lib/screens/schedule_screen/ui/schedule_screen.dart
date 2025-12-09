@@ -6,7 +6,7 @@ import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/base/ui/widgets/main_header.dart';
 import 'package:rep_visit/screens/doctors_screen/ui/widgets/doctors_shimmer.dart';
-import 'package:rep_visit/screens/schedule_screen/provider/getScheduleProvider.dart';
+import 'package:rep_visit/screens/schedule_screen/provider/get_schedule_provider.dart';
 import 'package:rep_visit/screens/schedule_screen/ui/widgets/add_schedule_widget.dart';
 
 import '../../../base/constants/asset_images.dart';
