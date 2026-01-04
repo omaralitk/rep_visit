@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-EndVisitModel endVisitModelFromJson(String str) => EndVisitModel.fromJson(json.decode(str));
+EndVisitModel endVisitModelFromJson(String str) =>
+    EndVisitModel.fromJson(json.decode(str));
 
 String endVisitModelToJson(EndVisitModel data) => json.encode(data.toJson());
 
@@ -20,16 +21,16 @@ class EndVisitModel {
   });
 
   factory EndVisitModel.fromJson(Map<String, dynamic> json) => EndVisitModel(
-    status: json["status"],
-    msg: json["msg"],
-    data: Data.fromJson(json["data"]),
-  );
+        status: json["status"],
+        msg: json["msg"],
+        data: Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "msg": msg,
-    "data": data?.toJson(),
-  };
+        "status": status,
+        "msg": msg,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -39,7 +40,7 @@ class Data {
   DateTime startTime;
   DateTime endTime;
   int totalDuration;
-  double totalDistance;
+  String totalDistance;
   String status;
 
   Data({
@@ -54,24 +55,24 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    visitId: json["visit_id"],
-    dailyVisitId: json["daily_visit_id"],
-    doctorId: json["doctor_id"],
-    startTime: DateTime.parse(json["start_time"]),
-    endTime: DateTime.parse(json["end_time"]),
-    totalDuration: json["total_duration"],
-    totalDistance: json["total_distance"]?.toDouble(),
-    status: json["status"],
-  );
+        visitId: json["visit_id"],
+        dailyVisitId: json["daily_visit_id"],
+        doctorId: json["doctor_id"],
+        startTime: DateTime.parse(json["start_time"]),
+        endTime: DateTime.parse(json["end_time"]),
+        totalDuration: json["total_duration"],
+        totalDistance: json["total_distance"],
+        status: json["status"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "visit_id": visitId,
-    "daily_visit_id": dailyVisitId,
-    "doctor_id": doctorId,
-    "start_time": startTime.toIso8601String(),
-    "end_time": endTime.toIso8601String(),
-    "total_duration": totalDuration,
-    "total_distance": totalDistance,
-    "status": status,
-  };
+        "visit_id": visitId,
+        "daily_visit_id": dailyVisitId,
+        "doctor_id": doctorId,
+        "start_time": startTime.toIso8601String(),
+        "end_time": endTime.toIso8601String(),
+        "total_duration": totalDuration,
+        "total_distance": totalDistance,
+        "status": status,
+      };
 }

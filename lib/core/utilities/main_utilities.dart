@@ -80,15 +80,13 @@ class MainUtilities {
   static Future<void> callPhone(String phoneNumber) async {
     final Uri uri = Uri(scheme: 'tel', path: phoneNumber);
 
-    // استخدم هذا الخيار للـ Android و iOS
     if (await canLaunchUrl(uri)) {
       await launchUrl(
         uri,
-        mode: LaunchMode.platformDefault, // مهم!
+        mode: LaunchMode.platformDefault,
       );
     } else {
       debugPrint("Cannot launch phone call to $phoneNumber");
-      // يمكن عرض رسالة للمستخدم
     }
   }
 }

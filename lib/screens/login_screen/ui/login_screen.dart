@@ -38,121 +38,123 @@ class _LoginPageState extends State<LoginPage> {
         color: AppColors.whiteColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 70,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      LoadingWidget.show();
-                    },
-                    child: TextWidget(
-                      "welcome_back".tr(),
-                      fontWeight: FontWeight.bold,
-                      textSize: 24,
-                      textColor: AppColors.fontColor,
-                    ),
-                  ),
-                  const LangSwitcher()
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InkWell(
-                onTap: () {
-                  LoadingWidget.hide();
-                },
-                child: TextWidget(
-                  "please_enter_a_form".tr(),
-                  fontWeight: FontWeight.w500,
-                  textSize: 14,
-                  textColor: AppColors.fontColor,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 70,
                 ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Form(
-                  child: Column(
-                children: [
-                  SharedTextFormField(
-                    label: "emp_code".tr(),
-                    hint: "enter_your_employee".tr(),
-                    controller: loginProvider.empCodeController,
-                    onSubmitted: (v) {
-                      FocusScope.of(context)
-                          .requestFocus(loginProvider.passFocus);
-                    },
-                    focusNode: loginProvider.empFocus,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SharedTextFormField(
-                    label: "pass".tr(),
-                    hint: "enter_pass".tr(),
-                    controller: loginProvider.passController,
-                    isPassword: true,
-                    focusNode: loginProvider.passFocus,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _rememberMeWidget(loginProvider),
-                      InkWell(
-                        onTap: () {
-                          NavigationService.push(
-                               const ForgetPasswordScreen());
-                        },
-                        child: TextWidget(
-                          "forget_pass".tr(),
-                          textColor: AppColors.fontColor,
-                          textSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Selector<LoginProvider, bool>(
-                      builder: (context, provider, widget) {
-                        return ButtonWidget(
-                          text: "sign_in".tr(),
-                          onTap: provider
-                              ? () {
-                            FocusScope.of(context).unfocus();
-                                  loginProvider.makeLogin(
-                                      loginProvider.empCodeController.text,
-                                      loginProvider.passController.text,
-                                      context);
-                                }
-                              : () {},
-                          textSize: 14,
-                          borderColor: AppColors.grey200,
-                          fontWeight: FontWeight.w700,
-                          textColor: provider
-                              ? AppColors.whiteColor
-                              : AppColors.grey300,
-                          backgroundColor: provider
-                              ? AppColors.mainColor
-                              : AppColors.grey100,
-                        );
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        LoadingWidget.show();
                       },
-                      selector: (context, val) => val.checkValidate())
-                ],
-              ))
-            ],
+                      child: TextWidget(
+                        "welcome_back".tr(),
+                        fontWeight: FontWeight.bold,
+                        textSize: 24,
+                        textColor: AppColors.fontColor,
+                      ),
+                    ),
+                    const LangSwitcher()
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                InkWell(
+                  onTap: () {
+                    LoadingWidget.hide();
+                  },
+                  child: TextWidget(
+                    "please_enter_a_form".tr(),
+                    fontWeight: FontWeight.w500,
+                    textSize: 14,
+                    textColor: AppColors.fontColor,
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Form(
+                    child: Column(
+                  children: [
+                    SharedTextFormField(
+                      label: "emp_code".tr(),
+                      hint: "enter_your_employee".tr(),
+                      controller: loginProvider.empCodeController,
+                      onSubmitted: (v) {
+                        FocusScope.of(context)
+                            .requestFocus(loginProvider.passFocus);
+                      },
+                      focusNode: loginProvider.empFocus,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SharedTextFormField(
+                      label: "pass".tr(),
+                      hint: "enter_pass".tr(),
+                      controller: loginProvider.passController,
+                      isPassword: true,
+                      focusNode: loginProvider.passFocus,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _rememberMeWidget(loginProvider),
+                        InkWell(
+                          onTap: () {
+                            NavigationService.push(
+                                 const ForgetPasswordScreen());
+                          },
+                          child: TextWidget(
+                            "forget_pass".tr(),
+                            textColor: AppColors.fontColor,
+                            textSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Selector<LoginProvider, bool>(
+                        builder: (context, provider, widget) {
+                          return ButtonWidget(
+                            text: "sign_in".tr(),
+                            onTap: provider
+                                ? () {
+                              FocusScope.of(context).unfocus();
+                                    loginProvider.makeLogin(
+                                        loginProvider.empCodeController.text,
+                                        loginProvider.passController.text,
+                                        context);
+                                  }
+                                : () {},
+                            textSize: 14,
+                            borderColor: AppColors.grey200,
+                            fontWeight: FontWeight.w700,
+                            textColor: provider
+                                ? AppColors.whiteColor
+                                : AppColors.grey300,
+                            backgroundColor: provider
+                                ? AppColors.mainColor
+                                : AppColors.grey100,
+                          );
+                        },
+                        selector: (context, val) => val.checkValidate())
+                  ],
+                ))
+              ],
+            ),
           ),
         ),
       ),

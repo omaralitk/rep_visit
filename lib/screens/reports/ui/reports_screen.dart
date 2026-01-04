@@ -1,13 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/base/constants/asset_images.dart';
 import 'package:rep_visit/base/constants/dimensions.dart';
+import 'package:rep_visit/base/ui/widgets/button_widget.dart';
 import 'package:rep_visit/base/ui/widgets/main_header.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/base/ui/widgets/text_widget.dart';
-import 'package:intl/intl.dart';
 import 'package:rep_visit/screens/reports/provider/reports_provider.dart';
 import 'package:rep_visit/screens/reports/ui/widgets/reports_shimmer.dart';
 
@@ -45,8 +46,8 @@ class _ReportsPageState extends State<ReportsPage> {
     return Scaffold(
       appBar: AppBar(
         title: MainHeader(
-          title: "Reports",
-          subTitle: "View and export your activity reports",
+          title: "Reports".tr(),
+          subTitle: "View and export your activity reports".tr(),
         ),
       ),
       body: Selector<ReportsProvider, bool>(
@@ -84,7 +85,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   TextWidget(
-                                    "Daily Report",
+                                    "Daily Report".tr(),
                                     textSize: 16,
                                     fontWeight: FontWeight.w700,
                                     textColor: AppColors.fontColor,
@@ -123,7 +124,24 @@ class _ReportsPageState extends State<ReportsPage> {
                           const SizedBox(
                             height: 15,
                           ),
-                          notesWidget("Hello Comment")
+                          notesWidget("Hello Comment", provider.noteController),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Divider(),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          ButtonWidget(
+                            text: "Export".tr(),
+                            onTap: () {
+                              provider.exportNote();
+                            },
+                            backgroundColor: AppColors.black,
+                            textColor: AppColors.whiteColor,
+                            textSize: 14,
+                            fontWeight: FontWeight.w700,
+                          )
                         ],
                       ),
                     ),
@@ -173,8 +191,8 @@ class _ReportsPageState extends State<ReportsPage> {
                         fontWeight: FontWeight.w700,
                         textColor: AppColors.fontColor,
                       ),
-                      const TextWidget(
-                        "Duration",
+                      TextWidget(
+                        "Duration".tr(),
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                       )
@@ -227,7 +245,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     textSize: 16,
                   ),
                   TextWidget(
-                    "Visits",
+                    "Visits".tr(),
                     fontWeight: FontWeight.w500,
                     textColor: AppColors.typography500,
                     textSize: 12,
@@ -279,7 +297,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     textSize: 16,
                   ),
                   TextWidget(
-                    "Distance traveled",
+                    "Distance traveled".tr(),
                     fontWeight: FontWeight.w500,
                     textColor: AppColors.typography500,
                     textSize: 12,
@@ -294,7 +312,7 @@ class _ReportsPageState extends State<ReportsPage> {
   }
 
   /// Notes Widget
-  notesWidget(String latestComment) {
+  notesWidget(String latestComment, TextEditingController noteController) {
     return Container(
       width: Dimensions.fullWidth(context),
       decoration: BoxDecoration(
@@ -307,7 +325,7 @@ class _ReportsPageState extends State<ReportsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextWidget(
-              "Notes",
+              "Notes".tr(),
               textSize: 16,
               fontWeight: FontWeight.w700,
               textColor: AppColors.fontColor,
@@ -317,35 +335,35 @@ class _ReportsPageState extends State<ReportsPage> {
             ),
             SharedTextFormField(
               label: "",
-              hint: "Enter Your Note",
-              controller: TextEditingController(),
+              hint: "Enter Your Note".tr(),
+              controller: noteController,
             ),
             const SizedBox(
               height: 8,
             ),
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.grey300)),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextWidget(
-                      latestComment,
-                      textSize: 14,
-                      fontWeight: FontWeight.w500,
-                      textColor: AppColors.typography700,
-                    ),
-                    Icon(
-                      Icons.delete_outlined,
-                      color: AppColors.red,
-                    )
-                  ],
-                ),
-              ),
-            )
+            // Container(
+            //   decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(12),
+            //       border: Border.all(color: AppColors.grey300)),
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(12.0),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         TextWidget(
+            //           latestComment,
+            //           textSize: 14,
+            //           fontWeight: FontWeight.w500,
+            //           textColor: AppColors.typography700,
+            //         ),
+            //         Icon(
+            //           Icons.delete_outlined,
+            //           color: AppColors.red,
+            //         )
+            //       ],
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),

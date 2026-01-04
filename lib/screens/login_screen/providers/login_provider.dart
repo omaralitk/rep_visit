@@ -44,7 +44,7 @@ class LoginProvider extends ChangeNotifier {
     _loginRepo.makeLogin(body).then((val) {
       LoadingWidget.hide();
       if (val.status == 1) {
-        UserCache.setIsLogin(true);
+        UserCache.setIsLogin(isRememberMe?true:false);
         UserCache.setToken(val.token);
         UserCache.setEmpData(val.data);
         NavigationService.pushAndRemoveUntil( const BaseScreen());

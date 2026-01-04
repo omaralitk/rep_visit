@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rep_visit/core/cach/cach_manager.dart';
 import 'package:rep_visit/screens/onboarding/providers/onboarding_provider.dart';
 
 import '../../../../base/constants/app_colors.dart';
@@ -121,8 +122,8 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
 
                               backgroundColor: AppColors.whiteColor,
                               borderColor: AppColors.grey200,
-                              onTap: () {
-
+                              onTap: () async{
+                                await UserCache.setOnBoarding(true);
                                 NavigationService.pushAndRemoveUntil(
                                     const LoginScreen());
                               },
@@ -134,12 +135,13 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                           Expanded(
                             child: ButtonWidget(
                               text: onboardingProvider.pageIndex == 2?"Get Started":"Next",
-                              onTap: () {
+                              onTap: () async {
 
                                 if (onboardingProvider.pageIndex < 2) {
                                   onboardingProvider.setPageIndex(
                                       onboardingProvider.pageIndex + 1);
                                 } else {
+                                  await UserCache.setOnBoarding(true);
                                   NavigationService.pushAndRemoveUntil(
                                       const LoginScreen());
                                 }

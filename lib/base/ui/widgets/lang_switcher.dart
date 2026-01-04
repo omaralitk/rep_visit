@@ -14,7 +14,7 @@ class LangSwitcher extends StatelessWidget {
         LangService.changeLang(context);
       },
       child: TextWidget(
-        context.locale == const Locale("en") ? "EN" : "AR",
+        context.locale == const Locale("en") ? "AR" : "EN",
         textSize: 14,
         textColor: AppColors.mainColor,
         fontWeight: FontWeight.bold,

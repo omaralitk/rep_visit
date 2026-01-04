@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
@@ -37,7 +38,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               height: 20,
             ),
         TextWidget(
-          "Forget Password",
+          "Forget Password".tr(),
           fontWeight: FontWeight.w700,
           textColor: AppColors.fontColor,
           textSize: 24,
@@ -46,8 +47,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               height: 20,
             ),
             SharedTextFormField(
-                label: "Email",
-                hint: "Enter your email",
+                label: "Email".tr(),
+                hint: "Enter your email".tr(),
                 controller: forgetProvider.emailController),
             const SizedBox(
               height: 30,
@@ -57,7 +58,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               builder: (context, text, child) {
                 final isFilled = text.isNotEmpty;
                 return ButtonWidget(
-                  text: "Submit",
+                  text: "Submit".tr(),
                   onTap:isFilled? () {
                     forgetProvider.forgetPass(text, context);
                   }:(){},

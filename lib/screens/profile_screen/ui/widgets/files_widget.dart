@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,8 @@ class _FilesWidgetState extends State<FilesWidget> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProfileProvider>(context, listen: false).getFiles();
-    });  }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,7 @@ class _FilesWidgetState extends State<FilesWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextWidget(
-                            "Files",
+                            "Files".tr(),
                             textSize: 16,
                             fontWeight: FontWeight.w700,
                             textColor: AppColors.fontColor,
@@ -69,7 +71,8 @@ class _FilesWidgetState extends State<FilesWidget> {
                             width: Dimensions.fullWidth(context) * 0.68,
                             child: TextWidget(
                               // provider.date,
-                              "Check the files shared by your organization.",
+                              "Check the files shared by your organization."
+                                  .tr(),
                               textSize: 12,
                               fontWeight: FontWeight.w500,
                               textColor: AppColors.typography500,
@@ -92,60 +95,67 @@ class _FilesWidgetState extends State<FilesWidget> {
                           shrinkWrap: true,
                           itemCount: provider.filesList.length,
                           itemBuilder: (context, index) {
-                            return Container(
-                                decoration: BoxDecoration(
-                                    color: AppColors.whiteColor,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextWidget(
-                                          provider
-                                              .filesList[index].originalName,
-                                          textSize: 12,
-                                          textColor: AppColors.fontColor,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                color: AppColors.grey200)),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0, vertical: 6),
-                                          child: Row(
-                                            children: [
-                                              SvgPicture.asset(
-                                                AssetImages.openedEyes,
-                                                color: AppColors.mainColor,
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  MainUtilities.callPhone("+962785804494");
-                                                },
-                                                child: TextWidget(
-                                                  "View",
-                                                  textSize: 12,
-                                                  fontWeight: FontWeight.w700,
-                                                  textColor:
-                                                      AppColors.mainColor,
-                                                ),
-                                              ),
-                                            ],
+                            return Padding(
+                              padding:
+                                  EdgeInsets.only(top: index == 0 ? 0 : 12),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: AppColors.whiteColor,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextWidget(
+                                            provider
+                                                .filesList[index].originalName,
+                                            textSize: 12,
+                                            textColor: AppColors.fontColor,
+                                            fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ));
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: AppColors.grey200)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 6),
+                                            child: Row(
+                                              children: [
+                                                SvgPicture.asset(
+                                                  AssetImages.openedEyes,
+                                                  color: AppColors.mainColor,
+                                                ),
+                                                const SizedBox(
+                                                  width: 5,
+                                                ),
+                                                InkWell(
+                                                  onTap: () {
+                                                    MainUtilities.openFileSmart(
+                                                        provider
+                                                            .filesList[index]
+                                                            .downloadUrl);
+                                                  },
+                                                  child: TextWidget(
+                                                    "View".tr(),
+                                                    textSize: 12,
+                                                    fontWeight: FontWeight.w700,
+                                                    textColor:
+                                                        AppColors.mainColor,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                            );
                           })
                 ],
               ),

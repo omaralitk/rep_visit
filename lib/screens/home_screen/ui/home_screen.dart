@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +58,6 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-
       body: Selector<HomeProvider, bool>(
           builder: (context, provider, widget) {
             return provider
@@ -97,9 +97,9 @@ class _HomePageState extends State<HomePage> {
                                             homeProvider.time,
                                             homeProvider.doctorName,
                                             homeProvider.address,
-                                            "0",
-                                            "0",
-                                            "0000000"))
+                                            homeProvider.lat,
+                                            homeProvider.lng,
+                                            homeProvider.phone))
                                     : const SizedBox()
                               ],
                             ),
@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                                       height: 15,
                                     ),
                                     TextWidget(
-                                      "Today's Visits",
+                                      "Today's Visits".tr(),
                                       textSize: 16,
                                       fontWeight: FontWeight.w700,
                                       textColor: AppColors.fontColor,
@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                                                   height: 10,
                                                 ),
                                                 TextWidget(
-                                                  "No schedule visits for today",
+                                                  "No schedule visits for today".tr(),
                                                   textSize: 16,
                                                   fontWeight: FontWeight.bold,
                                                   textColor:
@@ -263,7 +263,7 @@ class _HomePageState extends State<HomePage> {
                   height: 15,
                 ),
                 TextWidget(
-                  "Today's Progress",
+                  "Today's Progress".tr(),
                   fontWeight: FontWeight.bold,
                   textColor: AppColors.fontColor,
                   textSize: 16,
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextWidget(
-                      "Visits Completed",
+                      "Visits Completed".tr(),
                       textSize: 12,
                       textColor: AppColors.typography500,
                       fontWeight: FontWeight.w400,
@@ -303,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                   child: LinearProgressIndicator(
                     value: numOfTasks == 0 && totalTasks == 0
                         ? 0
-                        : numOfTasks / totalTasks,
+                        : numOfTasks / 100,
                     minHeight: 8,
                     backgroundColor: AppColors.primary100,
                     valueColor:
@@ -378,7 +378,7 @@ class _HomePageState extends State<HomePage> {
                   height: 15,
                 ),
                 TextWidget(
-                  "Next Visit",
+                  "Next Visit".tr(),
                   fontWeight: FontWeight.bold,
                   textColor: AppColors.fontColor,
                   textSize: 16,
@@ -403,6 +403,7 @@ class _HomePageState extends State<HomePage> {
                 TextWidget(
                   hospital,
                   textSize: 12,
+                  maxLine: 2,
                   textColor: AppColors.typography500,
                   fontWeight: FontWeight.w400,
                 ),
@@ -414,9 +415,9 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                         child: ButtonWidget(
                       height: 32,
-                      text: "Navigate",
+                      text: "Navigate".tr(),
                       onTap: () {
-                        openGoogleMap(double.parse(lat), double.parse(long));
+                        openGoogleMap(lat, long);
                       },
                       borderRadius: 8,
                       textColor: AppColors.whiteColor,
@@ -495,7 +496,7 @@ class _HomePageState extends State<HomePage> {
                                 child: Row(
                                   children: [
                                     TextWidget(
-                                      "Next Visit",
+                                      "Next Visit".tr(),
                                       textSize: 12,
                                       fontWeight: FontWeight.w700,
                                       textColor: AppColors.success,
@@ -558,7 +559,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// Open google map
-  Future<void> openGoogleMap(double latitude, double longitude) async {
+  Future<void> openGoogleMap(String latitude, String longitude) async {
     final Uri googleMapUrl = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
 

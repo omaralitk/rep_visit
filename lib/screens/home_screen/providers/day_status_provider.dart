@@ -29,7 +29,7 @@ class DayStatusProvider extends ChangeNotifier {
   void handleDayAction() async {
     if (isStart == false) {
       // Start Day
-      bool success = await workProcess(1);
+      bool success = await startWork();
 
       if (success) {
         isStart = true;
@@ -37,10 +37,9 @@ class DayStatusProvider extends ChangeNotifier {
         endTime = null;
         notifyListeners();
       }
-
     } else {
       // End Day
-      bool success = await workProcess(2);
+      bool success = await endWork();
 
       if (success) {
         isStart = false;
@@ -50,10 +49,11 @@ class DayStatusProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> workProcess(int val) async {
+  Future<bool> startWork() async {
     try {
       LoadingWidget.show();
-      final response = await HomeRepo().workProcess(val);
+      final response = await HomeRepo().startWork();
+
       LoadingWidget.hide();
 
       if (response?.status == 1) {
@@ -63,7 +63,26 @@ class DayStatusProvider extends ChangeNotifier {
         ToastService.showError(response?.msg ?? "Something went wrong");
         return false;
       }
+    } catch (e) {
+      LoadingWidget.hide();
+      ToastService.showError("Error occurred: $e");
+      return false;
+    }
+  }
 
+  Future<bool> endWork() async {
+    try {
+      LoadingWidget.show();
+      final response = await HomeRepo().endWork();
+      LoadingWidget.hide();
+
+      if (response?.status == 1) {
+        ToastService.showSuccess(response?.msg ?? "");
+        return true;
+      } else {
+        ToastService.showError(response?.msg ?? "Something went wrong");
+        return false;
+      }
     } catch (e) {
       LoadingWidget.hide();
       ToastService.showError("Error occurred: $e");

@@ -66,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 4));
     bool route = await UserCache.getOnBoarding();
     bool isLogin = await UserCache.getIsLogin();
-
+    print("route new $route");
     if (!mounted) return;
     if(isLogin){
       NavigationService.pushAndRemoveUntil(const BaseScreen());

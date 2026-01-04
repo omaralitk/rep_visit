@@ -1,8 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/base/ui/widgets/no_data_widget.dart';
-import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/screens/tracking_screen/provider/tracking_provider.dart';
 
 import '../../../../base/constants/app_colors.dart';
@@ -47,17 +48,28 @@ class _CompletedVisitsState extends State<CompletedVisits> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextWidget(
-                  "Completed Visits",
+                  "Completed Visits".tr(),
                   textSize: 16,
                   fontWeight: FontWeight.w700,
                   textColor: AppColors.success,
                 ),
-                TextWidget(
-                  "${completedProvider.completedVisits.length} visits completed today",
-                  textSize: 12,
-                  fontWeight: FontWeight.w500,
-                  textColor: AppColors.success,
-                  textAlign: TextAlign.start,
+                Row(
+                  children: [
+                    TextWidget(
+                      "${completedProvider.completedVisits.length} ",
+                      textSize: 12,
+                      fontWeight: FontWeight.w500,
+                      textColor: AppColors.success,
+                      textAlign: TextAlign.start,
+                    ),
+                    TextWidget(
+                      "visits completed today".tr(),
+                      textSize: 12,
+                      fontWeight: FontWeight.w500,
+                      textColor: AppColors.success,
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
                 ),
               ],
             )
@@ -74,8 +86,8 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                 itemBuilder: (context, index) {
                   return visitSection(completedProvider, index);
                 })
-            : const NoDataWidget(
-                title: "You don't have any completed visits for today")
+            : NoDataWidget(
+                title: "You don't have any completed visits for today".tr())
       ],
     );
   }
@@ -118,7 +130,7 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     child: TextWidget(
-                      provider.completedVisits[index].totalDuration??"",
+                      '${provider.completedVisits[index].totalDuration}' ?? "",
                       textSize: 12,
                       textColor: AppColors.black,
                       fontWeight: FontWeight.w700,
@@ -135,27 +147,72 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                   const SizedBox(
                     width: 5,
                   ),
-                  TextWidget(
-                    provider.completedVisits[index].doctor.address,
-                    textSize: 12,
-                    fontWeight: FontWeight.w300,
-                    textColor: AppColors.typography500,
+                  Expanded(
+                    child: TextWidget(
+                      provider.completedVisits[index].doctor.address,
+                      textSize: 12,
+                      fontWeight: FontWeight.w300,
+                      textColor: AppColors.typography500,
+                    ),
                   )
                 ],
               ),
               const SizedBox(
                 height: 15,
               ),
-              // Button
+              Row(
+                children: List.generate(5, (i) {
+                  final starIndex = i + 1;
 
+                  final ratingString =
+                      provider.completedVisits[index].doctor.rating;
+                  final rating = ratingString != null && ratingString.isNotEmpty
+                      ? (double.tryParse(ratingString) ?? 0.0)
+                      : 0.0;
+
+                  final filled = starIndex <= rating;
+
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: filled ? AppColors.starColor : AppColors.grey100,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.grey200),
+                    ),
+                    child: Icon(
+                      filled ? Icons.star : Icons.star_border,
+                      size: 18,
+                      color: filled
+                          ? AppColors.whiteColor
+                          : AppColors.typography500,
+                    ),
+                  );
+                }),
+              ),
               const SizedBox(
                 height: 10,
               ),
               Container(
-                height: 58,
+                width: Dimensions.fullWidth(context),
+                decoration: BoxDecoration(
+                    color: AppColors.grey100,
+                    border: Border.all(
+                      color: AppColors.grey300,
+                    ),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: TextWidget(
+                    provider.completedVisits[index].notes??"",
+                    textSize: 15,
+                    fontWeight: FontWeight.w500,
+                    textColor: AppColors.typography500,
+                  ),
+                ),
               ),
               const SizedBox(
-                height: 10,
+                height: 15,
               ),
               Row(
                 children: [
@@ -166,19 +223,32 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                           AssetImages.noData,
                           width: 20,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
-                        TextWidget(
-                          "Check in: 10:32 AM",
-                          textSize: 12,
-                          fontWeight: FontWeight.w500,
-                          textColor: AppColors.fontColor,
+                        Row(
+                          children: [
+                            TextWidget(
+                              "Check in: ".tr(args: [
+
+                              ]),
+                              textSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.fontColor,
+                            ),  TextWidget(
+                              provider.completedVisits[index].visitTime
+                                  ??
+                                  "",
+                              textSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.fontColor,
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Expanded(
@@ -188,14 +258,24 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                           AssetImages.noData,
                           width: 20,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
-                        TextWidget(
-                          "Check out: 11:32 AM",
-                          textSize: 12,
-                          fontWeight: FontWeight.w500,
-                          textColor: AppColors.fontColor,
+                        Row(
+                          children: [
+                            TextWidget(
+                              "Check out: ".tr(),
+                              textSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.fontColor,
+                            ),TextWidget(
+                              provider.completedVisits[index].endTime??
+                                  "",
+                              textSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.fontColor,
+                            ),
+                          ],
                         ),
                       ],
                     ),

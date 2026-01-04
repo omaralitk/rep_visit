@@ -1,25 +1,25 @@
 // To parse this JSON data, do
 //
-//     final workProcessModel = workProcessModelFromJson(jsonString);
+//     final endWorkModel = endWorkModelFromJson(jsonString);
 
 import 'dart:convert';
 
-WorkProcessModel workProcessModelFromJson(String str) => WorkProcessModel.fromJson(json.decode(str));
+EndWorkModel endWorkModelFromJson(String str) => EndWorkModel.fromJson(json.decode(str));
 
-String workProcessModelToJson(WorkProcessModel data) => json.encode(data.toJson());
+String endWorkModelToJson(EndWorkModel data) => json.encode(data.toJson());
 
-class WorkProcessModel {
+class EndWorkModel {
   int status;
   String msg;
   Data? data;
 
-  WorkProcessModel({
+  EndWorkModel({
     required this.status,
     required this.msg,
     required this.data,
   });
 
-  factory WorkProcessModel.fromJson(Map<String, dynamic> json) => WorkProcessModel(
+  factory EndWorkModel.fromJson(Map<String, dynamic> json) => EndWorkModel(
     status: json["status"],
     msg: json["msg"],
     data: Data.fromJson(json["data"]),
@@ -33,20 +33,20 @@ class WorkProcessModel {
 }
 
 class Data {
-  String? empcode;
-  String? name;
-  DateTime? startDate;
-  DateTime? endDate;
-  double? totalHours;
-  bool? isActive;
+  String empcode;
+  String name;
+  DateTime startDate;
+  DateTime endDate;
+  double totalHours;
+  bool isActive;
 
   Data({
-     this.empcode,
-     this.name,
-     this.startDate,
-     this.endDate,
-     this.totalHours,
-     this.isActive,
+    required this.empcode,
+    required this.name,
+    required this.startDate,
+    required this.endDate,
+    required this.totalHours,
+    required this.isActive,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -61,8 +61,8 @@ class Data {
   Map<String, dynamic> toJson() => {
     "empcode": empcode,
     "name": name,
-    "start_date": startDate?.toIso8601String(),
-    "end_date": endDate?.toIso8601String(),
+    "start_date": startDate.toIso8601String(),
+    "end_date": endDate.toIso8601String(),
     "total_hours": totalHours,
     "is_active": isActive,
   };

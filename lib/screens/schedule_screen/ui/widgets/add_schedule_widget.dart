@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/ui/widgets/button_widget.dart';
 import 'package:rep_visit/base/ui/widgets/cached_image.dart';
-import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/screens/schedule_screen/provider/get_schedule_provider.dart';
 
@@ -52,7 +52,10 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
     return Container(
       width: Dimensions.fullWidth(context),
       height: Dimensions.fullHeight(context) * 0.9,
-      color: AppColors.whiteColor,
+      decoration: BoxDecoration(
+        color: AppColors.whiteColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       child: Stack(
         children: [
           SingleChildScrollView(
@@ -74,13 +77,14 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                                 height: 30,
                               ),
                               TextWidget(
-                                "Schedule new visit",
+                                "Schedule new visit".tr(),
                                 textSize: 20,
                                 textColor: AppColors.fontColor,
                                 fontWeight: FontWeight.w700,
                               ),
                               TextWidget(
-                                "Add a visit with one of your assigned doctors",
+                                "Add a visit with one of your assigned doctors"
+                                    .tr(),
                                 textSize: 12,
                                 fontWeight: FontWeight.w500,
                                 textColor: AppColors.typography700,
@@ -98,8 +102,10 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                                 ),
                                 child: Row(
                                   children: [
-                                    _tabItem("This Day", 0, scheduleProvider),
-                                    _tabItem("Tomorrow", 1, scheduleProvider),
+                                    _tabItem(
+                                        "This Day".tr(), 0, scheduleProvider),
+                                    _tabItem(
+                                        "Tomorrow".tr(), 1, scheduleProvider),
                                   ],
                                 ),
                               ),
@@ -107,19 +113,42 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                                 height: 10,
                               ),
                               SharedTextFormField(
-                                  label: "",
-                                  hint: "Search doctors...",
-                                  controller:
-                                      scheduleProvider.searchController),
-                              ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount:
-                                      scheduleProvider.doctorsList.length,
-                                  itemBuilder: (context, index) {
-                                    return doctorSection(
-                                        index, scheduleProvider);
-                                  }),
+                                label: "",
+                                hint: "Search doctors...".tr(),
+                                controller: scheduleProvider.searchController,
+                                onChanged: (value) {
+                                  scheduleProvider.searchDoctors(value);
+                                },
+                              ),
+                              Consumer<ScheduleProvider>(
+                                  builder: (context, provider, widget) {
+                                return provider.filteredDoctorsList.isEmpty
+                                    ? Center(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 50),
+                                          child: TextWidget(
+                                            "No doctors found".tr(),
+                                            textSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            textColor: AppColors.typography500,
+                                          ),
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount:
+                                            provider.filteredDoctorsList.length,
+                                        itemBuilder: (context, index) {
+                                          return doctorSection(
+                                            index,
+                                            provider,
+                                          );
+                                        },
+                                      );
+                              }),
                               const SizedBox(
                                 height: 70,
                               ),
@@ -139,7 +168,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: ButtonWidget(
-                            text: "Save",
+                            text: "Save".tr(),
                             onTap: () {
                               scheduleProvider.saveScheduleVisits(context);
                             },
@@ -207,7 +236,9 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CachedImage(
-                    url: provider.doctorsList[index].image ?? "",
+                    url:
+                        provider.filteredDoctorsList[index].image?.toString() ??
+                            "",
                   ),
                   Row(
                     children: [
@@ -219,7 +250,8 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                             borderRadius: BorderRadius.circular(8)),
                         child: Center(
                           child: TextWidget(
-                            provider.doctorsList[index].datumClass ?? "",
+                            provider.filteredDoctorsList[index].datumClass ??
+                                "",
                             textSize: 12,
                             fontWeight: FontWeight.w700,
                             textColor: AppColors.whiteColor,
@@ -237,7 +269,9 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                         width: 5,
                       ),
                       TextWidget(
-                        provider.doctorsList[index].rating ?? "",
+                        provider.filteredDoctorsList[index].rating
+                                ?.toString() ??
+                            "",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -252,13 +286,13 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
 
               /// Name of doctor
               TextWidget(
-                provider.doctorsList[index].name ?? "",
+                provider.filteredDoctorsList[index].name,
                 textSize: 16,
                 fontWeight: FontWeight.w700,
                 textColor: AppColors.fontColor,
               ),
               TextWidget(
-                provider.doctorsList[index].speciality ?? "",
+                provider.filteredDoctorsList[index].speciality,
                 textSize: 12,
                 fontWeight: FontWeight.w500,
                 textColor: AppColors.typography500,
@@ -278,7 +312,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                         width: 5,
                       ),
                       TextWidget(
-                        provider.doctorsList[index].hospitalName ?? "",
+                        provider.filteredDoctorsList[index].hospitalName,
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -295,7 +329,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                       SizedBox(
                         width: Dimensions.fullWidth(context) * 0.3,
                         child: TextWidget(
-                          provider.doctorsList[index].address ?? "",
+                          provider.filteredDoctorsList[index].address,
                           textSize: 12,
                           fontWeight: FontWeight.w500,
                           textColor: AppColors.typography500,
@@ -340,7 +374,10 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                                 size: 16,
                               ),
                               TextWidget(
-                                provider.doctorsList[index].availableTime ?? "",
+                                provider.filteredDoctorsList[index]
+                                        .availableTime
+                                        ?.toString() ??
+                                    "",
                                 textSize: 12,
                                 fontWeight: FontWeight.w500,
                                 textColor: AppColors.whiteColor,
@@ -360,11 +397,27 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                       ),
                       SizedBox(
                         width: Dimensions.fullWidth(context) * 0.3,
-                        child: TextWidget(
-                          "Last visit: ${provider.doctorsList[index].lastVisit}",
-                          textSize: 12,
-                          fontWeight: FontWeight.w500,
-                          textColor: AppColors.typography500,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextWidget(
+                                "Last visit:",
+                                textSize: 12,
+                                fontWeight: FontWeight.w500,
+                                textColor: AppColors.typography500,
+                              ),
+                            ),
+                            TextWidget(
+                              provider.filteredDoctorsList[index].lastVisit !=
+                                      null
+                                  ? DateFormat('yyyy-MM-dd').format(provider
+                                      .filteredDoctorsList[index].lastVisit!)
+                                  : "",
+                              textSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.typography500,
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -377,14 +430,18 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
               Selector<ScheduleProvider, bool>(
                 selector: (context, provider) => provider.listOfAddedSchedule
                     .any((item) =>
-                        item["doctor_id"] == provider.doctorsList[index].id),
+                        item["doctor_id"] ==
+                        provider.filteredDoctorsList[index].id),
                 builder: (context, isAdded, _) {
                   return ButtonWidget(
-                    text: isAdded ? "Added" : "Add to schedule visits",
+                    text:
+                        isAdded ? "Added".tr() : "Add to schedule visits".tr(),
                     onTap: () {
                       provider.toggleScheduleVisit(
-                        provider.doctorsList[index].id ?? 0,
-                        provider.doctorsList[index].availableTime ?? "09:30:00",
+                        provider.filteredDoctorsList[index].id,
+                        provider.filteredDoctorsList[index].availableTime
+                                ?.toString() ??
+                            "09:30:00",
                       );
                     },
                     textColor: AppColors.mainColor,

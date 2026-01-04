@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
-import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/base/ui/widgets/text_widget.dart';
 
 class ButtonWidget extends StatelessWidget {

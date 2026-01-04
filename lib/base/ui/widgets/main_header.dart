@@ -5,6 +5,7 @@ import 'package:rep_visit/base/constants/dimensions.dart';
 import 'package:rep_visit/core/navigation_service/navigation_service.dart';
 import 'package:rep_visit/main.dart';
 import 'package:rep_visit/screens/base_screen/providers/base_provider.dart';
+import 'package:rep_visit/screens/notifications/ui/notifications_screen.dart';
 import 'package:rep_visit/screens/profile_screen/ui/profile_screen.dart';
 
 import '../../constants/app_colors.dart';
@@ -20,7 +21,7 @@ class MainHeader extends StatelessWidget {
       {super.key, required this.title, required this.subTitle, this.isProfile});
   @override
   Widget build(BuildContext context) {
-    var provider=Provider.of<BaseProvider>(context,listen: false);
+    var provider = Provider.of<BaseProvider>(context, listen: false);
 
     return Column(
       children: [
@@ -54,7 +55,14 @@ class MainHeader extends StatelessWidget {
             ),
             Row(
               children: [
-                topIconWidget(AssetImages.notificationIcon, () {}),
+                topIconWidget(AssetImages.notificationIcon, () {
+                  showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return const NotificationsScreen();
+                      });
+                }),
                 isProfile == true
                     ? const SizedBox()
                     : const SizedBox(
@@ -64,7 +72,7 @@ class MainHeader extends StatelessWidget {
                     ? const SizedBox()
                     : topIconWidget(AssetImages.personIcon, () {
                         // NavigationService.push(const ProfileScreen());
-                  provider.setCurrentIndex(5);
+                        provider.setCurrentIndex(5);
                       })
               ],
             )
@@ -76,7 +84,7 @@ class MainHeader extends StatelessWidget {
 
   /// Top bar icon widget
   topIconWidget(String image, VoidCallback onTap) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 32,

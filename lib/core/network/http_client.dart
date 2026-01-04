@@ -35,21 +35,20 @@ class HttpClient {
   Future<ApiResponseHandler> post({
     required String endPoint,
     dynamic payload,
-  }) async
-  {
+  }) async {
     try {
       var header = await NetworkConstants.getHeaders();
 
       final response = await http
           .post(
-        Uri.parse(endPoint),
-        headers: header,
-        body: jsonEncode(payload),
-      )
+            Uri.parse(endPoint),
+            headers: header,
+            body: jsonEncode(payload),
+          )
           .timeout(
-        const Duration(seconds: 30),
-        onTimeout: () => _responseHandler(_timeoutResponse),
-      );
+            const Duration(seconds: 30),
+            onTimeout: () => _responseHandler(_timeoutResponse),
+          );
 
       return _responseHandler(response);
     } on TimeoutException catch (_) {
@@ -58,7 +57,6 @@ class HttpClient {
       return _responseHandler(http.Response(ex.toString(), 9999));
     }
   }
-
 
   _responseHandler(http.Response response) {
     log('____________________________________________________');
@@ -72,17 +70,16 @@ class HttpClient {
   }
 
   _handleBody(http.Response response) {
-    if (response.statusCode == HttpStatus.ok) {
+    if (response.statusCode == HttpStatus.ok || response.statusCode == HttpStatus.created) {
       return response.body;
-    }
-    else if(response.statusCode == HttpStatus.unauthorized){
+    } else if (response.statusCode == HttpStatus.unauthorized &&
+        response.request?.url.toString().contains("login") == false) {
       // final context = NavigationService.navigatorKey.currentContext;
       // ToastService.showError(context!, "Session Expired");
       UserCache.clearAll();
-      NavigationService.pushAndRemoveUntilWithoutContext( const LoginScreen());
-      ToastService.showError( "Session Expired");
-    }
-    else  {
+      NavigationService.pushAndRemoveUntil(const LoginScreen());
+      ToastService.showError("Session Expired");
+    } else {
       return Exception(response.body);
     }
   }

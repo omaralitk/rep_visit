@@ -38,9 +38,10 @@ class ScheduleVisits {
   int doctorId;
   DateTime visitDate;
   String status;
-  String visitTime;
+  String? visitTime;
   dynamic endTime;
   dynamic totalDuration;
+  dynamic notes;
   DateTime createdAt;
   DateTime updatedAt;
   Doctor doctor;
@@ -51,9 +52,10 @@ class ScheduleVisits {
     required this.doctorId,
     required this.visitDate,
     required this.status,
-    required this.visitTime,
-    required this.endTime,
+    this.visitTime,
+    this.endTime,
     required this.totalDuration,
+    required this.notes,
     required this.createdAt,
     required this.updatedAt,
     required this.doctor,
@@ -68,6 +70,7 @@ class ScheduleVisits {
     visitTime: json["visit_time"],
     endTime: json["end_time"],
     totalDuration: json["total_duration"],
+    notes: json["feedback"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     doctor: Doctor.fromJson(json["doctor"]),
@@ -82,6 +85,7 @@ class ScheduleVisits {
     "visit_time": visitTime,
     "end_time": endTime,
     "total_duration": totalDuration,
+    "feedback": notes,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "doctor": doctor.toJson(),
@@ -91,6 +95,8 @@ class ScheduleVisits {
 class Doctor {
   int id;
   int companyId;
+  dynamic addedByUserId;
+  dynamic representativeEmpCode;
   String name;
   String speciality;
   String hospitalName;
@@ -112,6 +118,8 @@ class Doctor {
   Doctor({
     required this.id,
     required this.companyId,
+    required this.addedByUserId,
+    required this.representativeEmpCode,
     required this.name,
     required this.speciality,
     required this.hospitalName,
@@ -134,6 +142,8 @@ class Doctor {
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
     id: json["id"],
     companyId: json["company_id"],
+    addedByUserId: json["added_by_user_id"],
+    representativeEmpCode: json["representative_emp_code"],
     name: json["name"],
     speciality: json["speciality"],
     hospitalName: json["hospital_name"],
@@ -156,6 +166,8 @@ class Doctor {
   Map<String, dynamic> toJson() => {
     "id": id,
     "company_id": companyId,
+    "added_by_user_id": addedByUserId,
+    "representative_emp_code": representativeEmpCode,
     "name": name,
     "speciality": speciality,
     "hospital_name": hospitalName,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/screens/profile_screen/provider/profile_provider.dart';
@@ -5,10 +6,9 @@ import 'package:rep_visit/screens/profile_screen/ui/widgets/files_widget.dart';
 import 'package:rep_visit/screens/profile_screen/ui/widgets/info_widget.dart';
 
 import '../../../base/constants/app_colors.dart';
-import '../../../base/ui/widgets/bottom_nav_bar.dart';
 import '../../../base/ui/widgets/main_header.dart';
 import '../../../base/ui/widgets/text_widget.dart';
-import '../../base_screen/providers/base_provider.dart';
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -17,6 +17,7 @@ class ProfileScreen extends StatelessWidget {
     return const ProfilePage();
   }
 }
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -27,20 +28,19 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    var profileProvider =Provider.of<ProfileProvider>(context,listen: false);
+    var profileProvider = Provider.of<ProfileProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: MainHeader(
-            title: "Profile",
-            subTitle: "Manage your account information",
-        isProfile: true,
+          title: "Profile".tr(),
+          subTitle: "Manage your account information",
+          isProfile: true,
         ),
-
       ),
       body: Padding(
-        padding:const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -49,34 +49,39 @@ class _ProfilePageState extends State<ProfilePage> {
                 builder: (context, selectedIndex, _) {
                   return Row(
                     children: [
-                      _tabItem(context, "Info.", 0, selectedIndex,profileProvider),
+                      _tabItem(
+                          context, "Info.", 0, selectedIndex, profileProvider),
                       const SizedBox(width: 12),
-                      _tabItem(context, "Files", 1, selectedIndex,profileProvider),
+                      _tabItem(
+                          context, "Files", 1, selectedIndex, profileProvider),
                     ],
                   );
                 },
               ),
-             const SizedBox(height: 30,),
-              Selector<ProfileProvider,int>(builder: (context,provider,widget){
-                 switch(provider){
-                   case 0:
-                     return const InfoWidget();
-                   case 1:
-                     return const FilesWidget();
-                   default:
-                     return const InfoWidget();
-                }
-              }, selector: (context,selector)=>selector.selectedTab)
+              const SizedBox(
+                height: 30,
+              ),
+              Selector<ProfileProvider, int>(
+                  builder: (context, provider, widget) {
+                    switch (provider) {
+                      case 0:
+                        return const InfoWidget();
+                      case 1:
+                        return const FilesWidget();
+                      default:
+                        return const InfoWidget();
+                    }
+                  },
+                  selector: (context, selector) => selector.selectedTab)
             ],
           ),
         ),
       ),
-
     );
   }
-  Widget _tabItem(
-      BuildContext context, String title, int index, int selectedIndex,ProfileProvider provider)
-  {
+
+  Widget _tabItem(BuildContext context, String title, int index,
+      int selectedIndex, ProfileProvider provider) {
     bool isSelected = selectedIndex == index;
 
     return GestureDetector(

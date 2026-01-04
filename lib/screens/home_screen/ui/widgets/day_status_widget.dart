@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -14,8 +15,6 @@ class DayStatusWidget extends StatefulWidget {
 }
 
 class _DayStatusWidgetState extends State<DayStatusWidget> {
-
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DayStatusProvider>(context);
@@ -37,7 +36,7 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextWidget(
-                "Day Status",
+                "Day Status".tr(),
                 fontWeight: FontWeight.bold,
                 textColor: AppColors.whiteColor,
                 textSize: 16,
@@ -57,10 +56,11 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextWidget(
-                "Start Time:",
-              textSize: 14,
+                "Start Time:".tr(),
+                textSize: 14,
                 style: TextStyle(
-                    color: AppColors.whiteColor.withOpacity(0.7), ),
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                ),
               ),
               Text(
                 provider.formattedStartTime,
@@ -74,7 +74,7 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "End Time:",
+                "End Time:".tr(),
                 style: TextStyle(
                     color: AppColors.whiteColor.withOpacity(0.7), fontSize: 14),
               ),
@@ -121,7 +121,7 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    !provider.isStart  ? "Start Day" : "End Day",
+                    !provider.isStart ? "Start Day".tr() : "End Day".tr(),
                     style: TextStyle(
                       color: AppColors.whiteColor,
                       fontWeight: FontWeight.w600,
@@ -132,7 +132,6 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
               ),
             ),
           ),
-
         ],
       ),
     );

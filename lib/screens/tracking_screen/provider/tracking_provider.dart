@@ -18,11 +18,11 @@ class TrackingProvider extends ChangeNotifier {
   int selectedTab = 0;
 
   /// Visit client-side state
-  final Map<int, bool> visitActive = {};          // visitId -> active or not
-  final Map<int, DateTime?> visitStartTime = {};  // visitId -> start datetime
-  final Map<int, Duration> visitElapsed = {};     // visitId -> elapsed duration
-  final Map<int, int> visitRating = {};           // visitId -> stars
-  final Map<int, String> visitNotes = {};         // visitId -> notes
+  final Map<int, bool> visitActive = {};
+  final Map<int, DateTime?> visitStartTime = {};
+  final Map<int, Duration> visitElapsed = {};
+  final Map<int, int> visitRating = {};
+  final Map<int, String> visitNotes = {};
   final Map<int, TextEditingController> _notesControllers = {};
 
   Timer? _tickTimer;
@@ -48,12 +48,16 @@ class TrackingProvider extends ChangeNotifier {
   /// -------------------- GET VISITS --------------------
   Future<void> getVisits() async {
     isLoading = true;
-    // notifyListeners();
+    notifyListeners();
 
-    GetDailyVisitsRepo().getVisits().then((val) {
+    try {
+      final val = await GetDailyVisitsRepo().getVisits();
       isLoading = false;
 
       if (val.success == 1) {
+        allVisits.clear();
+        pendingVisits.clear();
+        completedVisits.clear();
         allVisits = val.data;
 
         pendingVisits = allVisits
@@ -69,7 +73,11 @@ class TrackingProvider extends ChangeNotifier {
       }
 
       notifyListeners();
-    });
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      // Error is handled, loading state is reset
+    }
   }
 
   /// Initialize local state based on visits data from backend
@@ -114,8 +122,6 @@ class TrackingProvider extends ChangeNotifier {
       "long": position.longitude
     };
 
-
-
     GetDailyVisitsRepo().startVisit(body).then((val) {
       LoadingWidget.hide();
 
@@ -136,14 +142,13 @@ class TrackingProvider extends ChangeNotifier {
     Position position = await MainUtilities.getPosition();
 
     final body = {
-      "visit_id": visitId,
+      "daily_visit_id": visitId,
       "lat": position.latitude,
       "long": position.longitude,
       "rate": visitRating[visitId] ?? 0,
       "feedback": visitNotes[visitId] ?? "",
     };
-
-
+    print("salah ${body}");
     GetDailyVisitsRepo().endVisit(body).then((val) {
       LoadingWidget.hide();
 

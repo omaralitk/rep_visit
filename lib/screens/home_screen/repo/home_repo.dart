@@ -1,52 +1,104 @@
 import 'package:rep_visit/core/network/models/general_response_model.dart';
+import 'package:rep_visit/screens/home_screen/models/end_work_model.dart';
+import 'package:rep_visit/screens/home_screen/models/start_work_model.dart';
 import 'package:rep_visit/screens/home_screen/models/summary_model.dart';
-import 'package:rep_visit/screens/home_screen/models/work_process_model.dart';
 
 import '../../../core/network/constants/end_points.dart';
 import '../../../core/network/http_client.dart';
 
 class HomeRepo {
+  // -----------------------------------------
+  // GET SUMMARY
+  // -----------------------------------------
   Future<SummaryModel?> getSummary() async {
-    SummaryModel summaryModel = SummaryModel(
-        status: 0,
-        msg: "",
-        data: SummaryData(
+    try {
+      final response = await httpClient.get(endPoint: EndPoints.summaryPi);
+
+      if (response.statusCode == 200) {
+        return summaryModelFromJson(response.response);
+      } else {
+        return SummaryModel(
+          status: 0,
+          msg: "Something Error",
+          data: SummaryData(
             greeting: "",
             subgreeting: "",
             todaysVisits: null,
             progress: null,
-            nextVisit: null));
-
-    final response = await httpClient.get(
-      endPoint: EndPoints.summaryPi,
-    );
-
-    if (response.statusCode == 200) {
-      summaryModel = summaryModelFromJson(response.response);
-      return summaryModel;
-    } else {
-      summaryModel.msg = "Something Error";
-      // generalResponseModel = generalResponseModelFromJson(response.response);
-      // onboardingModel.msg = generalResponseModel.msg;
-      return summaryModel;
+            nextVisit: null,
+          ),
+        );
+      }
+    } catch (e) {
+      print("getSummary() Error: $e");
+      return SummaryModel(
+        status: 0,
+        msg: "Something Error",
+        data: SummaryData(
+          greeting: "",
+          subgreeting: "",
+          todaysVisits: null,
+          progress: null,
+          nextVisit: null,
+        ),
+      );
     }
   }
 
-  Future<WorkProcessModel?> workProcess(int type) async {
+  // -----------------------------------------
+  // START WORK
+  // -----------------------------------------
+  Future<StartWorkModel?> startWork() async {
+    try {
+      final response = await httpClient.post(
+        endPoint: EndPoints.startWork,
+        payload: {},
+      );
+      if (response.statusCode == 200) {
+        return startWorkModelFromJson(response.response);
+      } else {
+        return StartWorkModel(
+          status: 0,
+          msg: "Something Error",
+          data: null,
+        );
+      }
+    } catch (e) {
+      print("startWork() Error: $e");
+      return StartWorkModel(
+        status: 0,
+        msg: "Something Error",
+        data: null,
+      );
+    }
+  }
 
-    WorkProcessModel workProcessModel =
-        WorkProcessModel(status: 0, msg: "", data: null);
+  // -----------------------------------------
+  // END WORK
+  // -----------------------------------------
+  Future<EndWorkModel?> endWork() async {
+    try {
+      final response = await httpClient.post(
+        endPoint: EndPoints.endWork,
+        payload: {},
+      );
 
-    /// When start visit (1)
-    /// When end visit (2)
-
-
-    final response = await httpClient.post(
-        endPoint: type == 1 ? EndPoints.startWork : EndPoints.endWork,
-        payload: {});
-    print("dddddd ${response.response}");
-    workProcessModel = workProcessModelFromJson(response.response);
-
-    return workProcessModel;
+      if (response.statusCode == 200) {
+        return endWorkModelFromJson(response.response);
+      } else {
+        return EndWorkModel(
+          status: 0,
+          msg: "Something Error",
+          data: null,
+        );
+      }
+    } catch (e) {
+      print("endWork() Error: $e");
+      return EndWorkModel(
+        status: 0,
+        msg: "Something Error",
+        data: null,
+      );
+    }
   }
 }

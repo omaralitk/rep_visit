@@ -16,8 +16,11 @@ class HomeProvider extends ChangeNotifier {
 
   ///Next visit section
   String doctorName="";
-  String address="";
   String time="";
+  String lat="";
+  String address="";
+  String lng="";
+  String phone="";
 
   /// Today's Visit Section
   List<Visit> visits=[];
@@ -38,6 +41,9 @@ class HomeProvider extends ChangeNotifier {
         doctorName=val?.data.nextVisit?.doctor??"";
         time=val?.data.nextVisit?.time??"";
         address=val?.data.nextVisit?.address??"";
+        lat=val?.data.nextVisit?.lat??"";
+        lng=val?.data.nextVisit?.lng??"";
+        phone=val?.data.nextVisit?.phone??"";
         visits=val?.data.todaysVisits??[];
         notifyListeners();
       } else {}

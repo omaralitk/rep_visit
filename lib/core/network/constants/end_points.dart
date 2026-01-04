@@ -75,8 +75,48 @@ class EndPoints {
 
   static get startWork => _startWork;
 
-  /// Start work
+  /// end work
   static const _endWork = '$_baseUrl/api/end-work';
 
   static get endWork => _endWork;
+
+  /// let ai schedule
+  static const _letAiSchedule = '$_baseUrl/api/daily-visits/schedule';
+
+  static get letAiSchedule => _letAiSchedule;
+
+  /// get notifications
+  static const _notifications = '$_baseUrl/api/notifications';
+
+  static get notifications => _notifications;
+
+  /// save doctor schedule
+  static const _saveDoctorSchedule = '$_baseUrl/api/doctors/schedule';
+
+  static get saveDoctorSchedule => _saveDoctorSchedule;
+
+  /// filters
+  static const _getFilters = '$_baseUrl/api/doctors/filters';
+
+  static get getFilters => _getFilters;
+
+  /// my doctors
+  static const _myDoctors = '$_baseUrl/api/my-doctors';
+
+  static get myDoctors => _myDoctors;
+
+  /// Add Doctor Request
+  static const _addDoctorRequest = '$_baseUrl/api/doctor-requests';
+
+  static get addDoctorRequest => _addDoctorRequest;
+
+  /// export note
+  static const _exportNote = '$_baseUrl/api/daily-report/note';
+
+  static get exportNote => _exportNote;
+
+  /// read notification
+  static const _readNotification = '$_baseUrl/api/notifications/read';
+
+  static get readNotification => _readNotification;
 }

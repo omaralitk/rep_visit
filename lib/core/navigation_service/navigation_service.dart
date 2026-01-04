@@ -1,25 +1,24 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 
 class NavigationService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  static Future<dynamic> pushAndRemoveUntilWithoutContext(Widget page) {
+
+  static Future<dynamic> pushAndRemoveUntil(Widget page) {
     return navigatorKey.currentState!.pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => page),
           (route) => false,
     );
   }
-  static pushAndRemoveUntil( Widget widget) {
-    return Navigator.of(NavigationService.navigatorKey.currentContext!).pushAndRemoveUntil( MaterialPageRoute(builder: (context) => widget), (route) => false);
+
+  static Future<dynamic> push(Widget page) {
+    return navigatorKey.currentState!.push(
+      MaterialPageRoute(builder: (_) => page),
+    );
   }
 
-  static push( Widget widget) {
-    return Navigator.push(NavigationService.navigatorKey.currentContext!, MaterialPageRoute(builder: (context) => widget));
+  static void back() {
+    if (navigatorKey.currentState!.canPop()) {
+      navigatorKey.currentState!.pop();
+    }
   }
-  static back() {
-    return Navigator.pop(NavigationService.navigatorKey.currentContext!);
-  }
-
-
 }

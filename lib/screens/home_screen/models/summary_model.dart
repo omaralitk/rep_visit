@@ -69,12 +69,18 @@ class Visit {
   String doctor;
   String address;
   String status;
+  String lat;
+  String lng;
+  String phone;
 
   Visit({
     required this.time,
     required this.doctor,
     required this.address,
     required this.status,
+    required this.lat,
+    required this.lng,
+    required this.phone,
   });
 
   factory Visit.fromJson(Map<String, dynamic> json) => Visit(
@@ -82,6 +88,9 @@ class Visit {
     doctor: json["doctor"],
     address: json["address"],
     status: json["status"],
+    lat: json["status"],
+    lng: json["status"],
+    phone: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -89,6 +98,9 @@ class Visit {
     "doctor": doctor,
     "address": address,
     "status": status,
+    "lat": lat,
+    "long": lng,
+    "phone": phone,
   };
 }
 

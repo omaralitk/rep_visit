@@ -25,20 +25,20 @@ class GetDailyVisitsRepo {
   Future<StartVisitModel> startVisit(Map<String, dynamic> body) async {
     StartVisitModel fallback =
         StartVisitModel(status: 0, msg: "Something went wrong", data: null);
-
+    final response = await httpClient.post(
+      endPoint: EndPoints.startVisit,
+      payload: body,
+    );
+print("ggggg ${response.response}");
+    if (response.statusCode == 200) {
+      return startVisitModelFromJson(response.response);
+    } else {
+      /// Server responded but with error status
+      return startVisitModelFromJson(response.response);
+    }
     try {
 
-      final response = await httpClient.post(
-        endPoint: EndPoints.startVisit,
-        payload: body,
-      );
 
-      if (response.statusCode == 200) {
-        return startVisitModelFromJson(response.response);
-      } else {
-        /// Server responded but with error status
-        return startVisitModelFromJson(response.response);
-      }
     } catch (e, stacktrace) {
       /// Log error only in debug mode
       if (kDebugMode) {

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -22,12 +23,12 @@ final bool? isProfile;
     var baseProvider = Provider.of<BaseProvider>(context, listen: false);
 
     final items = [
-      const _NavItem(icon: AssetImages.homeIcon, label: "Home"),
-      const _NavItem(icon: AssetImages.scheduleIcon, label: "Schedule"),
-      const _NavItem(icon: AssetImages.trackingIcon, label: "Tracking"),
-      const _NavItem(icon: AssetImages.doctorsIcon, label: "Doctors"),
-      const _NavItem(icon: AssetImages.reportsIcon, label: "Reports"),
-      const _NavItem(icon: AssetImages.personalInfoIcon, label: "Profile"),
+       _NavItem(icon: AssetImages.homeIcon, label: "Home".tr()),
+       _NavItem(icon: AssetImages.scheduleIcon, label: "Schedule".tr()),
+       _NavItem(icon: AssetImages.trackingIcon, label: "Tracking".tr()),
+       _NavItem(icon: AssetImages.doctorsIcon, label: "Doctors".tr()),
+       _NavItem(icon: AssetImages.reportsIcon, label: "Reports".tr()),
+       _NavItem(icon: AssetImages.personalInfoIcon, label: "Profile"),
 
     ];
 
