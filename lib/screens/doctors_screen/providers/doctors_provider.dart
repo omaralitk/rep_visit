@@ -322,42 +322,97 @@ class DoctorsProvider extends ChangeNotifier {
   /// Select doctor page
   TextEditingController searchDoctorController = TextEditingController();
 
-  /// Selected doctor ID for "Add to my list"
-  int? selectedDoctorId;
+  /// Selected doctor IDs for "Add to my list" (multiple selection)
+  List<int> selectedDoctorIds = [];
 
-  void setSelectedDoctor(int? doctorId) {
-    selectedDoctorId = doctorId;
+  void toggleSelectedDoctor(int doctorId) {
+    if (selectedDoctorIds.contains(doctorId)) {
+      selectedDoctorIds.remove(doctorId);
+    } else {
+      selectedDoctorIds.add(doctorId);
+    }
     notifyListeners();
   }
 
-  /// Add doctor request from selected doctor (From List page)
+  void clearSelectedDoctors() {
+    selectedDoctorIds.clear();
+    notifyListeners();
+  }
+
+  bool isDoctorSelected(int doctorId) {
+    return selectedDoctorIds.contains(doctorId);
+  }
+
+  /// Add doctor request from selected doctors (From List page)
   Future<void> addDoctorRequest() async {
-    if (selectedDoctorId == null) {
-      ToastService.showError("Please select a doctor".tr());
+    if (selectedDoctorIds.isEmpty) {
+      ToastService.showError("Please select at least one doctor".tr());
       return;
     }
 
-    // Find the selected doctor from myDoctorsList
-    final selectedDoctor = myDoctorsList.firstWhere(
-      (doctor) => doctor.id == selectedDoctorId,
-      orElse: () => throw Exception("Selected doctor not found".tr()),
-    );
+    // Process each selected doctor
+    for (final doctorId in selectedDoctorIds) {
+      // Find the selected doctor from myDoctorsList
+      final selectedDoctor = myDoctorsList.firstWhere(
+        (doctor) => doctor.id != null && doctor.id == doctorId,
+        orElse: () => throw Exception("Selected doctor not found".tr()),
+      );
 
-    // Use the form-based method with selected doctor data
-    await addDoctorRequestFromForm(
-      name: selectedDoctor.name,
-      hospitalName: selectedDoctor.hospitalName,
-      address: selectedDoctor.address,
-      specialty: selectedDoctor.speciality,
-      category: selectedDoctor.datumClass,
-      area: selectedDoctor.address,
-      phone: selectedDoctor.phone?.toString() ?? "",
-      email: selectedDoctor.email?.toString() ?? "",
-    );
+      // Use the form-based method with selected doctor data
+      await addDoctorRequestFromForm(
+        name: selectedDoctor.name ?? "",
+        hospitalName: selectedDoctor.hospitalName ?? "",
+        address: selectedDoctor.address ?? "",
+        specialty: selectedDoctor.speciality ?? "",
+        category: selectedDoctor.datumClass ?? "",
+        area: selectedDoctor.address ?? "",
+        phone: selectedDoctor.phone?.toString() ?? "",
+        email: selectedDoctor.email?.toString() ?? "",
+      );
+    }
 
     // Clear selection after successful request
-    if (selectedDoctorId != null) {
-      selectedDoctorId = null;
+    clearSelectedDoctors();
+  }
+
+  /// Add selected doctors to my list (From List page)
+  Future<void> addToMyList() async {
+    if (selectedDoctorIds.isEmpty) {
+      ToastService.showError("Please select at least one doctor".tr());
+      return;
+    }
+
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      // Create request body with doctor_id array
+      final requestBody = {
+        "doctor_id": selectedDoctorIds,
+      };
+
+      final response = await DoctorsRepo().addToMyList(requestBody);
+
+      isLoading = false;
+
+      if (response.status == 1) {
+        ToastService.showSuccess(response.msg.isNotEmpty
+            ? response.msg
+            : "Doctors added successfully".tr());
+        // Clear selection after successful request
+        clearSelectedDoctors();
+        // Refresh my doctors list
+        await getMyDoctors();
+        notifyListeners();
+      } else {
+        ToastService.showError(response.msg.isNotEmpty
+            ? response.msg
+            : "Failed to add doctors".tr());
+      }
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      ToastService.showError("Error adding doctors to list".tr() + ": $e");
       notifyListeners();
     }
   }

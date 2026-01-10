@@ -40,24 +40,24 @@ class GetMyDoctorsModel {
 }
 
 class Datum {
-  int id;
-  String name;
-  String speciality;
-  String hospitalName;
-  String address;
+  int? id;
+  String? name;
+  String? speciality;
+  String? hospitalName;
+  String? address;
   dynamic phone;
   dynamic email;
   dynamic image;
-  String status;
-  String datumClass;
+  String? status;
+  String? datumClass;
   dynamic rating;
   dynamic availableTime;
-  String availableDays;
+  String? availableDays;
   dynamic lastVisit;
-  String latitude;
-  String longitude;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String? latitude;
+  String? longitude;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   Datum({
     required this.id,
@@ -118,7 +118,7 @@ class Datum {
         "last_visit": lastVisit,
         "latitude": latitude,
         "longitude": longitude,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
       };
 }

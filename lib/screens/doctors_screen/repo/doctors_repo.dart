@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
+import 'package:rep_visit/screens/doctors_screen/models/add_to_list_model.dart';
 import 'package:rep_visit/screens/doctors_screen/models/doctors_model.dart';
 import 'package:rep_visit/screens/doctors_screen/models/doctors_request_model.dart';
 import 'package:rep_visit/screens/doctors_screen/models/my_doctors_model.dart';
@@ -163,5 +164,29 @@ class DoctorsRepo {
       doctorRequestModel = doctorRequestModelFromJson(response.response);
     } else {}
     return doctorRequestModel;
+  }
+
+  Future<AddToListModel> addToMyList(Map<String, dynamic> body) async {
+    AddToListModel addToListModel = AddToListModel(
+      status: 0,
+      msg: "",
+      data: null,
+    );
+    LoadingWidget.show();
+
+    // Format request body as readable string
+    print("Add to my list request: ${jsonEncode(body)}");
+    final response =
+        await HttpClient().post(endPoint: EndPoints.myDoctors, payload: body);
+    print("Add to my list response: ${response.response}");
+    print("Status code: ${response.statusCode}");
+    LoadingWidget.hide();
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      print("Add to my list model: ${response.response}");
+      addToListModel = addToListModelFromJson(response.response);
+    } else {
+      addToListModel.msg = "Error adding doctors to list".tr();
+    }
+    return addToListModel;
   }
 }

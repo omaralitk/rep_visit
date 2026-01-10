@@ -8,6 +8,7 @@ import 'package:rep_visit/screens/doctors_screen/providers/doctors_provider.dart
 
 import '../../../../base/constants/app_colors.dart';
 import '../../../../base/ui/widgets/cached_image.dart';
+import '../../../../base/ui/widgets/custom_check_box.dart';
 import '../../../../base/ui/widgets/text_widget.dart';
 
 class FromListDoctor extends StatefulWidget {
@@ -24,6 +25,8 @@ class _SelectDoctorState extends State<FromListDoctor> {
     // Load my doctors when the page opens
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = Provider.of<DoctorsProvider>(context, listen: false);
+      // Clear previous selections
+      provider.clearSelectedDoctors();
       await provider.getMyDoctors();
     });
   }
@@ -38,9 +41,12 @@ class _SelectDoctorState extends State<FromListDoctor> {
         final filteredDoctors = searchQuery.isEmpty
             ? doctorProvider.myDoctorsList
             : doctorProvider.myDoctorsList.where((doctor) {
-                return doctor.name.toLowerCase().contains(searchQuery) ||
-                    doctor.hospitalName.toLowerCase().contains(searchQuery) ||
-                    doctor.speciality.toLowerCase().contains(searchQuery);
+                return doctor.name?.toLowerCase().contains(searchQuery) ??
+                    false ||
+                        doctor.hospitalName!
+                            .toLowerCase()
+                            .contains(searchQuery) ||
+                        doctor.speciality!.toLowerCase().contains(searchQuery);
               }).toList();
 
         return Column(
@@ -64,19 +70,41 @@ class _SelectDoctorState extends State<FromListDoctor> {
                     ),
                     const SizedBox(height: 15),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextWidget(
-                          "Available Doctors".tr(),
-                          textSize: 14,
-                          fontWeight: FontWeight.w500,
-                          textColor: AppColors.fontColor,
+                        Row(
+                          children: [
+                            TextWidget(
+                              "Available Doctors".tr(),
+                              textSize: 14,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.fontColor,
+                            ),
+                            TextWidget(
+                              " (${filteredDoctors.length})",
+                              textSize: 14,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.fontColor,
+                            ),
+                          ],
                         ),
-                        TextWidget(
-                          " (${filteredDoctors.length})",
-                          textSize: 14,
-                          fontWeight: FontWeight.w500,
-                          textColor: AppColors.fontColor,
-                        ),
+                        if (doctorProvider.selectedDoctorIds.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.mainColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: TextWidget(
+                              "${doctorProvider.selectedDoctorIds.length} ${"Selected".tr()}",
+                              textSize: 12,
+                              fontWeight: FontWeight.w600,
+                              textColor: AppColors.whiteColor,
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -137,17 +165,18 @@ class _SelectDoctorState extends State<FromListDoctor> {
                     child: ButtonWidget(
                       text: "Add to my List".tr(),
                       textColor: AppColors.whiteColor,
-                      backgroundColor: doctorProvider.selectedDoctorId != null
-                          ? AppColors.mainColor
-                          : AppColors.grey300,
+                      backgroundColor:
+                          doctorProvider.selectedDoctorIds.isNotEmpty
+                              ? AppColors.mainColor
+                              : AppColors.grey300,
                       icon: Icon(
                         Icons.add,
                         color: AppColors.whiteColor,
                         size: 18,
                       ),
-                      onTap: doctorProvider.selectedDoctorId != null
+                      onTap: doctorProvider.selectedDoctorIds.isNotEmpty
                           ? () async {
-                              await doctorProvider.addDoctorRequest();
+                              await doctorProvider.addToMyList();
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                               }
@@ -183,20 +212,18 @@ class _SelectDoctorState extends State<FromListDoctor> {
     }
 
     // Check if doctor is available
-    final isAvailable = doctor.status.toLowerCase() == 'available' ||
-        doctor.status.toLowerCase() == 'active';
+    final isAvailable = doctor.status?.toLowerCase() == 'available' ||
+        doctor.status?.toLowerCase() == 'active';
 
     // Check if this doctor is selected
-    final isSelected = provider.selectedDoctorId == doctor.id;
+    final doctorId = doctor.id;
+    if (doctorId == null) return const SizedBox.shrink();
+
+    final isSelected = provider.isDoctorSelected(doctorId);
 
     return InkWell(
       onTap: () {
-        // Toggle selection: if already selected, deselect; otherwise select
-        if (provider.selectedDoctorId == doctor.id) {
-          provider.setSelectedDoctor(null);
-        } else {
-          provider.setSelectedDoctor(doctor.id);
-        }
+        provider.toggleSelectedDoctor(doctorId);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -213,6 +240,14 @@ class _SelectDoctorState extends State<FromListDoctor> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
+                // Checkbox
+                CustomCheckBox(
+                  isChecked: isSelected,
+                  checkboxCallback: (value) {
+                    provider.toggleSelectedDoctor(doctorId);
+                  },
+                ),
+                const SizedBox(width: 12),
                 // Profile picture
                 CachedImage(url: doctor.image?.toString() ?? ""),
                 const SizedBox(width: 12),
@@ -223,7 +258,7 @@ class _SelectDoctorState extends State<FromListDoctor> {
                     children: [
                       // Doctor name
                       TextWidget(
-                        doctor.name,
+                        doctor.name ?? "",
                         textSize: 16,
                         fontWeight: FontWeight.w700,
                         textColor: AppColors.fontColor,
@@ -231,7 +266,7 @@ class _SelectDoctorState extends State<FromListDoctor> {
                       const SizedBox(height: 4),
                       // Specialty
                       TextWidget(
-                        doctor.speciality,
+                        doctor.speciality ?? "",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -250,7 +285,7 @@ class _SelectDoctorState extends State<FromListDoctor> {
                             ),
                             child: Center(
                               child: TextWidget(
-                                doctor.datumClass,
+                                doctor.datumClass ?? "",
                                 textSize: 12,
                                 fontWeight: FontWeight.w700,
                                 textColor: AppColors.whiteColor,
@@ -277,7 +312,9 @@ class _SelectDoctorState extends State<FromListDoctor> {
                               ),
                             ),
                             child: TextWidget(
-                              isAvailable ? "Available".tr() : doctor.status,
+                              isAvailable
+                                  ? "Available".tr()
+                                  : doctor.status ?? "",
                               textSize: 11,
                               fontWeight: FontWeight.w600,
                               textColor: isAvailable

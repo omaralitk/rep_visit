@@ -19,6 +19,7 @@ class AddNewDoctorForm extends StatefulWidget {
 }
 
 class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _hospitalController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -28,6 +29,17 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
   String? _selectedSpeciality;
   String? _selectedCategory;
   String? _selectedArea;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _nameController.dispose();
+    _hospitalController.dispose();
+    _addressController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -87,6 +99,10 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
             // Scrollable form fields
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -216,7 +232,6 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20), // Extra padding at bottom
                   ],
                 ),
               ),
@@ -286,7 +301,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                             }
                           : null,
                       child: TextWidget(
-                        'Add to my List'.tr(),
+                        'Submit'.tr(),
                         textSize: 14,
                         fontWeight: FontWeight.w600,
                         textColor: _canSubmit(provider)

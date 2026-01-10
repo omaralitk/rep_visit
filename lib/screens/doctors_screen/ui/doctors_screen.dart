@@ -417,7 +417,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                 border: Border.all(color: AppColors.grey200),
                               ),
                               child: TextWidget(
-                                "${schedule.dayShort??""} \n${schedule.time??""}",
+                                "${schedule.dayShort ?? ""} \n${schedule.time ?? ""}",
                                 textSize: 12,
                                 textAlign: TextAlign.center,
                                 fontWeight: FontWeight.w500,
