@@ -49,7 +49,7 @@ class DoctorsRepo {
     }).toString();
 
     final response = await httpClient.get(endPoint: url);
-
+    print("doctors omar ${response.response}");
     if (response.statusCode == 200) {
       doctorsModel = doctorsModelFromJson(response.response);
     }
@@ -172,6 +172,8 @@ class DoctorsRepo {
       msg: "",
       data: null,
     );
+    print("omar add to my list body ${jsonEncode(body)}");
+    print("omar add to my list body ${body}");
     LoadingWidget.show();
 
     // Format request body as readable string
@@ -183,7 +185,22 @@ class DoctorsRepo {
     LoadingWidget.hide();
     if (response.statusCode == 201 || response.statusCode == 200) {
       print("Add to my list model: ${response.response}");
-      addToListModel = addToListModelFromJson(response.response);
+      try {
+        addToListModel = addToListModelFromJson(response.response);
+      } catch (e) {
+        print("Error parsing add to list response: $e");
+        // If parsing fails, try to extract status and msg manually
+        try {
+          final jsonData = jsonDecode(response.response);
+          addToListModel.status = jsonData["status"] ?? 0;
+          addToListModel.msg =
+              jsonData["msg"] ?? "Error adding doctors to list".tr();
+          addToListModel.data = null;
+        } catch (e2) {
+          print("Error parsing JSON: $e2");
+          addToListModel.msg = "Error adding doctors to list".tr();
+        }
+      }
     } else {
       addToListModel.msg = "Error adding doctors to list".tr();
     }

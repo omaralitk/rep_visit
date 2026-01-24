@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:rep_visit/base/ui/widgets/cached_image.dart';
 import 'package:rep_visit/base/ui/widgets/main_header.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
+import 'package:rep_visit/base/ui/widgets/no_data_widget.dart';
 import 'package:rep_visit/screens/doctors_screen/providers/doctors_provider.dart';
 import 'package:rep_visit/screens/doctors_screen/ui/widgets/doctor_filter_widget.dart';
 import 'package:rep_visit/screens/doctors_screen/ui/widgets/doctors_shimmer.dart';
@@ -34,9 +36,13 @@ class DoctorsPage extends StatefulWidget {
 }
 
 class _DoctorsPageState extends State<DoctorsPage> {
+  late TextEditingController _searchController;
+  Timer? _searchDebounceTimer;
+
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var doctorsProvider =
           Provider.of<DoctorsProvider>(context, listen: false);
@@ -47,8 +53,14 @@ class _DoctorsPageState extends State<DoctorsPage> {
   }
 
   @override
+  void dispose() {
+    _searchDebounceTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController searchController = TextEditingController();
     var provider = Provider.of<DoctorsProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
@@ -78,82 +90,151 @@ class _DoctorsPageState extends State<DoctorsPage> {
                             const SizedBox(
                               height: 15,
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: SharedTextFormField(
-                                    label: "",
-                                    hint: "Search".tr(),
-                                    controller: searchController,
-                                    onChanged: (_) {
-                                      setState(() {});
-                                    },
-                                    onSubmitted: (_) {
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    provider
-                                        .setOpenFilter(!provider.openFilter);
-                                  },
-                                  child: Container(
-                                    height: 56,
-                                    width: 85,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                            color: AppColors.grey300)),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                            Consumer<DoctorsProvider>(
+                              builder: (context, provider, _) {
+                                return Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Container(
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: AppColors.grey300),
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              child: SvgPicture.asset(
-                                                  AssetImages.filterIcon),
-                                            )),
-                                        const SizedBox(
-                                          width: 5,
+                                        Expanded(
+                                          child: SharedTextFormField(
+                                            label: "",
+                                            hint: "Search".tr(),
+                                            controller: _searchController,
+                                            onChanged: (value) {
+                                              provider.setSearch(value);
+
+                                              // Cancel previous timer
+                                              _searchDebounceTimer?.cancel();
+
+                                              // Debounce search by 300ms (search from first character)
+                                              _searchDebounceTimer = Timer(
+                                                const Duration(
+                                                    milliseconds: 300),
+                                                () {
+                                                  if (mounted &&
+                                                      _searchController.text ==
+                                                          value) {
+                                                    provider.searchDoctors();
+                                                  }
+                                                },
+                                              );
+                                            },
+                                            onSubmitted: (value) {
+                                              _searchDebounceTimer?.cancel();
+                                              provider.setSearch(value);
+                                              provider.searchDoctors();
+                                            },
+                                          ),
                                         ),
-                                        Icon(
-                                          Icons.arrow_drop_down,
-                                          color: AppColors.grey500,
+                                        const SizedBox(
+                                          width: 12,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            provider.setOpenFilter(
+                                                !provider.openFilter);
+                                          },
+                                          child: Container(
+                                            height: 56,
+                                            width: 85,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color: AppColors.grey300)),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: AppColors
+                                                                .grey300),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8)),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4.0),
+                                                      child: SvgPicture.asset(
+                                                          AssetImages
+                                                              .filterIcon),
+                                                    )),
+                                                const SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_drop_down,
+                                                  color: AppColors.grey500,
+                                                )
+                                              ],
+                                            ),
+                                          ),
                                         )
                                       ],
                                     ),
-                                  ),
-                                )
-                              ],
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Selector<DoctorsProvider, bool>(
+                                        builder: (context, provider, widget) {
+                                          return provider
+                                              ? const DoctorFilterWidget()
+                                              : const SizedBox();
+                                        },
+                                        selector: (context, selector) =>
+                                            selector.openFilter),
+                                  ],
+                                );
+                              },
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Selector<DoctorsProvider, bool>(
-                                builder: (context, provider, widget) {
-                                  return provider
-                                      ? const DoctorFilterWidget()
-                                      : const SizedBox();
-                                },
-                                selector: (context, selector) =>
-                                    selector.openFilter),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: provider.doctorsList.length,
-                              itemBuilder: (context, index) {
-                                return doctorSection(index, provider);
+                            Consumer<DoctorsProvider>(
+                              builder: (context, provider, _) {
+                                if (provider.isSearching) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(20.0),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+
+                                // Show empty widget if no doctors in list
+                                if (provider.doctorsList.isEmpty &&
+                                    provider.searchQuery.isEmpty) {
+                                  return NoDataWidget(
+                                    title:
+                                        "You don't have any doctors in your list"
+                                            .tr(),
+                                  );
+                                }
+
+                                // Show message if no results from search
+                                if (provider.doctorsList.isEmpty &&
+                                    provider.searchQuery.isNotEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: Center(
+                                      child: TextWidget(
+                                        "No doctors found".tr(),
+                                        textSize: 14,
+                                        textColor: AppColors.typography500,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: provider.doctorsList.length,
+                                  itemBuilder: (context, index) {
+                                    return doctorSection(index, provider);
+                                  },
+                                );
                               },
                             ),
                             const SizedBox(
@@ -269,13 +350,13 @@ class _DoctorsPageState extends State<DoctorsPage> {
 
               /// Name of doctor
               TextWidget(
-                provider.doctorsList[index].name,
+                provider.doctorsList[index].name ?? "",
                 textSize: 16,
                 fontWeight: FontWeight.w700,
                 textColor: AppColors.fontColor,
               ),
               TextWidget(
-                provider.doctorsList[index].speciality,
+                provider.doctorsList[index].speciality ?? "",
                 textSize: 12,
                 fontWeight: FontWeight.w500,
                 textColor: AppColors.typography500,
@@ -295,7 +376,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                         width: 5,
                       ),
                       TextWidget(
-                        provider.doctorsList[index].hospitalName,
+                        provider.doctorsList[index].hospitalName ?? "",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -312,7 +393,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                       SizedBox(
                         width: Dimensions.fullWidth(context) * 0.3,
                         child: TextWidget(
-                          provider.doctorsList[index].address,
+                          provider.doctorsList[index].address ?? "",
                           textSize: 12,
                           fontWeight: FontWeight.w500,
                           textColor: AppColors.typography500,
@@ -354,7 +435,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                 backgroundColor: Colors.transparent,
                                 builder: (context) {
                                   return DoctorScheduleBottomSheet(
-                                    doctorId: doctorId,
+                                    doctorId: doctorId ?? 0,
                                   );
                                 },
                               );
@@ -374,7 +455,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                   children: [
                                     Icon(
                                       provider.doctorsList[index].weeklySchedule
-                                              .isNotEmpty
+                                                  ?.isNotEmpty ??
+                                              false
                                           ? Icons.edit
                                           : Icons.add,
                                       size: 14,
@@ -383,7 +465,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                     const SizedBox(width: 4),
                                     TextWidget(
                                       provider.doctorsList[index].weeklySchedule
-                                              .isNotEmpty
+                                                  ?.isNotEmpty ??
+                                              false
                                           ? "Edit".tr()
                                           : "Add".tr(),
                                       textSize: 12,
@@ -399,32 +482,35 @@ class _DoctorsPageState extends State<DoctorsPage> {
                       ),
                       // Show schedule items if available
                       if (provider
-                          .doctorsList[index].weeklySchedule.isNotEmpty) ...[
+                              .doctorsList[index].weeklySchedule?.isNotEmpty ??
+                          false) ...[
                         const SizedBox(height: 12),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
                           children: provider.doctorsList[index].weeklySchedule
-                              .map((schedule) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.whiteColor,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.grey200),
-                              ),
-                              child: TextWidget(
-                                "${schedule.dayShort ?? ""} \n${schedule.time ?? ""}",
-                                textSize: 12,
-                                textAlign: TextAlign.center,
-                                fontWeight: FontWeight.w500,
-                                textColor: AppColors.fontColor,
-                              ),
-                            );
-                          }).toList(),
+                                  ?.map((schedule) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border:
+                                        Border.all(color: AppColors.grey200),
+                                  ),
+                                  child: TextWidget(
+                                    "${schedule.dayShort ?? ""} \n${schedule.time ?? ""}",
+                                    textSize: 12,
+                                    textAlign: TextAlign.center,
+                                    fontWeight: FontWeight.w500,
+                                    textColor: AppColors.fontColor,
+                                  ),
+                                );
+                              }).toList() ??
+                              [],
                         ),
                       ],
                     ],

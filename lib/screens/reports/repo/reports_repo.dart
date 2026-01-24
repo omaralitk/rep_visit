@@ -10,13 +10,17 @@ class ReportsRepo {
         ReportsModel(status: 0, msg: "", data: null, date: '');
     print("----------------------");
     final response = await httpClient.get(endPoint: EndPoints.reportsApi);
+
+    print("reports body ${response.response}");
     if (response.statusCode == 200) {
       reportsModel = reportsModelFromJson(response.response);
       return reportsModel;
     } else {
-      reportsModel.msg = "Error on login";
+
+      reportsModel.msg = "Error on get reports";
       return reportsModel;
     }
+
   }
 
   Future<ExportModel> exportNote(Map<String, dynamic> body) async {

@@ -115,7 +115,7 @@ class _PendingVisitsState extends State<PendingVisits> {
     final isActive = provider.visitActive[visit.id] ?? false;
     final elapsed = provider.visitElapsed[visit.id] ?? Duration.zero;
     final rating = provider.visitRating[visit.id] ?? 0;
-    final notesController = provider.notesControllerFor(visit.id);
+    final notesController = provider.notesControllerFor(visit.id??0);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),

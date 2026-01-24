@@ -250,8 +250,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                             borderRadius: BorderRadius.circular(8)),
                         child: Center(
                           child: TextWidget(
-                            provider.filteredDoctorsList[index].datumClass ??
-                                "",
+                            provider.filteredDoctorsList[index].datumClass??"",
                             textSize: 12,
                             fontWeight: FontWeight.w700,
                             textColor: AppColors.whiteColor,
@@ -286,13 +285,13 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
 
               /// Name of doctor
               TextWidget(
-                provider.filteredDoctorsList[index].name,
+                provider.filteredDoctorsList[index].name??"",
                 textSize: 16,
                 fontWeight: FontWeight.w700,
                 textColor: AppColors.fontColor,
               ),
               TextWidget(
-                provider.filteredDoctorsList[index].speciality,
+                provider.filteredDoctorsList[index].speciality??"",
                 textSize: 12,
                 fontWeight: FontWeight.w500,
                 textColor: AppColors.typography500,
@@ -312,7 +311,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                         width: 5,
                       ),
                       TextWidget(
-                        provider.filteredDoctorsList[index].hospitalName,
+                        provider.filteredDoctorsList[index].hospitalName??"",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -329,7 +328,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                       SizedBox(
                         width: Dimensions.fullWidth(context) * 0.3,
                         child: TextWidget(
-                          provider.filteredDoctorsList[index].address,
+                          provider.filteredDoctorsList[index].address??"",
                           textSize: 12,
                           fontWeight: FontWeight.w500,
                           textColor: AppColors.typography500,
@@ -438,7 +437,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                         isAdded ? "Added".tr() : "Add to schedule visits".tr(),
                     onTap: () {
                       provider.toggleScheduleVisit(
-                        provider.filteredDoctorsList[index].id,
+                        provider.filteredDoctorsList[index].id??0,
                         provider.filteredDoctorsList[index].availableTime
                                 ?.toString() ??
                             "09:30:00",

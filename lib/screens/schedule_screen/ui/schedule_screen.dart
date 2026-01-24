@@ -312,7 +312,7 @@ class _SchedulePageState extends State<SchedulePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CachedImage(
-                        url: provider.listOfVisits[index].doctor.image ?? ""),
+                        url: provider.listOfVisits[index].doctor?.image ?? ""),
                     Row(
                       children: [
                         Container(
@@ -323,7 +323,7 @@ class _SchedulePageState extends State<SchedulePage> {
                               borderRadius: BorderRadius.circular(8)),
                           child: Center(
                             child: TextWidget(
-                              provider.listOfVisits[index].doctor.doctorClass,
+                              provider.listOfVisits[index].doctor?.doctorClass??"",
                               textSize: 12,
                               fontWeight: FontWeight.w700,
                               textColor: AppColors.whiteColor,
@@ -341,7 +341,7 @@ class _SchedulePageState extends State<SchedulePage> {
                           width: 5,
                         ),
                         TextWidget(
-                          provider.listOfVisits[index].doctor.rating ?? "4.3",
+                          provider.listOfVisits[index].doctor?.rating ?? "",
                           textSize: 12,
                           fontWeight: FontWeight.w500,
                           textColor: AppColors.typography500,
@@ -356,13 +356,13 @@ class _SchedulePageState extends State<SchedulePage> {
 
                 /// Name of doctor
                 TextWidget(
-                  provider.listOfVisits[index].doctor.name,
+                  provider.listOfVisits[index].doctor?.name??"",
                   textSize: 16,
                   fontWeight: FontWeight.w700,
                   textColor: AppColors.fontColor,
                 ),
                 TextWidget(
-                  provider.listOfVisits[index].doctor.speciality,
+                  provider.listOfVisits[index].doctor?.speciality??"",
                   textSize: 12,
                   fontWeight: FontWeight.w500,
                   textColor: AppColors.typography500,
@@ -382,7 +382,7 @@ class _SchedulePageState extends State<SchedulePage> {
                           width: 5,
                         ),
                         TextWidget(
-                          provider.listOfVisits[index].doctor.hospitalName ??
+                          provider.listOfVisits[index].doctor?.hospitalName ??
                               "",
                           textSize: 12,
                           fontWeight: FontWeight.w500,
@@ -400,7 +400,7 @@ class _SchedulePageState extends State<SchedulePage> {
                         SizedBox(
                           width: Dimensions.fullWidth(context) * 0.3,
                           child: TextWidget(
-                            provider.listOfVisits[index].doctor.address,
+                            provider.listOfVisits[index].doctor?.address??"",
                             textSize: 12,
                             fontWeight: FontWeight.w500,
                             textColor: AppColors.typography500,
@@ -446,7 +446,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                   size: 16,
                                 ),
                                 TextWidget(
-                                  provider.listOfVisits[index].visitTime,
+                                  provider.listOfVisits[index].visitTime??"",
                                   textSize: 12,
                                   fontWeight: FontWeight.w500,
                                   textColor: AppColors.whiteColor,
@@ -477,7 +477,7 @@ class _SchedulePageState extends State<SchedulePage> {
                               ),
                               Expanded(
                                 child: TextWidget(
-                                  " ${provider.listOfVisits[index].doctor.lastVisit}",
+                                  " ${provider.listOfVisits[index].doctor?.lastVisit}",
                                   textSize: 12,
                                   fontWeight: FontWeight.w500,
                                   textColor: AppColors.typography500,

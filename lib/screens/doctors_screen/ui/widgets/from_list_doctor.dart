@@ -181,9 +181,7 @@ class _SelectDoctorState extends State<FromListDoctor> {
                                 Navigator.of(context).pop();
                               }
                             }
-                          : () {
-                              // Do nothing when disabled
-                            },
+                          : () {},
                     ),
                   ),
                 ],
@@ -211,9 +209,7 @@ class _SelectDoctorState extends State<FromListDoctor> {
       }
     }
 
-    // Check if doctor is available
-    final isAvailable = doctor.status?.toLowerCase() == 'available' ||
-        doctor.status?.toLowerCase() == 'active';
+
 
     // Check if this doctor is selected
     final doctorId = doctor.id;
@@ -293,35 +289,7 @@ class _SelectDoctorState extends State<FromListDoctor> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          // Available status button
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isAvailable
-                                  ? AppColors.success50
-                                  : AppColors.grey100,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color: isAvailable
-                                    ? AppColors.success
-                                    : AppColors.grey300,
-                                width: 1,
-                              ),
-                            ),
-                            child: TextWidget(
-                              isAvailable
-                                  ? "Available".tr()
-                                  : doctor.status ?? "",
-                              textSize: 11,
-                              fontWeight: FontWeight.w600,
-                              textColor: isAvailable
-                                  ? AppColors.success
-                                  : AppColors.typography500,
-                            ),
-                          ),
+
                           const Spacer(),
                           // Star rating
                           Icon(

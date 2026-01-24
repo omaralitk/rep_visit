@@ -6,7 +6,7 @@ import '../../../core/network/http_client.dart';
 class ForgetPassRepo {
   Future<ForgetPassModel> forgetPass(Map<String, dynamic> body) async {
     ForgetPassModel forgetPass =
-        ForgetPassModel(status: 0, msg: "", newPassword: "");
+        ForgetPassModel(status: 0, msg: "", data: null);
     print("body of request ${body}");
     print("----------------------");
     final response =
@@ -15,7 +15,7 @@ class ForgetPassRepo {
       forgetPass = forgetPassModelFromJson(response.response);
       return forgetPass;
     } else {
-      forgetPass.msg = "Error";
+      forgetPass = forgetPassModelFromJson(response.response);
       return forgetPass;
     }
   }

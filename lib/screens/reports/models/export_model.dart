@@ -34,18 +34,18 @@ class ExportModel {
 }
 
 class Data {
-  int id;
-  DateTime date;
-  String note;
-  DateTime createdAt;
-  DateTime updatedAt;
+  int? id;
+  DateTime? date;
+  String? note;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   Data({
-    required this.id,
-    required this.date,
-    required this.note,
-    required this.createdAt,
-    required this.updatedAt,
+     this.id,
+     this.date,
+     this.note,
+     this.createdAt,
+     this.updatedAt,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -59,9 +59,9 @@ class Data {
   Map<String, dynamic> toJson() => {
         "id": id,
         "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+            "${date?.year.toString().padLeft(4, '0')}-${date?.month.toString().padLeft(2, '0')}-${date?.day.toString().padLeft(2, '0')}",
         "note": note,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
       };
 }

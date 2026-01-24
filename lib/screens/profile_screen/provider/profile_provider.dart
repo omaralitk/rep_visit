@@ -11,6 +11,7 @@ import 'package:rep_visit/screens/login_screen/ui/login_screen.dart';
 import 'package:rep_visit/screens/profile_screen/repo/profile_repo.dart';
 
 import '../../../core/cach/cach_manager.dart';
+import '../../../core/utilities/logout_utility.dart';
 import '../../login_screen/models/login_model.dart';
 import '../models/files_model.dart';
 
@@ -59,15 +60,17 @@ class ProfileProvider extends ChangeNotifier {
   String? base64Image;
 
   /// Logout Method
-  makeLogOut(BuildContext context) {
+  makeLogOut(BuildContext context) async {
     LoadingWidget.show();
-    ProfileRepo().makeLogOut({}).then((val) {
+    ProfileRepo().makeLogOut({}).then((val) async {
       LoadingWidget.hide();
       if (val is Exception) {
         ToastService.showError(val.msg);
       } else if (val.status == 1) {
-        UserCache.clearAll();
+        // Dispose all controllers and clear all caches (except onboarding)
+
         NavigationService.pushAndRemoveUntil(const LoginScreen());
+        await LogoutUtility.performLogout(context);
         ToastService.showSuccess(val.msg);
       }
     });

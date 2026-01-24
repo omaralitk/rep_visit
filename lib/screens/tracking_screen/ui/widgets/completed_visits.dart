@@ -224,13 +224,12 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                           width: 20,
                         ),
                         const SizedBox(
-                          width: 5,
+                          width: 4,
                         ),
                         Row(
                           children: [
                             TextWidget(
                               "Check in: ".tr(args: [
-
                               ]),
                               textSize: 12,
                               fontWeight: FontWeight.w500,
@@ -259,23 +258,26 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                           width: 20,
                         ),
                         const SizedBox(
-                          width: 5,
+                          width: 4,
                         ),
-                        Row(
-                          children: [
-                            TextWidget(
-                              "Check out: ".tr(),
-                              textSize: 12,
-                              fontWeight: FontWeight.w500,
-                              textColor: AppColors.fontColor,
-                            ),TextWidget(
-                              provider.completedVisits[index].endTime??
-                                  "",
-                              textSize: 12,
-                              fontWeight: FontWeight.w500,
-                              textColor: AppColors.fontColor,
-                            ),
-                          ],
+                        Expanded(
+                          child: Row(
+                            children: [
+                              TextWidget(
+                                "Check out: ".tr(),
+                                textSize: 12,
+                                fontWeight: FontWeight.w500,
+                                textColor: AppColors.fontColor,
+                              ),
+                              TextWidget(
+                                provider.completedVisits[index].endTime??
+                                    "",
+                                textSize: 12,
+                                fontWeight: FontWeight.w500,
+                                textColor: AppColors.fontColor,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

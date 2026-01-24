@@ -30,6 +30,7 @@ class AiScheduleRepo {
 
     final response =
         await httpClient.post(endPoint: EndPoints.letAiSchedule, payload: body);
+    print("lllllll ${response.response}");
     print("Response ${response.response}");
     if (response.statusCode == 200) {
       aiSchedulModel = aiSchedulModelFromJson(response.response);

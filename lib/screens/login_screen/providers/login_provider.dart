@@ -48,6 +48,8 @@ class LoginProvider extends ChangeNotifier {
         UserCache.setToken(val.token);
         UserCache.setEmpData(val.data);
         NavigationService.pushAndRemoveUntil( const BaseScreen());
+        empCodeController.text="";
+        passController.text="";
       } else {
         ToastService.showError( "Wrong email or password");
       }

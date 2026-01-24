@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
         builder: (context, snapshot) => Stack(
           children: [
             Center(
-              child: SvgPicture.asset(AssetImages.splashLogo),
+              child: Image.asset(AssetImages.newLogo,height: 100,width: 100,),
             ),
             Positioned(
                 bottom: 20,

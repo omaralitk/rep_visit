@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
-import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
+import 'package:rep_visit/core/utilities/main_utilities.dart';
 import 'package:rep_visit/screens/home_screen/repo/home_repo.dart';
 
 class DayStatusProvider extends ChangeNotifier {
@@ -52,7 +52,22 @@ class DayStatusProvider extends ChangeNotifier {
   Future<bool> startWork() async {
     try {
       LoadingWidget.show();
-      final response = await HomeRepo().startWork();
+
+      // Get current location
+      double lat = 0.0;
+      double long = 0.0;
+      try {
+        final position = await MainUtilities.getPosition();
+        lat = position.latitude;
+        long = position.longitude;
+      } catch (e) {
+        LoadingWidget.hide();
+        ToastService.showError(
+            "Please enable location permission to start your day");
+        return false;
+      }
+
+      final response = await HomeRepo().startWork(lat: lat, long: long);
 
       LoadingWidget.hide();
 
@@ -73,7 +88,22 @@ class DayStatusProvider extends ChangeNotifier {
   Future<bool> endWork() async {
     try {
       LoadingWidget.show();
-      final response = await HomeRepo().endWork();
+
+      // Get current location
+      double lat = 0.0;
+      double long = 0.0;
+      try {
+        final position = await MainUtilities.getPosition();
+        lat = position.latitude;
+        long = position.longitude;
+      } catch (e) {
+        LoadingWidget.hide();
+        ToastService.showError(
+            "Please enable location permission to end your day");
+        return false;
+      }
+
+      final response = await HomeRepo().endWork(lat: lat, long: long);
       LoadingWidget.hide();
 
       if (response?.status == 1) {

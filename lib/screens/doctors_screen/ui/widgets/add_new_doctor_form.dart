@@ -70,20 +70,34 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
     return ['Select area'.tr(), ...provider.areas.map((e) => e.label)];
   }
 
+  /// Validate email format
+  bool _isValidEmail(String email) {
+    if (email.isEmpty) return false;
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
   bool _canSubmit(DoctorsProvider provider) {
     final specialities = _getSpecialities(provider);
     final categories = _getCategories(provider);
     final areas = _getAreas(provider);
 
+    // final phoneNotEmpty = _phoneController.text.trim().isNotEmpty;
+    // final emailNotEmpty = _emailController.text.trim().isNotEmpty;
+    final emailValid = _isValidEmail(_emailController.text.trim());
+
     return _nameController.text.isNotEmpty &&
-        _hospitalController.text.isNotEmpty &&
+        
         _addressController.text.isNotEmpty &&
         _selectedSpeciality != null &&
         _selectedSpeciality != specialities.first &&
         _selectedCategory != null &&
-        _selectedCategory != categories.first &&
-        _selectedArea != null &&
-        _selectedArea != areas.first;
+        _selectedCategory != categories.first
+
+
+        ;
   }
 
   @override
@@ -126,7 +140,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                     ),
                     const SizedBox(height: 12),
                     SharedTextFormField(
-                      label: 'Hospital*'.tr(),
+                      label: 'Hospital'.tr(),
                       hint: 'Enter hospital name'.tr(),
                       controller: _hospitalController,
                       onChanged: (_) => setState(() {}),
@@ -150,7 +164,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: CustomDropdown(
-                            label: 'Area*'.tr(),
+                            label: 'Area'.tr(),
                             hint: 'Select area'.tr(),
                             items: areas,
                             value: _selectedArea,
@@ -219,6 +233,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                             hint: 'Enter Dr phone'.tr(),
                             controller: _phoneController,
                             textInputType: TextInputType.phone,
+                            onChanged: (_) => setState(() {}),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -228,6 +243,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                             hint: 'Enter Dr email'.tr(),
                             controller: _emailController,
                             textInputType: TextInputType.emailAddress,
+                            onChanged: (_) => setState(() {}),
                           ),
                         ),
                       ],
@@ -282,7 +298,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                           ? () async {
                               await provider.addDoctorRequestFromForm(
                                 name: _nameController.text,
-                                hospitalName: _hospitalController.text,
+                                hospitalName: _hospitalController.text??"",
                                 address: _addressController.text,
                                 specialty: _selectedSpeciality ?? "",
                                 category: _selectedCategory ?? "",
@@ -295,7 +311,7 @@ class _AddNewDoctorFormState extends State<AddNewDoctorForm> {
                                     : "",
                               );
 
-                              if (context.mounted && !provider.isLoading) {
+                              if (context.mounted && !provider.isLoading && provider.successAdd) {
                                 Navigator.of(context).pop();
                               }
                             }

@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
+import 'package:rep_visit/base/ui/widgets/text_widget.dart';
+import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/core/cach/cach_manager.dart';
 import 'package:rep_visit/screens/login_screen/models/login_model.dart';
 import 'package:rep_visit/screens/tracking_screen/models/traking_model.dart';
 import 'package:rep_visit/screens/tracking_screen/repo/get_daily_visits_repo.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/utilities/main_utilities.dart';
 
 class TrackingProvider extends ChangeNotifier {
@@ -85,6 +90,21 @@ class TrackingProvider extends ChangeNotifier {
     /// First: clean orphaned visitIds from memory
     final pendingIds = pendingVisits.map((v) => v.id).toList();
 
+    // Store existing state for visits that are already active
+    final Map<int, DateTime?> preservedStartTimes = {};
+    final Map<int, Duration> preservedElapsed = {};
+    
+    // Preserve start times and elapsed times for visits that are still pending
+    for (var visitId in pendingIds) {
+      if (visitActive[visitId] == true && visitStartTime[visitId] != null) {
+        preservedStartTimes[visitId] = visitStartTime[visitId];
+        // Calculate current elapsed time before clearing
+        if (visitStartTime[visitId] != null) {
+          preservedElapsed[visitId] = DateTime.now().difference(visitStartTime[visitId]!);
+        }
+      }
+    }
+
     visitActive.removeWhere((id, _) => !pendingIds.contains(id));
     visitStartTime.removeWhere((id, _) => !pendingIds.contains(id));
     visitElapsed.removeWhere((id, _) => !pendingIds.contains(id));
@@ -93,46 +113,129 @@ class TrackingProvider extends ChangeNotifier {
 
     for (var v in pendingVisits) {
       visitRating.putIfAbsent(v.id, () => 0);
-      visitElapsed.putIfAbsent(v.id, () => Duration.zero);
-      visitStartTime.putIfAbsent(v.id, () => null);
-
+      
       // *** IMPORTANT ***
       // Auto-activate visits backend marked as "Started"
       if (v.status == "Started") {
         visitActive[v.id] = true;
 
-        // Backend doesn't provide start time → we start now
-        visitStartTime[v.id] = DateTime.now();
+        // Preserve existing start time if visit was already active
+        // Otherwise, set new start time
+        if (preservedStartTimes.containsKey(v.id) && preservedStartTimes[v.id] != null) {
+          // Restore preserved start time to continue timer
+          visitStartTime[v.id] = preservedStartTimes[v.id];
+          // Restore preserved elapsed time
+          visitElapsed[v.id] = preservedElapsed[v.id] ?? Duration.zero;
+        } else {
+          // New visit being started - set start time to now
+          visitStartTime[v.id] = DateTime.now();
+          visitElapsed[v.id] = Duration.zero;
+        }
       } else {
         visitActive.putIfAbsent(v.id, () => false);
+        visitElapsed.putIfAbsent(v.id, () => Duration.zero);
+        visitStartTime.putIfAbsent(v.id, () => null);
       }
     }
   }
 
+  /// Check location permission status
+  Future<bool> checkLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    return permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always;
+  }
+
+  /// Show permission denied dialog
+  void _showPermissionDeniedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: TextWidget(
+            "Location Permission Required".tr(),
+            textSize: 18,
+            fontWeight: FontWeight.bold,
+            textColor: AppColors.fontColor,
+          ),
+          content: TextWidget(
+            "Location permission is required to start a visit. Please enable location permission in settings."
+                .tr(),
+            textSize: 14,
+            textColor: AppColors.typography500,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: TextWidget(
+                "Cancel".tr(),
+                textSize: 14,
+                textColor: AppColors.typography500,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await openAppSettings();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.mainColor,
+                foregroundColor: Colors.white,
+              ),
+              child: TextWidget(
+                "Go to Settings".tr(),
+                textSize: 14,
+                fontWeight: FontWeight.w600,
+                textColor: Colors.white,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   /// -------------------- START VISIT --------------------
   Future<void> startVisit(BuildContext context, int visitId) async {
+    // Check location permission first
+    final hasPermission = await checkLocationPermission();
+
+    if (!hasPermission) {
+      // Show permission denied dialog
+      _showPermissionDeniedDialog(context);
+      return;
+    }
+
     LoadingWidget.show();
-    EmpData userData = await UserCache.getEmpData();
-    Position position = await MainUtilities.getPosition();
+    try {
+      EmpData userData = await UserCache.getEmpData();
+      Position position = await MainUtilities.getPosition();
 
-    final body = {
-      "rep_id": userData.empcode,
-      "daily_visit_id": visitId,
-      "lat": position.latitude,
-      "long": position.longitude
-    };
+      final body = {
+        "rep_id": userData.empcode,
+        "daily_visit_id": visitId,
+        "lat": position.latitude,
+        "long": position.longitude
+      };
 
-    GetDailyVisitsRepo().startVisit(body).then((val) {
+      GetDailyVisitsRepo().startVisit(body).then((val) {
+        LoadingWidget.hide();
+
+        visitActive[visitId] = true;
+        visitStartTime[visitId] = DateTime.now();
+        visitElapsed[visitId] = Duration.zero;
+
+        notesControllerFor(visitId);
+        _ensureTimerRunning();
+        notifyListeners();
+      });
+    } catch (e) {
       LoadingWidget.hide();
-
-      visitActive[visitId] = true;
-      visitStartTime[visitId] = DateTime.now();
-      visitElapsed[visitId] = Duration.zero;
-
-      notesControllerFor(visitId);
-      _ensureTimerRunning();
-      notifyListeners();
-    });
+      // If permission was denied during getPosition, show dialog
+      if (e.toString().contains('denied')) {
+        _showPermissionDeniedDialog(context);
+      }
+    }
   }
 
   /// -------------------- END VISIT --------------------
@@ -231,6 +334,25 @@ class TrackingProvider extends ChangeNotifier {
       _tickTimer?.cancel();
       _tickTimer = null;
     }
+  }
+
+  /// Clear all state (for logout)
+  void clearAllState() {
+    _tickTimer?.cancel();
+    _tickTimer = null;
+    for (var c in _notesControllers.values) {
+      c.dispose();
+    }
+    _notesControllers.clear();
+    allVisits.clear();
+    pendingVisits.clear();
+    completedVisits.clear();
+    visitActive.clear();
+    visitStartTime.clear();
+    visitElapsed.clear();
+    visitRating.clear();
+    visitNotes.clear();
+    notifyListeners();
   }
 
   /// Clean up

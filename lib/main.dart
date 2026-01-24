@@ -21,11 +21,75 @@ import 'package:rep_visit/screens/tracking_screen/provider/tracking_provider.dar
 
 import 'core/navigation_service/navigation_service.dart';
 import 'core/services/service_locator.dart';
+import 'core/services/notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+// Background message handler (must be top-level function)
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("🔔 Handling a background message: ${message.messageId}");
+  print("🔔 Title: ${message.notification?.title}");
+  print("🔔 Body: ${message.notification?.body}");
+  print("🔔 Data: ${message.data}");
+
+  // Show notification even in background
+  final FlutterLocalNotificationsPlugin localNotifications =
+      FlutterLocalNotificationsPlugin();
+
+  const androidDetails = AndroidNotificationDetails(
+    'high_importance_channel',
+    'High Importance Notifications',
+    channelDescription: 'This channel is used for important notifications.',
+    importance: Importance.max,
+    priority: Priority.high,
+    showWhen: true,
+    enableVibration: true,
+    playSound: true,
+  );
+
+  const iosDetails = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+  );
+
+  const platformDetails = NotificationDetails(
+    android: androidDetails,
+    iOS: iosDetails,
+  );
+
+  final title =
+      message.notification?.title ?? message.data['title'] ?? 'Notification';
+  final body = message.notification?.body ??
+      message.data['body'] ??
+      message.data['message'] ??
+      'New notification';
+
+  await localNotifications.show(
+    message.hashCode,
+    title,
+    body,
+    platformDetails,
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Set up background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // Initialize notification service
+  await NotificationService().init();
+
   await EasyLocalization.ensureInitialized();
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],

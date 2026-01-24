@@ -12,7 +12,10 @@ import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 
 class DoctorsProvider extends ChangeNotifier {
   List<doctors_model.Datum> doctorsList = [];
+  List<doctors_model.Datum> _allDoctorsList =
+      []; // Store all doctors for local filtering
   bool isLoading = false;
+  bool isSearching = false; // Separate loading state for search
 
   String? selectedCategory;
   String? selectedSpeciality;
@@ -27,13 +30,15 @@ class DoctorsProvider extends ChangeNotifier {
         category: selectedCategory,
         speciality: selectedSpeciality,
         area: selectedArea,
-        search: searchQuery.isEmpty ? null : searchQuery,
+        search: null, // Don't send search to API, filter locally
       );
       isLoading = false;
 
       if (val.status == 1) {
-        doctorsList = val.data;
+        _allDoctorsList = val.data??[]; // Store all doctors
+        _applyFilters(); // Apply local search and filters
       } else {
+        _allDoctorsList.clear();
         doctorsList.clear();
       }
       notifyListeners();
@@ -41,6 +46,54 @@ class DoctorsProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Apply local filters (search, category, speciality, area)
+  void _applyFilters() {
+    List<doctors_model.Datum> filtered = List.from(_allDoctorsList);
+
+    // Apply search filter (local) - from first character
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.toLowerCase().trim();
+      filtered = filtered.where((doctor) {
+        return (doctor.name?.toLowerCase().contains(query)??false) ||
+            (doctor.speciality?.toLowerCase().contains(query)??false) ||
+            ( doctor.hospitalName?.toLowerCase().contains(query)??false) ||
+            (doctor.address?.toLowerCase().contains(query) ?? false);
+      }).toList();
+    }
+
+    // Apply category filter
+    if (selectedCategory != null &&
+        selectedCategory!.isNotEmpty &&
+        selectedCategory != 'All'.tr()) {
+      filtered = filtered.where((doctor) {
+        return doctor.datumClass == selectedCategory;
+      }).toList();
+    }
+
+    // Apply speciality filter
+    if (selectedSpeciality != null &&
+        selectedSpeciality!.isNotEmpty &&
+        selectedSpeciality != 'All'.tr()) {
+      filtered = filtered.where((doctor) {
+        return doctor.speciality == selectedSpeciality;
+      }).toList();
+    }
+
+    // Apply area filter
+    if (selectedArea != null &&
+        selectedArea!.isNotEmpty &&
+        selectedArea != 'All'.tr()) {
+      filtered = filtered.where((doctor) {
+        return doctor.address
+                ?.toLowerCase()
+                .contains(selectedArea!.toLowerCase()) ??
+            false;
+      }).toList();
+    }
+
+    doctorsList = filtered;
   }
 
   int selectedIndex = 0;
@@ -70,7 +123,9 @@ class DoctorsProvider extends ChangeNotifier {
         selectedCategory = null;
       }
     }
-    getDoctorsList();
+    // Apply filters locally instead of calling API
+    _applyFilters();
+    notifyListeners();
   }
 
   void setSpeciality(String? value) {
@@ -86,7 +141,9 @@ class DoctorsProvider extends ChangeNotifier {
         selectedSpeciality = null;
       }
     }
-    getDoctorsList();
+    // Apply filters locally instead of calling API
+    _applyFilters();
+    notifyListeners();
   }
 
   void setArea(String? value) {
@@ -102,12 +159,29 @@ class DoctorsProvider extends ChangeNotifier {
         selectedArea = null;
       }
     }
-    getDoctorsList();
+    // Apply filters locally instead of calling API
+    _applyFilters();
+    notifyListeners();
   }
 
   void setSearch(String value) {
     searchQuery = value;
-    getDoctorsList();
+    _applyFilters(); // Apply local filter immediately
+    notifyListeners();
+  }
+
+  Future<void> searchDoctors() async {
+    // Local filtering - no API call needed
+    isSearching = true;
+    notifyListeners();
+
+    // Simulate slight delay for better UX
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    _applyFilters(); // Apply local filters
+
+    isSearching = false;
+    notifyListeners();
   }
 
   Future<void> saveDoctorSchedule(Map<String, dynamic> body) async {
@@ -300,6 +374,7 @@ class DoctorsProvider extends ChangeNotifier {
   /// My Doctors
   bool isMyDoctorsLoading = false;
   List<Datum> myDoctorsList = [];
+
   Future<void> getMyDoctors() async {
     isMyDoctorsLoading = true;
     notifyListeners();
@@ -384,25 +459,35 @@ class DoctorsProvider extends ChangeNotifier {
 
     isLoading = true;
     notifyListeners();
-
+    // Create request body with doctor_id array
+    final requestBody = {
+      "doctor_id": selectedDoctorIds,
+    };
     try {
-      // Create request body with doctor_id array
-      final requestBody = {
-        "doctor_id": selectedDoctorIds,
-      };
-
       final response = await DoctorsRepo().addToMyList(requestBody);
-
+      print("add to list api ${response.msg}");
       isLoading = false;
 
       if (response.status == 1) {
-        ToastService.showSuccess(response.msg.isNotEmpty
-            ? response.msg
-            : "Doctors added successfully".tr());
-        // Clear selection after successful request
+        // Check if all doctors are already in the list
+        final msg = response.msg.toLowerCase();
+        if (msg.contains("already in your list") ||
+            msg.contains("already in") ||
+            (response.data == null && response.msg.isNotEmpty)) {
+          // Show info message instead of success
+          ToastService.showInfo(response.msg.isNotEmpty
+              ? response.msg
+              : "All doctors are already in your list".tr());
+        } else {
+          // Successfully added doctors
+          ToastService.showSuccess(response.msg.isNotEmpty
+              ? response.msg
+              : "Doctors added successfully".tr());
+          // Refresh my doctors list
+          await getMyDoctors();
+        }
+        // Clear selection in both cases
         clearSelectedDoctors();
-        // Refresh my doctors list
-        await getMyDoctors();
         notifyListeners();
       } else {
         ToastService.showError(response.msg.isNotEmpty
@@ -424,7 +509,7 @@ class DoctorsProvider extends ChangeNotifier {
     );
     return emailRegex.hasMatch(email);
   }
-
+bool successAdd=false;
   /// Add doctor request from form data (Add New Doctor page)
   Future<void> addDoctorRequestFromForm({
     required String name,
@@ -436,23 +521,8 @@ class DoctorsProvider extends ChangeNotifier {
     required String phone,
     required String email,
   }) async {
-    // Validate phone is not empty
-    if (phone.isEmpty) {
-      ToastService.showError('Please enter a phone number'.tr());
-      return;
-    }
 
-    // Validate email is not empty
-    if (email.isEmpty) {
-      ToastService.showError('Please enter an email address'.tr());
-      return;
-    }
 
-    // Validate email format
-    if (!_isValidEmail(email)) {
-      ToastService.showError('Please enter a valid email address'.tr());
-      return;
-    }
 
     // Get the value for specialty, category and area from their labels
     String? specialtyValue;
@@ -478,14 +548,7 @@ class DoctorsProvider extends ChangeNotifier {
       categoryValue = category; // Fallback to label if not found
     }
 
-    try {
-      if (area.isNotEmpty && area != 'Select area'.tr()) {
-        final areaItem = areas.firstWhere((e) => e.label == area);
-        areaValue = areaItem.value;
-      }
-    } catch (_) {
-      areaValue = area; // Fallback to label if not found
-    }
+
 
     // Build request body according to the API specification
     final requestBody = {
@@ -511,12 +574,14 @@ class DoctorsProvider extends ChangeNotifier {
         ToastService.showSuccess(response.msg.isNotEmpty
             ? response.msg
             : "Doctor request added successfully".tr());
+        successAdd=true;
         notifyListeners();
       } else {
         ToastService.showError(response.msg.isNotEmpty
             ? response.msg
             : "Failed to add doctor request".tr());
       }
+
       notifyListeners();
     } catch (e) {
       isLoading = false;

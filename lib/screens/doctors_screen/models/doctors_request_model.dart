@@ -52,24 +52,24 @@ class Data {
 }
 
 class DoctorRequest {
-  int id;
-  String doctorName;
-  String email;
-  String phone;
-  String speciality;
-  String hospitalName;
-  String status;
-  DateTime createdAt;
+  int? id;
+  String? doctorName;
+  String? email;
+  String? phone;
+  String? speciality;
+  String? hospitalName;
+  String? status;
+  DateTime? createdAt;
 
   DoctorRequest({
-    required this.id,
-    required this.doctorName,
-    required this.email,
-    required this.phone,
-    required this.speciality,
-    required this.hospitalName,
-    required this.status,
-    required this.createdAt,
+     this.id,
+     this.doctorName,
+     this.email,
+     this.phone,
+     this.speciality,
+     this.hospitalName,
+     this.status,
+     this.createdAt,
   });
 
   factory DoctorRequest.fromJson(Map<String, dynamic> json) => DoctorRequest(
@@ -91,6 +91,6 @@ class DoctorRequest {
         "speciality": speciality,
         "hospital_name": hospitalName,
         "status": status,
-        "created_at": createdAt.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
       };
 }

@@ -9,23 +9,23 @@ ReportsModel reportsModelFromJson(String str) => ReportsModel.fromJson(json.deco
 String reportsModelToJson(ReportsModel data) => json.encode(data.toJson());
 
 class ReportsModel {
-  int status;
-  String msg;
-  String date;
+  int? status;
+  String? msg;
+  String? date;
   Data? data;
 
   ReportsModel({
-    required this.status,
-    required this.msg,
-    required this.date,
-    required this.data,
+    this.status,
+    this.msg,
+    this.date,
+    this.data,
   });
 
   factory ReportsModel.fromJson(Map<String, dynamic> json) => ReportsModel(
     status: json["status"],
     msg: json["msg"],
     date: json["date"],
-    data: Data.fromJson(json["data"]),
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -37,25 +37,33 @@ class ReportsModel {
 }
 
 class Data {
-  int visits;
-  String? duration;
-  String? distanceTraveled;
+  int? visits;
+  int? durationMinutes;
+  String? durationText;
+  double? distanceKm;
+  String? note;
 
   Data({
-    required this.visits,
-    required this.duration,
-    required this.distanceTraveled,
+    this.visits,
+    this.durationMinutes,
+    this.durationText,
+    this.distanceKm,
+    this.note,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     visits: json["visits"],
-    duration: json["duration"],
-    distanceTraveled: json["distance_traveled"],
+    durationMinutes: json["duration_minutes"],
+    durationText: json["duration_text"],
+    distanceKm: json["distance_km"],
+    note: json["note"],
   );
 
   Map<String, dynamic> toJson() => {
     "visits": visits,
-    "duration": duration,
-    "distance_traveled": distanceTraveled,
+    "duration_minutes": durationMinutes,
+    "duration_text": durationText,
+    "distance_km": distanceKm,
+    "note": note,
   };
 }

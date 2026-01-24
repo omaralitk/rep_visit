@@ -83,8 +83,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                   children: [
                     SharedTextFormField(
-                      label: "emp_code".tr(),
-                      hint: "enter_your_employee".tr(),
+                      label: "Email".tr(),
+                      hint: "Enter your email".tr(),
                       controller: loginProvider.empCodeController,
                       onSubmitted: (v) {
                         FocusScope.of(context)

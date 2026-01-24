@@ -158,7 +158,8 @@ class _HomePageState extends State<HomePage> {
                                                   height: 10,
                                                 ),
                                                 TextWidget(
-                                                  "No schedule visits for today".tr(),
+                                                  "No schedule visits for today"
+                                                      .tr(),
                                                   textSize: 16,
                                                   fontWeight: FontWeight.bold,
                                                   textColor:
@@ -179,12 +180,15 @@ class _HomePageState extends State<HomePage> {
                                                 const NeverScrollableScrollPhysics(),
                                             itemBuilder: (context, index) {
                                               return todayVisitCard(
+                                                  homeProvider.visits[index]
+                                                          .doctor ??
+                                                      "",
+                                                  homeProvider.visits[index]
+                                                          .address ??
+                                                      "",
                                                   homeProvider
-                                                      .visits[index].doctor,
-                                                  homeProvider
-                                                      .visits[index].address,
-                                                  homeProvider
-                                                      .visits[index].time,
+                                                          .visits[index].time ??
+                                                      "",
                                                   homeProvider.visits[index]
                                                           .status ==
                                                       "Completed",
@@ -208,7 +212,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// Today Progress widget
-  todayProgress(String percentage, int numOfTasks, int totalTasks) {
+  todayProgress(String percentage, double numOfTasks, int totalTasks) {
     return Container(
       height: Dimensions.isTablet(context) ? 240 : 210,
       decoration: BoxDecoration(
@@ -322,8 +326,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// Next Visit widget
-  nextVisit(String time, String doctorName, String hospital, String lat,
-      String long, String callNumber) {
+  nextVisit(String time, String doctorName, String hospital, double lat,
+      double long, String callNumber) {
     String formattedTime = time.isNotEmpty ? time.substring(0, 5) : "";
     return Container(
       height: Dimensions.isTablet(context) ? 240 : 210,
@@ -417,33 +421,35 @@ class _HomePageState extends State<HomePage> {
                       height: 32,
                       text: "Navigate".tr(),
                       onTap: () {
-                        openGoogleMap(lat, long);
+                        openGoogleMap(lat.toString(), long.toString());
                       },
                       borderRadius: 8,
                       textColor: AppColors.whiteColor,
                       backgroundColor: AppColors.success,
                     )),
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        makePhoneCall(callNumber);
-                      },
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.success)),
-                        child: Icon(
-                          Icons.phone_outlined,
-                          color: AppColors.success,
-                          size: 20,
-                        ),
+                    if (callNumber.isNotEmpty)
+                      const SizedBox(
+                        width: 12,
                       ),
-                    )
+                    if (callNumber.isNotEmpty)
+                      InkWell(
+                        onTap: () {
+                          makePhoneCall(callNumber);
+                        },
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: AppColors.whiteColor,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.success)),
+                          child: Icon(
+                            Icons.phone_outlined,
+                            color: AppColors.success,
+                            size: 20,
+                          ),
+                        ),
+                      )
                   ],
                 ),
               ],

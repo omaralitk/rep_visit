@@ -44,8 +44,11 @@ class UserCache {
   }
 
   /// -------------------- CLEAR METHODS --------------------
+  /// Clear all caches except onboarding
   static Future<void> clearAll() async {
-    final prefs = await SharedPreferences.getInstance();
+    // Preserve onboarding status
+    final onboardingStatus = await getOnBoarding();
+    
     await clearIsLogin();
     await setToken("");
     await setEmpData(EmpData(
@@ -55,6 +58,9 @@ class UserCache {
         phoneNumber: "",
         image: "",
         companyCode: ""));
+    
+    // Restore onboarding status
+    await setOnBoarding(onboardingStatus);
   }
 
   static Future<void> clearIsLogin() async {

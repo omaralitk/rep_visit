@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
 
 import '../../../../base/constants/app_colors.dart';
 import '../../../../base/constants/dimensions.dart';
@@ -238,6 +239,17 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
       child: InkWell(
         onTap: () {
           setState(() {
+            // Clear selections when switching tabs
+            if (selectedTab != index) {
+              // Clear selected days
+              _selectedDays = List<bool>.filled(_days.length, false);
+
+              // Clear individual schedule data when switching to bulk
+              if (index == 0) {
+                _individualDayTimes.clear();
+                _individualDayDates.clear();
+              }
+            }
             selectedTab = index;
           });
         },
@@ -537,6 +549,7 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
   }
 
   Future<void> _handleSaveSchedule() async {
+
     final provider = Provider.of<DoctorsProvider>(context, listen: false);
     bool success = false;
 
@@ -558,25 +571,35 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
           selectedDaysList.add(_days[i]);
         }
       }
-
+      LoadingWidget.show();
       success = await provider.saveBulkSchedule(
+
         doctorId: widget.doctorId,
         selectedDays: selectedDaysList,
         time: _selectedTime,
         startDate: _startDate!,
         endDate: _endDate!,
       );
+      LoadingWidget.hide();
     } else {
       // Individual schedule
+      LoadingWidget.show();
+
       success = await provider.saveIndividualSchedule(
         doctorId: widget.doctorId,
         dayTimes: _individualDayTimes,
         days: _days,
       );
+      LoadingWidget.hide();
+
     }
 
     if (success && mounted) {
       Navigator.of(context).pop();
     }
+    if(success && mounted){
+      await provider.getDoctorsList();
+    }
+
   }
 }

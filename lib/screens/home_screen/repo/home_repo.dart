@@ -1,4 +1,3 @@
-import 'package:rep_visit/core/network/models/general_response_model.dart';
 import 'package:rep_visit/screens/home_screen/models/end_work_model.dart';
 import 'package:rep_visit/screens/home_screen/models/start_work_model.dart';
 import 'package:rep_visit/screens/home_screen/models/summary_model.dart';
@@ -48,15 +47,45 @@ class HomeRepo {
   // -----------------------------------------
   // START WORK
   // -----------------------------------------
-  Future<StartWorkModel?> startWork() async {
+  Future<StartWorkModel?> startWork(
+      {required double lat, required double long}) async {
     try {
       final response = await httpClient.post(
         endPoint: EndPoints.startWork,
-        payload: {},
+        payload: {
+          "lat": lat,
+          "long": long,
+        },
       );
+
       if (response.statusCode == 200) {
-        return startWorkModelFromJson(response.response);
+        try {
+          // Ensure response.response is a String before parsing
+          if (response.response is String) {
+            return startWorkModelFromJson(response.response as String);
+          } else {
+            print("startWork() Error: Response is not a string");
+            return StartWorkModel(
+              status: 0,
+              msg: "Invalid response format",
+              data: null,
+            );
+          }
+        } catch (e) {
+          print("startWork() Parsing Error: $e");
+          return StartWorkModel(
+            status: 0,
+            msg: "Failed to parse response",
+            data: null,
+          );
+        }
       } else {
+        // Try to parse error response
+        try {
+          if (response.response is String) {
+            return startWorkModelFromJson(response.response as String);
+          }
+        } catch (_) {}
         return StartWorkModel(
           status: 0,
           msg: "Something Error",
@@ -76,16 +105,45 @@ class HomeRepo {
   // -----------------------------------------
   // END WORK
   // -----------------------------------------
-  Future<EndWorkModel?> endWork() async {
+  Future<EndWorkModel?> endWork(
+      {required double lat, required double long}) async {
     try {
       final response = await httpClient.post(
         endPoint: EndPoints.endWork,
-        payload: {},
+        payload: {
+          "lat": lat,
+          "long": long,
+        },
       );
 
       if (response.statusCode == 200) {
-        return endWorkModelFromJson(response.response);
+        try {
+          // Ensure response.response is a String before parsing
+          if (response.response is String) {
+            return endWorkModelFromJson(response.response as String);
+          } else {
+            print("endWork() Error: Response is not a string");
+            return EndWorkModel(
+              status: 0,
+              msg: "Invalid response format",
+              data: null,
+            );
+          }
+        } catch (e) {
+          print("endWork() Parsing Error: $e");
+          return EndWorkModel(
+            status: 0,
+            msg: "Failed to parse response",
+            data: null,
+          );
+        }
       } else {
+        // Try to parse error response
+        try {
+          if (response.response is String) {
+            return endWorkModelFromJson(response.response as String);
+          }
+        } catch (_) {}
         return EndWorkModel(
           status: 0,
           msg: "Something Error",

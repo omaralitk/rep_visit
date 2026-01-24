@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-StartWorkModel startWorkModelFromJson(String str) => StartWorkModel.fromJson(json.decode(str));
+StartWorkModel startWorkModelFromJson(String str) =>
+    StartWorkModel.fromJson(json.decode(str));
 
 String startWorkModelToJson(StartWorkModel data) => json.encode(data.toJson());
 
@@ -20,16 +21,16 @@ class StartWorkModel {
   });
 
   factory StartWorkModel.fromJson(Map<String, dynamic> json) => StartWorkModel(
-    status: json["status"],
-    msg: json["msg"],
-    data: Data.fromJson(json["data"]),
-  );
+        status: json["status"],
+        msg: json["msg"],
+        data: json["data"] != null ? Data.fromJson(json["data"]) : null,
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "msg": msg,
-    "data": data?.toJson(),
-  };
+        "status": status,
+        "msg": msg,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -46,16 +47,16 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    empcode: json["empcode"],
-    name: json["name"],
-    startDate: DateTime.parse(json["start_date"]),
-    isActive: json["is_active"],
-  );
+        empcode: json["empcode"],
+        name: json["name"],
+        startDate: DateTime.parse(json["start_date"]),
+        isActive: json["is_active"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "empcode": empcode,
-    "name": name,
-    "start_date": startDate.toIso8601String(),
-    "is_active": isActive,
-  };
+        "empcode": empcode,
+        "name": name,
+        "start_date": startDate.toIso8601String(),
+        "is_active": isActive,
+      };
 }

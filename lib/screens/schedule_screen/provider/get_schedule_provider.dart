@@ -31,7 +31,7 @@ class ScheduleProvider extends ChangeNotifier {
     AiScheduleRepo().getAiVisits(isAi ? body : emptyBody).then((val) {
       isLoading = false;
       if (val.success == 1) {
-        listOfVisits = val.data;
+        listOfVisits = val.data??[];
       }
       notifyListeners();
     });
@@ -75,7 +75,7 @@ class ScheduleProvider extends ChangeNotifier {
       doctorsLoading = false;
 
       if (val.status == 1) {
-        doctorsList = val.data;
+        doctorsList = val.data??[];
         filteredDoctorsList = List.from(doctorsList);
       } else {
         doctorsList.clear();
@@ -93,19 +93,19 @@ class ScheduleProvider extends ChangeNotifier {
       filteredDoctorsList = List.from(doctorsList);
     } else {
       filteredDoctorsList = doctorsList.where((doctor) {
-        return doctor.name.toLowerCase().contains(query.toLowerCase());
+        return doctor.name?.toLowerCase().contains(query.toLowerCase())??false;
       }).toList();
     }
 
     // Sort: priority to names starting with query
     filteredDoctorsList.sort((a, b) {
-      final aStarts = a.name.toLowerCase().startsWith(query.toLowerCase());
-      final bStarts = b.name.toLowerCase().startsWith(query.toLowerCase());
+      final aStarts = a.name?.toLowerCase().startsWith(query.toLowerCase())??false;
+      final bStarts = b.name?.toLowerCase().startsWith(query.toLowerCase())??false;
 
       if (aStarts && !bStarts) return -1;
       if (!aStarts && bStarts) return 1;
 
-      return a.name.compareTo(b.name);
+      return a.name?.compareTo(b.name??"")??0;
     });
 
     notifyListeners();

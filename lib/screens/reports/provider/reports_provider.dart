@@ -15,21 +15,19 @@ class ReportsProvider extends ChangeNotifier {
     notifyListeners();
     ReportsRepo().getReports().then((val) {
       isLoading = false;
+
       if (val.status == 1) {
-        date = val.date;
+
+        date = val.date??"";
         visits = val.data?.visits ?? 0;
-        duration = val.data?.duration ?? "0";
-        distance = val.data?.distanceTraveled ?? "0";
+        duration = val.data?.durationText ?? "0";
+        distance = val.data?.distanceKm.toString() ?? "0";
       }
       notifyListeners();
     });
   }
 
   exportNote() {
-    if (noteController.text.isEmpty) {
-      ToastService.showError("Please enter your note");
-      return;
-    }
     Map<String, dynamic> body = {"note": noteController.text};
     LoadingWidget.show();
 

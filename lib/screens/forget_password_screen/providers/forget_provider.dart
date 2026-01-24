@@ -20,9 +20,9 @@ class ForgetProvider extends ChangeNotifier {
     ForgetPassRepo().forgetPass(body).then((val) {
       LoadingWidget.hide();
       if (val.status == 1) {
-        ToastService.showSuccess(val.msg);
+        ToastService.showSuccess(val.msg??"");
       }else{
-        ToastService.showError(val.msg);
+        ToastService.showError(val.msg??"");
 
       }
     });

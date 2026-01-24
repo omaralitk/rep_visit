@@ -9,88 +9,88 @@ SummaryModel summaryModelFromJson(String str) => SummaryModel.fromJson(json.deco
 String summaryModelToJson(SummaryModel data) => json.encode(data.toJson());
 
 class SummaryModel {
-  int status;
-  String msg;
-  SummaryData data;
+  int? status;
+  String? msg;
+  SummaryData? data;
 
   SummaryModel({
-    required this.status,
-    required this.msg,
-    required this.data,
+    this.status,
+    this.msg,
+    this.data,
   });
 
   factory SummaryModel.fromJson(Map<String, dynamic> json) => SummaryModel(
     status: json["status"],
     msg: json["msg"],
-    data: SummaryData.fromJson(json["data"]),
+    data: json["data"] == null ? null : SummaryData.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "msg": msg,
-    "data": data.toJson(),
+    "data": data?.toJson(),
   };
 }
 
 class SummaryData {
-  String greeting;
-  String subgreeting;
-  List<Visit>? todaysVisits;
+  String? greeting;
+  String? subgreeting;
+  List<TodaysVisit>? todaysVisits;
   Progress? progress;
-  Visit? nextVisit;
+  NextVisit? nextVisit;
 
   SummaryData({
-    required this.greeting,
-    required this.subgreeting,
-    required this.todaysVisits,
-    required this.progress,
-    required this.nextVisit,
+    this.greeting,
+    this.subgreeting,
+    this.todaysVisits,
+    this.progress,
+    this.nextVisit,
   });
 
   factory SummaryData.fromJson(Map<String, dynamic> json) => SummaryData(
     greeting: json["greeting"],
     subgreeting: json["subgreeting"],
-    todaysVisits: List<Visit>.from(json["todaysVisits"].map((x) => Visit.fromJson(x))),
-    progress: Progress.fromJson(json["progress"]),
-    nextVisit: Visit.fromJson(json["nextVisit"]),
+    todaysVisits: json["todaysVisits"] == null ? [] : List<TodaysVisit>.from(json["todaysVisits"]!.map((x) => TodaysVisit.fromJson(x))),
+    progress: json["progress"] == null ? null : Progress.fromJson(json["progress"]),
+    nextVisit: json["nextVisit"] == null ? null : NextVisit.fromJson(json["nextVisit"]),
   );
 
   Map<String, dynamic> toJson() => {
     "greeting": greeting,
     "subgreeting": subgreeting,
-    "todaysVisits": List<dynamic>.from(todaysVisits!.map((x) => x.toJson())),
+    "todaysVisits": todaysVisits == null ? [] : List<dynamic>.from(todaysVisits!.map((x) => x.toJson())),
     "progress": progress?.toJson(),
     "nextVisit": nextVisit?.toJson(),
   };
 }
 
-class Visit {
-  String time;
-  String doctor;
-  String address;
-  String status;
-  String lat;
-  String lng;
-  String phone;
+class NextVisit {
+  String? time;
+  String? doctor;
+  String? address;
+  String? status;
+  double? lat;
+  double? long;
+  String? phone;
 
-  Visit({
-    required this.time,
-    required this.doctor,
-    required this.address,
-    required this.status,
-    required this.lat,
-    required this.lng,
-    required this.phone,
+  NextVisit({
+    this.time,
+    this.doctor,
+    this.address,
+    this.status,
+    this.lat,
+    this.long,
+    this.phone,
   });
 
-  factory Visit.fromJson(Map<String, dynamic> json) => Visit(
+  factory NextVisit.fromJson(Map<String, dynamic> json) => NextVisit(
     time: json["time"],
     doctor: json["doctor"],
     address: json["address"],
     status: json["status"],
-    lat: json["status"],
-    lng: json["status"],
-    phone: json["status"],
+    lat: json["lat"],
+    long: json["long"],
+    phone: json["phone"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -99,20 +99,20 @@ class Visit {
     "address": address,
     "status": status,
     "lat": lat,
-    "long": lng,
+    "long": long,
     "phone": phone,
   };
 }
 
 class Progress {
-  int percentage;
-  int totalVisits;
-  String visitsCompleted;
+  double? percentage;
+  int? totalVisits;
+  String? visitsCompleted;
 
   Progress({
-    required this.percentage,
-    required this.totalVisits,
-    required this.visitsCompleted,
+    this.percentage,
+    this.totalVisits,
+    this.visitsCompleted,
   });
 
   factory Progress.fromJson(Map<String, dynamic> json) => Progress(
@@ -125,5 +125,37 @@ class Progress {
     "percentage": percentage,
     "totalVisits": totalVisits,
     "visitsCompleted": visitsCompleted,
+  };
+}
+
+class TodaysVisit {
+  String? doctor;
+  String? address;
+  String? time;
+  String? status;
+  int? isNext;
+
+  TodaysVisit({
+    this.doctor,
+    this.address,
+    this.time,
+    this.status,
+    this.isNext,
+  });
+
+  factory TodaysVisit.fromJson(Map<String, dynamic> json) => TodaysVisit(
+    doctor: json["doctor"],
+    address: json["address"],
+    time: json["time"],
+    status: json["status"],
+    isNext: json["isNext"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "doctor": doctor,
+    "address": address,
+    "time": time,
+    "status": status,
+    "isNext": isNext,
   };
 }

@@ -34,4 +34,8 @@ class AssetImages {
   static const String passIcon = "assets/images/svg/pass_icon.svg";
   static const String editIcon = "assets/images/svg/edit_icon.svg";
   static const String filesIcon = "assets/images/svg/files_icon.svg";
+
+  /// Png Images
+
+  static const String newLogo = "assets/images/png/new_logo.png";
 }

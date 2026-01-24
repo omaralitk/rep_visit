@@ -12,7 +12,7 @@ String addToListModelToJson(AddToListModel data) => json.encode(data.toJson());
 class AddToListModel {
   int status;
   String msg;
-  Data? data;
+  dynamic data;
 
   AddToListModel({
     required this.status,
@@ -20,11 +20,27 @@ class AddToListModel {
     required this.data,
   });
 
-  factory AddToListModel.fromJson(Map<String, dynamic> json) => AddToListModel(
-        status: json["status"],
-        msg: json["msg"],
-        data: Data.fromJson(json["data"]),
-      );
+  factory AddToListModel.fromJson(Map<String, dynamic> json) {
+    // Handle case where data is null, empty array, or empty map
+    Data? data;
+    if (json["data"] != null) {
+      if (json["data"] is Map<String, dynamic> &&
+          (json["data"] as Map<String, dynamic>).isNotEmpty) {
+        try {
+          data = Data.fromJson(json["data"] as Map<String, dynamic>);
+        } catch (e) {
+          data = null;
+        }
+      }
+      // If data is an empty array [] or null, data remains null
+    }
+
+    return AddToListModel(
+      status: json["status"] ?? 0,
+      msg: json["msg"] ?? "",
+      data: data,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "status": status,

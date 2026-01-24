@@ -115,7 +115,14 @@ class _FilesWidgetState extends State<FilesWidget> {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        Container(
+                                        InkWell(
+                                          onTap: () {
+                                            MainUtilities.openFileSmart(
+                                                provider
+                                                    .filesList[index]
+                                                    .downloadUrl);
+                                          },
+                                          child: Container(
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -133,22 +140,15 @@ class _FilesWidgetState extends State<FilesWidget> {
                                                 const SizedBox(
                                                   width: 5,
                                                 ),
-                                                InkWell(
-                                                  onTap: () {
-                                                    MainUtilities.openFileSmart(
-                                                        provider
-                                                            .filesList[index]
-                                                            .downloadUrl);
-                                                  },
-                                                  child: TextWidget(
+                                                  TextWidget(
                                                     "View".tr(),
                                                     textSize: 12,
                                                     fontWeight: FontWeight.w700,
                                                     textColor:
                                                         AppColors.mainColor,
-                                                  ),
                                                 ),
                                               ],
+                                              ),
                                             ),
                                           ),
                                         ),

@@ -9,70 +9,70 @@ DoctorsModel doctorsModelFromJson(String str) => DoctorsModel.fromJson(json.deco
 String doctorsModelToJson(DoctorsModel data) => json.encode(data.toJson());
 
 class DoctorsModel {
-  int status;
-  String msg;
-  List<Datum> data;
-  int companyId;
+  int? status;
+  String? msg;
+  List<Datum>? data;
+  int? companyId;
 
   DoctorsModel({
-    required this.status,
-    required this.msg,
-    required this.data,
-    required this.companyId,
+    this.status,
+    this.msg,
+    this.data,
+    this.companyId,
   });
 
   factory DoctorsModel.fromJson(Map<String, dynamic> json) => DoctorsModel(
     status: json["status"],
     msg: json["msg"],
-    data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
     companyId: json["company_id"],
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "msg": msg,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
     "company_id": companyId,
   };
 }
 
 class Datum {
-  int id;
-  String name;
-  String speciality;
-  String hospitalName;
-  String address;
+  int? id;
+  String? name;
+  String? speciality;
+  String? hospitalName;
+  String? address;
   dynamic image;
-  String status;
-  String datumClass;
-  dynamic rating;
+  String? status;
+  String? datumClass;
+  String? rating;
   dynamic availableTime;
   String? availableDays;
-  dynamic lastVisit;
-  String latitude;
-  String longitude;
-  DateTime createdAt;
-  DateTime updatedAt;
-  List<WeeklySchedule> weeklySchedule;
+  DateTime? lastVisit;
+  String? latitude;
+  String? longitude;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  List<WeeklySchedule>? weeklySchedule;
 
   Datum({
-    required this.id,
-    required this.name,
-    required this.speciality,
-    required this.hospitalName,
-    required this.address,
-    required this.image,
-    required this.status,
-    required this.datumClass,
-    required this.rating,
-    required this.availableTime,
-    required this.availableDays,
-    required this.lastVisit,
-    required this.latitude,
-    required this.longitude,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.weeklySchedule,
+    this.id,
+    this.name,
+    this.speciality,
+    this.hospitalName,
+    this.address,
+    this.image,
+    this.status,
+    this.datumClass,
+    this.rating,
+    this.availableTime,
+    this.availableDays,
+    this.lastVisit,
+    this.latitude,
+    this.longitude,
+    this.createdAt,
+    this.updatedAt,
+    this.weeklySchedule,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -87,12 +87,12 @@ class Datum {
     rating: json["rating"],
     availableTime: json["available_time"],
     availableDays: json["available_days"],
-    lastVisit: json["last_visit"],
+    lastVisit: json["last_visit"] == null ? null : DateTime.parse(json["last_visit"]),
     latitude: json["latitude"],
     longitude: json["longitude"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    weeklySchedule: List<WeeklySchedule>.from(json["weekly_schedule"].map((x) => WeeklySchedule.fromJson(x))),
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    weeklySchedule: json["weekly_schedule"] == null ? [] : List<WeeklySchedule>.from(json["weekly_schedule"]!.map((x) => WeeklySchedule.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -107,26 +107,34 @@ class Datum {
     "rating": rating,
     "available_time": availableTime,
     "available_days": availableDays,
-    "last_visit": lastVisit,
+    "last_visit": "${lastVisit!.year.toString().padLeft(4, '0')}-${lastVisit!.month.toString().padLeft(2, '0')}-${lastVisit!.day.toString().padLeft(2, '0')}",
     "latitude": latitude,
     "longitude": longitude,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "weekly_schedule": List<dynamic>.from(weeklySchedule.map((x) => x.toJson())),
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "weekly_schedule": weeklySchedule == null ? [] : List<dynamic>.from(weeklySchedule!.map((x) => x.toJson())),
   };
 }
 
+
+
+
+
+
+
+
+
 class WeeklySchedule {
-  String day;
-  String dayShort;
-  String time;
-  String display;
+  String? day;
+  String? dayShort;
+  String? time;
+  String? display;
 
   WeeklySchedule({
-    required this.day,
-    required this.dayShort,
-    required this.time,
-    required this.display,
+    this.day,
+    this.dayShort,
+    this.time,
+    this.display,
   });
 
   factory WeeklySchedule.fromJson(Map<String, dynamic> json) => WeeklySchedule(
@@ -142,4 +150,16 @@ class WeeklySchedule {
     "time": time,
     "display": display,
   };
+}
+
+class EnumValues<T> {
+  Map<String, T> map;
+  late Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    reverseMap = map.map((k, v) => MapEntry(v, k));
+    return reverseMap;
+  }
 }
