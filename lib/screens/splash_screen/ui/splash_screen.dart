@@ -36,7 +36,11 @@ class _SplashScreenState extends State<SplashScreen> {
         builder: (context, snapshot) => Stack(
           children: [
             Center(
-              child: Image.asset(AssetImages.newLogo,height: 100,width: 100,),
+              child: Image.asset(
+                AssetImages.newLogo,
+                height: 100,
+                width: 100,
+              ),
             ),
             Positioned(
                 bottom: 20,
@@ -68,18 +72,17 @@ class _SplashScreenState extends State<SplashScreen> {
     bool isLogin = await UserCache.getIsLogin();
     print("route new $route");
     if (!mounted) return;
-    if(isLogin){
+    if (isLogin) {
       NavigationService.pushAndRemoveUntil(const BaseScreen());
-    }else{
+    } else {
       if (!route) {
         final onboardingProvider =
-        Provider.of<OnboardingProvider>(context, listen: false);
+            Provider.of<OnboardingProvider>(context, listen: false);
         onboardingProvider.getOnboarding(context);
       } else {
-        NavigationService.pushAndRemoveUntil( const LoginPage());
+        NavigationService.pushAndRemoveUntil(const LoginPage());
       }
     }
-
   }
 
   @override

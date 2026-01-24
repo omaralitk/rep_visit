@@ -78,12 +78,12 @@ class NotificationsProvider extends ChangeNotifier {
   Future<void> readNotification(String notificationId) async {
     try {
       final val = await NotificationsRepo().readNotification(notificationId);
-      if (val.status == 1) {
-        ToastService.showSuccess(val.msg);
+      if (val.success == 1) {
+        ToastService.showSuccess(val.msg??"");
         markAsRead(notificationId);
       } else {
-        ToastService.showError(val.msg.isNotEmpty
-            ? val.msg
+        ToastService.showError(val.msg?.isNotEmpty??false
+            ? val.msg??""
             : "Failed to mark notification as read");
       }
     } catch (e) {

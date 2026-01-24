@@ -151,6 +151,17 @@
   "Error in save individual schedule": "Error in save individual schedule",
   "Error in get filters": "Error in get filters",
   "Error in get my doctors": "Error in get my doctors",
-  "Error in add doctor request": "Error in add doctor request"
+  "Error in add doctor request": "Error in add doctor request",
+  "Not started": "Not started",
+  "Not ended": "Not ended",
+  "Notifications": "Notifications",
+  "Mark as read": "Mark as read",
+  "No notifications": "No notifications",
+  "Retry": "Retry",
+  "Export": "Export",
+  "Tap on the map to select address": "Tap on the map to select address",
+  "Select address": "Select address",
+  "Search location": "Search location",
+  "Use this address": "Use this address"
 
 }

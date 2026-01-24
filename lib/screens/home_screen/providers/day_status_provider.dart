@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
@@ -20,10 +21,10 @@ class DayStatusProvider extends ChangeNotifier {
 
   String get formattedStartTime => startTime != null
       ? DateFormat('hh:mm a').format(startTime!)
-      : 'Not started';
+      : 'Not started'.tr();
 
   String get formattedEndTime =>
-      endTime != null ? DateFormat('hh:mm a').format(endTime!) : 'Not ended';
+      endTime != null ? DateFormat('hh:mm a').format(endTime!) : 'Not ended'.tr();
 
   /// Handle Start/End button logic
   void handleDayAction() async {

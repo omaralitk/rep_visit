@@ -3,6 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:rep_visit/core/cach/cach_manager.dart';
+import 'package:rep_visit/core/navigation_service/navigation_service.dart';
+import 'package:rep_visit/screens/base_screen/ui/base_screen.dart';
+import 'package:rep_visit/screens/notifications/ui/notifications_screen.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -91,8 +96,9 @@ class NotificationService {
     await _localNotif.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification tap
-        print("Notification tapped: ${response.payload}");
+        // Handle notification tap from local notification
+        debugPrint("🔔 Local notification tapped: ${response.payload}");
+        _handleNotificationTap(null);
       },
     );
 
@@ -125,15 +131,20 @@ class NotificationService {
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        debugPrint("🔔 Notification opened app!");
+        debugPrint("🔔 Notification opened app from background!");
         debugPrint("🔔 Message: ${message.messageId}");
+        _handleNotificationTap(message);
       });
 
-      // Check if app was opened from a notification
+      // Check if app was opened from a notification (terminated state)
       final initialMessage = await _messaging.getInitialMessage();
       if (initialMessage != null) {
         debugPrint(
-            "🔔 App opened from notification: ${initialMessage.messageId}");
+            "🔔 App opened from notification (terminated): ${initialMessage.messageId}");
+        // Delay to ensure app is fully initialized
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _handleNotificationTap(initialMessage);
+        });
       }
 
       debugPrint("🔔 FCM listeners set up successfully");
@@ -205,6 +216,84 @@ class NotificationService {
       debugPrint("❌ Error getting FCM token: $e");
       print("❌ Error getting FCM token: $e");
       return null;
+    }
+  }
+
+  /// Handle notification tap - navigate to home and show NotificationsScreen
+  Future<void> _handleNotificationTap(RemoteMessage? message) async {
+    try {
+      // Check if user is logged in
+      final isLoggedIn = await UserCache.getIsLogin();
+
+      if (!isLoggedIn) {
+        debugPrint("🔔 User not logged in, skipping notification handling");
+        return;
+      }
+
+      debugPrint("🔔 User is logged in, handling notification tap");
+
+      // Mark that we should show the bottom sheet when context is ready
+      _shouldShowNotificationSheet = true;
+
+      // Navigate to BaseScreen (which shows HomeScreen by default)
+      final context = NavigationService.navigatorKey.currentContext;
+      if (context != null) {
+        // Navigate to BaseScreen if not already there
+        NavigationService.pushAndRemoveUntil(const BaseScreen());
+
+        // Wait a bit for navigation to complete, then show NotificationsScreen as bottom sheet
+        Future.delayed(const Duration(milliseconds: 300), () {
+          final newContext = NavigationService.navigatorKey.currentContext;
+          if (newContext != null && _shouldShowNotificationSheet) {
+            _showNotificationsScreen(newContext);
+            _shouldShowNotificationSheet = false; // Reset flag
+          }
+        });
+      } else {
+        debugPrint("🔔 Context not available, will handle later");
+        // Store message for later handling when context is available
+        _pendingNotification = message;
+      }
+    } catch (e) {
+      debugPrint("❌ Error handling notification tap: $e");
+    }
+  }
+
+  RemoteMessage? _pendingNotification;
+  bool _shouldShowNotificationSheet = false;
+
+  /// Show NotificationsScreen as bottom sheet
+  /// Only called when a notification is actually tapped
+  void _showNotificationsScreen(BuildContext context) {
+    if (!_shouldShowNotificationSheet) {
+      debugPrint(
+          "🔔 Not showing notification sheet - no notification was tapped");
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return const NotificationsScreen();
+      },
+    );
+
+    // Clear flags
+    _pendingNotification = null;
+    _shouldShowNotificationSheet = false;
+  }
+
+  /// Call this method when app context is ready (e.g., from main.dart after app initialization)
+  /// Only handles if there's actually a pending notification
+  void handlePendingNotification() {
+    if (_pendingNotification != null) {
+      final context = NavigationService.navigatorKey.currentContext;
+      if (context != null) {
+        _handleNotificationTap(_pendingNotification);
+        _pendingNotification = null; // Clear after handling
+      }
     }
   }
 }

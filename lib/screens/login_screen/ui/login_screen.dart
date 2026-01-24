@@ -86,10 +86,12 @@ class _LoginPageState extends State<LoginPage> {
                       label: "Email".tr(),
                       hint: "Enter your email".tr(),
                       controller: loginProvider.empCodeController,
+                      textInputType: TextInputType.emailAddress,
                       onSubmitted: (v) {
                         FocusScope.of(context)
                             .requestFocus(loginProvider.passFocus);
                       },
+
                       focusNode: loginProvider.empFocus,
                     ),
                     const SizedBox(

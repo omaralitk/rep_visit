@@ -35,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
         automaticallyImplyLeading: false,
         title: MainHeader(
           title: "Profile".tr(),
-          subTitle: "Manage your account information",
+          subTitle: "Manage your account information".tr(),
           isProfile: true,
         ),
       ),
@@ -50,10 +50,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   return Row(
                     children: [
                       _tabItem(
-                          context, "Info.", 0, selectedIndex, profileProvider),
+                          context, "Info.".tr(), 0, selectedIndex, profileProvider),
                       const SizedBox(width: 12),
                       _tabItem(
-                          context, "Files", 1, selectedIndex, profileProvider),
+                          context, "Files".tr(), 1, selectedIndex, profileProvider),
                     ],
                   );
                 },

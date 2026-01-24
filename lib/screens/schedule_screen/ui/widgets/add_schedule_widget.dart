@@ -400,7 +400,7 @@ class _AddScheduleWidgetState extends State<AddScheduleWidget> {
                           children: [
                             Expanded(
                               child: TextWidget(
-                                "Last visit:",
+                                "Last visit:".tr(),
                                 textSize: 12,
                                 fontWeight: FontWeight.w500,
                                 textColor: AppColors.typography500,

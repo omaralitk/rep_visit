@@ -11,9 +11,10 @@ import 'package:rep_visit/base/ui/widgets/cached_image.dart';
 import 'package:rep_visit/base/ui/widgets/lang_switcher.dart';
 import 'package:rep_visit/base/ui/widgets/shared_text_form_field.dart';
 import 'package:rep_visit/base/ui/widgets/text_widget.dart';
-import 'package:rep_visit/core/navigation_service/navigation_service.dart';
+import 'package:rep_visit/core/services/notification_service.dart';
 import 'package:rep_visit/screens/profile_screen/provider/profile_provider.dart';
 import 'package:rep_visit/screens/profile_screen/ui/widgets/change_pass_widget.dart';
+import 'package:flutter/services.dart';
 
 class InfoWidget extends StatefulWidget {
   const InfoWidget({super.key});
@@ -77,7 +78,7 @@ class _InfoWidgetState extends State<InfoWidget> {
                               ),
                               const SizedBox(width: 12),
                               TextWidget(
-                                "Personal Information",
+                                "Personal Information".tr(),
                                 textSize: 16,
                                 fontWeight: FontWeight.w700,
                                 textColor: AppColors.fontColor,
@@ -126,7 +127,7 @@ class _InfoWidgetState extends State<InfoWidget> {
                                             color: AppColors.grey500),
                                         const SizedBox(width: 12),
                                         TextWidget(
-                                          "Change Photo",
+                                          "Change Photo".tr(),
                                           textSize: 12,
                                           fontWeight: FontWeight.w700,
                                           textColor: AppColors.fontColor,
@@ -296,6 +297,7 @@ class _InfoWidgetState extends State<InfoWidget> {
                               ),
                             ],
                           ),
+
                         ],
                       ),
                     ),
@@ -316,6 +318,91 @@ class _InfoWidgetState extends State<InfoWidget> {
                   const SizedBox(height: 40),
                 ],
               );
+      },
+    );
+  }
+
+  Future<void> _showFCMTokenDialog(BuildContext context) async {
+    final notificationService = NotificationService();
+    final token = await notificationService.getToken();
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: TextWidget(
+            "FCM Token",
+            textSize: 18,
+            fontWeight: FontWeight.w700,
+            textColor: AppColors.fontColor,
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextWidget(
+                  "Your device FCM token:",
+                  textSize: 14,
+                  textColor: AppColors.typography500,
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.grey300),
+                  ),
+                  child: SelectableText(
+                    token ?? "Token not available",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                      color: AppColors.fontColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: TextWidget(
+                "Close",
+                textSize: 14,
+                textColor: AppColors.fontColor,
+              ),
+            ),
+            if (token != null)
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: token));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: TextWidget(
+                        "Token copied to clipboard!",
+                        textSize: 14,
+                        textColor: AppColors.whiteColor,
+                      ),
+                      backgroundColor: AppColors.mainColor,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                  Navigator.of(context).pop();
+                },
+                child: TextWidget(
+                  "Copy",
+                  textSize: 14,
+                  textColor: AppColors.mainColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+          ],
+        );
       },
     );
   }

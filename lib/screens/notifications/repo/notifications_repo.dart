@@ -3,6 +3,8 @@ import 'package:rep_visit/core/network/models/general_response_model.dart';
 import 'package:rep_visit/screens/notifications/models/notifications_model.dart';
 import 'package:rep_visit/core/network/constants/end_points.dart';
 
+import '../models/read_notification_model.dart';
+
 class NotificationsRepo {
   Future<NotificationsModel> getNotifications() async {
     NotificationsModel notificationsModel =
@@ -19,20 +21,20 @@ class NotificationsRepo {
     }
   }
 
-  Future<GeneralResponseModel> readNotification(String id) async {
+  Future<ReadNotificationModel> readNotification(String id) async {
 
-    GeneralResponseModel generalResponseModel =
-        GeneralResponseModel(status: 0, msg: "", data: null);
+    ReadNotificationModel readNotificationModel =
+    ReadNotificationModel(success: 0, msg: "", data: null);
     final response = await httpClient
         .post(endPoint: EndPoints.readNotification, payload: {"id": id});
     print("salah ${response.response}");
     if (response.statusCode == 200) {
       print("salah ${response.response}");
-      generalResponseModel = generalResponseModelFromJson(response.response);
-      return generalResponseModel;
+      readNotificationModel = readNotificationModelFromJson(response.response);
+      return readNotificationModel;
     } else {
-      generalResponseModel.msg = "Error on read notification";
-      return generalResponseModel;
+      readNotificationModel.msg = "Error on read notification";
+      return readNotificationModel;
     }
   }
 }

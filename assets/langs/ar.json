@@ -150,5 +150,21 @@
   "Error in save individual schedule": "خطأ في حفظ الجدول الفردي",
   "Error in get filters": "خطأ في جلب المرشحات",
   "Error in get my doctors": "خطأ في جلب قائمة الأطباء",
-  "Error in add doctor request": "خطأ في إضافة طلب الطبيب"
+  "Error in add doctor request": "خطأ في إضافة طلب الطبيب",
+  "Not started": "لم تبدأ",
+  "Not ended": "لم تنته",
+  "Notifications": "الإشعارات",
+  "Mark as read": "علامة كمقروء",
+  "No notifications": "لا يوجد اشعارات",
+  "Retry": "أعد المحاولة",
+  "Manage your visit schedule": "إدارة جدول الزيارة الخاص بك",
+  "Export": "تصدير",
+  "Tap on the map to select address": "اضغط على الخريطة لاختيار الموقع",
+  "Select address": "اختر الموقع",
+  "Search location": "ابحث عن الموقع",
+  "Use this address": "استخدم هذا الموقع"
+
+
+
+
 }

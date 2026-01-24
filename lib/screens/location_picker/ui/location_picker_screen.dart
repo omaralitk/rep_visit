@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -33,8 +34,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   void initState() {
     super.initState();
-    _initCurrentLocation();
     _searchController.addListener(_onSearchChanged);
+    // Don't call _initCurrentLocation here - wait for map to be created
   }
 
   @override
@@ -63,20 +64,27 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   }
 
   Future<void> _searchLocations(String query) async {
+    if (query.isEmpty) return;
+
     setState(() {
       _isSearching = true;
     });
     try {
       final locations = await locationFromAddress(query);
-      setState(() {
-        _searchResults = locations;
-        _isSearching = false;
-      });
+      if (mounted) {
+        setState(() {
+          _searchResults = locations;
+          _isSearching = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _searchResults = [];
-        _isSearching = false;
-      });
+      debugPrint("Error searching locations: $e");
+      if (mounted) {
+        setState(() {
+          _searchResults = [];
+          _isSearching = false;
+        });
+      }
     }
   }
 
@@ -88,9 +96,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       _searchController.clear();
     });
 
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(latLng, 15),
-    );
+    if (_mapController != null) {
+      await _mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(latLng, 15),
+      );
+    }
     await _reverseGeocode(latLng);
   }
 
@@ -101,22 +111,39 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       setState(() {
         _selectedLatLng = latLng;
       });
-      _mapController?.moveCamera(CameraUpdate.newLatLngZoom(latLng, 14));
+
+      // Wait for map controller to be ready before moving camera
+      if (_mapController != null) {
+        await _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(latLng, 14),
+        );
+      }
       await _reverseGeocode(latLng);
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Error getting current location: $e");
       // Fallback to default if permission denied or other errors
+      setState(() {
+        _selectedLatLng = _fallbackLatLng;
+      });
+      if (_mapController != null) {
+        await _mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(_fallbackLatLng, 14),
+        );
+      }
       await _reverseGeocode(_fallbackLatLng);
     }
   }
 
   Future<void> _reverseGeocode(LatLng latLng) async {
+    if (!mounted) return;
+
     setState(() {
       _isLoadingAddress = true;
     });
     try {
       final placemarks =
           await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
-      if (placemarks.isNotEmpty) {
+      if (mounted && placemarks.isNotEmpty) {
         final p = placemarks.first;
         final buffer = [
           if (p.street != null && p.street!.isNotEmpty) p.street,
@@ -125,15 +152,23 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           if (p.country != null && p.country!.isNotEmpty) p.country,
         ].whereType<String>().join(', ');
         setState(() {
-          _selectedAddress = buffer;
+          _selectedAddress =
+              buffer.isNotEmpty ? buffer : 'Address not available';
         });
       }
-    } catch (_) {
-      // ignore errors
+    } catch (e) {
+      debugPrint("Error reverse geocoding: $e");
+      if (mounted) {
+        setState(() {
+          _selectedAddress = 'Address not available';
+        });
+      }
     } finally {
-      setState(() {
-        _isLoadingAddress = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingAddress = false;
+        });
+      }
     }
   }
 
@@ -155,7 +190,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             padding: const EdgeInsets.all(16.0),
             child: SharedTextFormField(
               label: '',
-              hint: 'Search location...'.tr(),
+              hint: 'Search location'.tr(),
               controller: _searchController,
               prefixIcon: Icon(Icons.search, color: AppColors.grey500),
               onSubmitted: (_) {
@@ -250,6 +285,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               },
               onMapCreated: (controller) {
                 _mapController = controller;
+                // Initialize location after map is created
+                _initCurrentLocation();
               },
               onTap: (latLng) {
                 setState(() {

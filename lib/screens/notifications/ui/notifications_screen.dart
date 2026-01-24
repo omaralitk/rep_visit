@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
@@ -53,7 +54,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 Row(
                   children: [
                     TextWidget(
-                      "Notifications",
+                      "Notifications".tr(),
                       textSize: 24,
                       fontWeight: FontWeight.w700,
                       textColor: AppColors.fontColor,
@@ -108,7 +109,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => provider.getNotifications(),
-                          child: const Text("Retry"),
+                          child:  Text("Retry".tr()),
                         ),
                       ],
                     ),
@@ -260,21 +261,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 if (isUnread)
                   Row(
                     children: [
-                      TextButton(
-                        onPressed: () {
-                          provider.readNotification(notification.id);
-                        },
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+
+                      InkWell(
+                        onTap: () {
+    provider.readNotification(notification.id);
+    },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.typography500),
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 4),
+                            child: TextWidget(
+                              "Mark as read".tr(),
+                              textSize: 12,
+                              fontWeight: FontWeight.w500,
+                              textColor: AppColors.typography500,
+                            ),
+                          ),
                         ),
-                        child: TextWidget(
-                          "Mark as read",
-                          textSize: 12,
-                          fontWeight: FontWeight.w500,
-                          textColor: AppColors.typography500,
-                        ),
-                      ),
+                      )
                     ],
                   ),
               ],

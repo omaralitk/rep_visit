@@ -39,9 +39,33 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("🔔 Body: ${message.notification?.body}");
   print("🔔 Data: ${message.data}");
 
-  // Show notification even in background
+  // Initialize local notifications plugin for background isolate
   final FlutterLocalNotificationsPlugin localNotifications =
       FlutterLocalNotificationsPlugin();
+
+  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const iosSettings = DarwinInitializationSettings();
+  const initSettings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
+
+  await localNotifications.initialize(initSettings);
+
+  // Create notification channel for Android
+  if (Platform.isAndroid) {
+    const androidChannel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
+      importance: Importance.high,
+    );
+
+    await localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(androidChannel);
+  }
 
   const androidDetails = AndroidNotificationDetails(
     'high_importance_channel',
