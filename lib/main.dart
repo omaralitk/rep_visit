@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -82,7 +84,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: Platform.isIOS
+        ? const FirebaseOptions(
+            apiKey: "AIzaSyDO9FNu2u5D3Dzs0dLUDnQZMWhX_zwiRRM",
+            appId: "1:81415529499:ios:398c1268b4291aef3984be",
+            messagingSenderId: "81415529499",
+            projectId: "repvisit",
+          )
+        : null,
+  );
 
   // Set up background message handler
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);

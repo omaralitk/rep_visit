@@ -8,6 +8,8 @@
 <string>This app needs access to your location even in the background.</string>
 <key>NSPhotoLibraryUsageDescription</key>
 <string>This app needs access to your photo library to select profile pictures.</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>We need access to save images to your library.</string>
 <key>NSCameraUsageDescription</key>
 <string>This app needs access to your camera to take profile pictures.</string>
 

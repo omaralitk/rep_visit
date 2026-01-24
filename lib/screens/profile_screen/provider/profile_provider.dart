@@ -169,84 +169,61 @@ class ProfileProvider extends ChangeNotifier {
     });
   }
 
-  /// Check and request photo library permission
   Future<bool> _checkPhotoPermission() async {
     if (Platform.isAndroid) {
-      // For Android 13+ (API 33+), Permission.photos handles READ_MEDIA_IMAGES
-      // For older versions, it falls back to READ_EXTERNAL_STORAGE
       PermissionStatus status = await Permission.photos.status;
 
       if (status.isDenied) {
         status = await Permission.photos.request();
-        if (status.isDenied) {
-          ToastService.showError("Photo permission is denied.");
-          return false;
-        }
       }
 
       if (status.isPermanentlyDenied) {
         ToastService.showError(
-            "Photo permission is permanently denied. Please enable it in settings.");
-        await openAppSettings();
-        return false;
-      }
-
-      return status.isGranted;
-    } else if (Platform.isIOS) {
-      PermissionStatus status = await Permission.photos.status;
-
-      if (status.isDenied) {
-        status = await Permission.photos.request();
-        if (status.isDenied) {
-          ToastService.showError("Photo permission is denied.");
-          return false;
-        }
-      }
-
-      if (status.isPermanentlyDenied) {
-        ToastService.showError(
-            "Photo permission is permanently denied. Please enable it in settings.");
+          "Photo permission is permanently denied. Please enable it in settings.",
+        );
         await openAppSettings();
         return false;
       }
 
       return status.isGranted;
     }
-    return false;
+    if (Platform.isIOS) {
+      final status = await Permission.photos.status;
+
+      if (status.isDenied) {
+        final result = await Permission.photos.request();
+        return result.isGranted || result.isLimited;
+      }
+
+      return status.isGranted || status.isLimited;
+    }
+    return true;
   }
 
-  /// Pick image from gallery
   Future<void> pickImage() async {
     try {
-      // Check permission first
-      final hasPermission = await _checkPhotoPermission();
-      if (!hasPermission) {
-        ToastService.showError(
-            "Photo permission is required to select images.");
-        return;
+      if (Platform.isAndroid) {
+        final hasPermission = await _checkPhotoPermission();
+        if (!hasPermission) return;
       }
 
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 70, // reduce size
+        imageQuality: 70,
       );
 
-      if (image != null) {
-        pickedImageFile = File(image.path);
+      if (image == null) return;
 
-        // Convert to Base64
-        List<int> imageBytes = await pickedImageFile!.readAsBytes();
-        base64Image = base64Encode(imageBytes);
+      pickedImageFile = File(image.path);
+      base64Image = base64Encode(await pickedImageFile!.readAsBytes());
 
-        // Update user image locally for preview
-        if (user != null) {
-          user!.image = image.path; // Temporary local path for preview
-        }
-
-        notifyListeners();
-        ToastService.showSuccess("Image selected successfully");
+      if (user != null) {
+        user!.image = image.path;
       }
+
+      notifyListeners();
+      ToastService.showSuccess("Image selected successfully");
     } catch (e) {
       ToastService.showError("Error picking image: $e");
     }

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+
 ReportsModel reportsModelFromJson(String str) => ReportsModel.fromJson(json.decode(str));
 
 String reportsModelToJson(ReportsModel data) => json.encode(data.toJson());
@@ -38,7 +40,7 @@ class ReportsModel {
 
 class Data {
   int? visits;
-  int? durationMinutes;
+  num? durationMinutes;
   String? durationText;
   double? distanceKm;
   String? note;
