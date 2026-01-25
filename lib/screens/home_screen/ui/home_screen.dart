@@ -254,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 4),
                         child: TextWidget(
-                          "${(numOfTasks == 0 && totalTasks == 0 ? 0 : numOfTasks / totalTasks).toInt()}%",
+                          "${numOfTasks.toInt()}%",
                           fontWeight: FontWeight.w700,
                           textColor: AppColors.whiteColor,
                           textSize: 12,

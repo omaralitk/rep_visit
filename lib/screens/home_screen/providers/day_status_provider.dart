@@ -23,8 +23,9 @@ class DayStatusProvider extends ChangeNotifier {
       ? DateFormat('hh:mm a').format(startTime!)
       : 'Not started'.tr();
 
-  String get formattedEndTime =>
-      endTime != null ? DateFormat('hh:mm a').format(endTime!) : 'Not ended'.tr();
+  String get formattedEndTime => endTime != null
+      ? DateFormat('hh:mm a').format(endTime!)
+      : 'Not ended'.tr();
 
   /// Handle Start/End button logic
   void handleDayAction() async {
@@ -119,5 +120,15 @@ class DayStatusProvider extends ChangeNotifier {
       ToastService.showError("Error occurred: $e");
       return false;
     }
+  }
+
+  /// Reset day status - used when logging out
+  void resetDayStatus() {
+    isStart = false;
+    startTime = null;
+    endTime = null;
+    startHistory.clear();
+    endHistory.clear();
+    notifyListeners();
   }
 }

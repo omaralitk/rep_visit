@@ -118,36 +118,41 @@ class _FilesWidgetState extends State<FilesWidget> {
                                         InkWell(
                                           onTap: () {
                                             MainUtilities.openFileSmart(
-                                                provider
-                                                    .filesList[index]
-                                                    .downloadUrl);
+                                              provider
+                                                  .filesList[index].downloadUrl,
+                                              originalFileName: provider
+                                                  .filesList[index]
+                                                  .originalName,
+                                            );
                                           },
                                           child: Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: AppColors.grey200)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0, vertical: 6),
-                                            child: Row(
-                                              children: [
-                                                SvgPicture.asset(
-                                                  AssetImages.openedEyes,
-                                                  color: AppColors.mainColor,
-                                                ),
-                                                const SizedBox(
-                                                  width: 5,
-                                                ),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                    color: AppColors.grey200)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 6),
+                                              child: Row(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    AssetImages.openedEyes,
+                                                    color: AppColors.mainColor,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
                                                   TextWidget(
                                                     "View".tr(),
                                                     textSize: 12,
                                                     fontWeight: FontWeight.w700,
                                                     textColor:
                                                         AppColors.mainColor,
-                                                ),
-                                              ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),

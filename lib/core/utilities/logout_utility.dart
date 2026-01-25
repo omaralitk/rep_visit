@@ -5,6 +5,7 @@ import 'package:rep_visit/core/cach/cach_manager.dart';
 import 'package:rep_visit/screens/base_screen/providers/base_provider.dart';
 import 'package:rep_visit/screens/doctors_screen/providers/doctors_provider.dart';
 import 'package:rep_visit/screens/forget_password_screen/providers/forget_provider.dart';
+import 'package:rep_visit/screens/home_screen/providers/day_status_provider.dart';
 import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
 import 'package:rep_visit/screens/login_screen/providers/login_provider.dart';
 import 'package:rep_visit/screens/profile_screen/provider/profile_provider.dart';
@@ -106,6 +107,11 @@ class LogoutUtility {
       // HomeProvider state
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
       homeProvider.clearAllState();
+
+      // DayStatusProvider - reset start day status
+      final dayStatusProvider =
+          Provider.of<DayStatusProvider>(context, listen: false);
+      dayStatusProvider.resetDayStatus();
 
       // BaseProvider state
       final baseProvider = Provider.of<BaseProvider>(context, listen: false);
