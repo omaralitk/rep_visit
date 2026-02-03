@@ -192,7 +192,8 @@ class _HomePageState extends State<HomePage> {
                                                   homeProvider.visits[index]
                                                           .status ==
                                                       "Completed",
-                                                  index == 1);
+                                                  homeProvider.visits[index]
+                                                      .isNext == 1);
                                             })
                                   ],
                                 ),
