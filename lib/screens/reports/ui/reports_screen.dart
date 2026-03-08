@@ -118,13 +118,13 @@ class _ReportsPageState extends State<ReportsPage> {
                           ),
                           Row(
                             children: [
-                              distanceTraveledWidget(provider.distance)
+                              pendingVisitsWidget(provider.distance)
                             ],
                           ),
                           const SizedBox(
                             height: 15,
                           ),
-                          notesWidget("Hello Comment", provider.noteController),
+                          notesWidget("", provider.noteController),
                           SizedBox(
                             height: 15,
                           ),
@@ -259,8 +259,8 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 
-  /// Distance traveled widget
-  distanceTraveledWidget(String distance) {
+  /// Pending visits widget
+  pendingVisitsWidget(String val) {
     return Expanded(
       child: Container(
         height: 70,
@@ -281,7 +281,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     border: Border.all(color: AppColors.primary200)),
                 child: Padding(
                   padding: const EdgeInsets.all(6.0),
-                  child: SvgPicture.asset(AssetImages.addressIcon),
+                  child: Icon(Icons.hourglass_top_sharp,color: AppColors.mainColor,),
                 ),
               ),
               const SizedBox(
@@ -291,13 +291,13 @@ class _ReportsPageState extends State<ReportsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextWidget(
-                    distance,
+                    val,
                     fontWeight: FontWeight.w700,
                     textColor: AppColors.fontColor,
                     textSize: 16,
                   ),
                   TextWidget(
-                    "Distance traveled".tr(),
+                    "Pending".tr(),
                     fontWeight: FontWeight.w500,
                     textColor: AppColors.typography500,
                     textSize: 12,

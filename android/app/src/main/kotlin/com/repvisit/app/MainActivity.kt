@@ -1,4 +1,4 @@
-package com.example.rep_visit
+package com.repvisit.app
 
 import io.flutter.embedding.android.FlutterActivity
 

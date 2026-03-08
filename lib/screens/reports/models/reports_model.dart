@@ -42,7 +42,7 @@ class Data {
   int? visits;
   num? durationMinutes;
   String? durationText;
-  double? distanceKm;
+  num? distanceKm;
   String? note;
 
   Data({

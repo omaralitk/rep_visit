@@ -7,28 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:81415529499:android:d5ea55f3ec66d0fb3984be",
+        "mobilesdk_app_id": "1:81415529499:android:8b34ac0bf6e980e03984be",
         "android_client_info": {
-          "package_name": "com.example.rep_visit"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDPdIBkWZZF934DkfqqBpFC_8NwlCoYOAw"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:81415529499:android:deeca3317318f4943984be",
-        "android_client_info": {
-          "package_name": "com.repvisit"
+          "package_name": "com.repvisit.app"
         }
       },
       "oauth_client": [],
