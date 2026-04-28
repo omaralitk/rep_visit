@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_visit/base/constants/app_colors.dart';
 import 'package:rep_visit/base/ui/widgets/text_widget.dart';
+import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
 
 import '../../providers/day_status_provider.dart';
 
@@ -17,15 +18,22 @@ class DayStatusWidget extends StatefulWidget {
 class _DayStatusWidgetState extends State<DayStatusWidget> {
   @override
   Widget build(BuildContext context) {
+    // ✅ لازم يسمع للتغييرات
     final provider = Provider.of<DayStatusProvider>(context);
+    final homeProvider = Provider.of<HomeProvider>(context);
+
     final now = DateTime.now();
     final formattedDate = DateFormat('EEEE, MMM d').format(now);
+
+    // ✅ المنطق الصحيح
+    final bool isStarted =
+        provider.isStart || homeProvider.isStarted;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.mainColor, // main blue background
+        color: AppColors.mainColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -49,9 +57,10 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
               ),
             ],
           ),
+
           const SizedBox(height: 10),
 
-          /// Start/End Time
+          /// Start Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -63,39 +72,52 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
                 ),
               ),
               Text(
-                provider.formattedStartTime,
+                (homeProvider.startTime.isEmpty)
+                    ? provider.formattedStartTime
+                    : homeProvider.startTime,
                 style: TextStyle(
-                    color: AppColors.whiteColor.withOpacity(0.7), fontSize: 14),
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
+
           const SizedBox(height: 5),
+
+          /// End Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "End Time:".tr(),
                 style: TextStyle(
-                    color: AppColors.whiteColor.withOpacity(0.7), fontSize: 14),
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                  fontSize: 14,
+                ),
               ),
               Text(
                 provider.formattedEndTime,
                 style: TextStyle(
-                    color: AppColors.whiteColor.withOpacity(0.7), fontSize: 14),
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
 
           const SizedBox(height: 20),
 
-          // Button
+          /// Button
           GestureDetector(
-            onTap: provider.handleDayAction,
+            onTap: (){
+              provider.handleDayAction(isStarted,context);
+            },
             child: Container(
               height: 48,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: !provider.isStart
+                color: !isStarted
                     ? AppColors.primary900
                     : AppColors.endDayButton,
                 borderRadius: BorderRadius.circular(12),
@@ -107,13 +129,13 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
                     height: 28,
                     width: 28,
                     decoration: BoxDecoration(
-                      color: !provider.isStart
+                      color: !isStarted
                           ? AppColors.primary700
                           : AppColors.endDayIcon,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      !provider.isStart
+                      !isStarted
                           ? Icons.play_arrow_outlined
                           : Icons.stop_outlined,
                       color: AppColors.whiteColor,
@@ -121,7 +143,9 @@ class _DayStatusWidgetState extends State<DayStatusWidget> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    !provider.isStart ? "Start Day".tr() : "End Day".tr(),
+                    !isStarted
+                        ? "Start Day".tr()
+                        : "End Day".tr(),
                     style: TextStyle(
                       color: AppColors.whiteColor,
                       fontWeight: FontWeight.w600,

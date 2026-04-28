@@ -46,7 +46,7 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
   final Map<int, String> _individualDayTimes = {};
 
   /// Individual schedule: day index -> date
-  final Map<int, DateTime> _individualDayDates = {};
+   Map<int, DateTime> _individualDayDates = {};
 
   /// Date fields for bulk schedule
   DateTime? _startDate;
@@ -115,7 +115,60 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
                       textColor: AppColors.fontColor,
                     ),
                     const SizedBox(height: 12),
-                    _buildDaysGrid(),
+                    (selectedTab == 0)
+                        ? _buildDaysGrid()
+                        : InkWell(
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+
+                        if (picked != null) {
+                          setState(() {
+                            // جيب index أول يوم مش مستخدم
+                            final availableIndex = List.generate(_days.length, (i) => i)
+                                .firstWhere(
+                                  (i) => !_individualDayDates.containsKey(i),
+                              orElse: () => -1,
+                            );
+
+                            if (availableIndex != -1) {
+                              _individualDayDates[availableIndex] = picked;
+                              _individualDayTimes[availableIndex] = _selectedTime;
+                              _selectedDays[availableIndex] = true;
+                            }
+                          });
+                        }
+                      },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppColors.grey300),
+                                color: AppColors.grey50,
+                              ),
+                              child:  Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.add,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                    TextWidget(
+                                      "Add New Day".tr(),
+                                      textSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ),
                     const SizedBox(height: 20),
                     if (selectedTab == 0) ...[
                       TextWidget(
@@ -444,46 +497,24 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
                   // Date picker
                   Expanded(
                     child: InkWell(
-                      onTap: () async {
-                        final DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: date,
-                          firstDate: DateTime.now(),
-                          lastDate:
-                              DateTime.now().add(const Duration(days: 365)),
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            _individualDayDates[index] = picked;
-                          });
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.grey300),
-                          color: AppColors.whiteColor,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Expanded(
-                              child: TextWidget(
-                                DateFormat('yyyy-MM-dd').format(date),
-                                textSize: 14,
-                                fontWeight: FontWeight.w500,
-                                textColor: AppColors.typography700,
-                              ),
+
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Expanded(
+                            child: TextWidget(
+                              DateFormat('yyyy-MM-dd').format(date),
+                              textSize: 14,
+                              fontWeight: FontWeight.w600,
+                              textColor: AppColors.typography700,
                             ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                            ),
-                          ],
-                        ),
+                          ),
+                          // const SizedBox(width: 4),
+                          // const Icon(
+                          //   Icons.calendar_today,
+                          //   size: 16,
+                          // ),
+                        ],
                       ),
                     ),
                   ),
@@ -547,9 +578,7 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
 
     return Column(children: children);
   }
-
   Future<void> _handleSaveSchedule() async {
-
     final provider = Provider.of<DoctorsProvider>(context, listen: false);
     bool success = false;
 
@@ -571,35 +600,41 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
           selectedDaysList.add(_days[i]);
         }
       }
-      LoadingWidget.show();
-      success = await provider.saveBulkSchedule(
 
+      LoadingWidget.show();
+
+      success = await provider.saveBulkSchedule(
         doctorId: widget.doctorId,
         selectedDays: selectedDaysList,
         time: _selectedTime,
         startDate: _startDate!,
         endDate: _endDate!,
       );
+
       LoadingWidget.hide();
     } else {
       // Individual schedule
       LoadingWidget.show();
 
+      /// ✅ تحويل الـ Map<DateTime> إلى Map<String> مع الحفاظ على الـ index
+      final Map<int, String> datesMap = {};
+
+      _individualDayDates.forEach((index, date) {
+        datesMap[index] = DateFormat('yyyy-MM-dd').format(date);
+      });
+
       success = await provider.saveIndividualSchedule(
         doctorId: widget.doctorId,
         dayTimes: _individualDayTimes,
-        days: _days,
+        dayDates: datesMap, // 👈 الحل الصحيح
       );
-      LoadingWidget.hide();
 
+      LoadingWidget.hide();
     }
 
     if (success && mounted) {
       Navigator.of(context).pop();
-    }
-    if(success && mounted){
       await provider.getDoctorsList();
     }
-
   }
 }

@@ -259,11 +259,12 @@ class DoctorsProvider extends ChangeNotifier {
   /// Save individual schedule - validation and request building in provider
   Future<bool> saveIndividualSchedule({
     required int doctorId,
-    required Map<int, String> dayTimes, // day index -> time
-    required List<String> days, // day names list
+    required Map<int, String> dayTimes,   // index -> time
+    required Map<int, String> dayDates,   // index -> date (NEW)
   }) async {
+
     // Validation
-    if (dayTimes.isEmpty) {
+    if (dayTimes.isEmpty || dayDates.isEmpty) {
       ToastService.showError('Please select at least one day with time'.tr());
       return false;
     }
@@ -273,32 +274,35 @@ class DoctorsProvider extends ChangeNotifier {
     final sortedKeys = dayTimes.keys.toList()..sort();
 
     for (final index in sortedKeys) {
-      final dayName = days[index]; // Use English day name for API
-      final time = dayTimes[index]!;
+      final time = dayTimes[index];
+      final date = dayDates[index];
+
+      if (time == null || date == null) continue;
 
       schedules.add({
-        "day": dayName,
+        "day": date,   // 👈 بدل day name صار date
         "time": time,
       });
     }
 
-    // Prepare request body
+    // Request body (ما تغير)
     final requestBody = {
       "doctor_id": doctorId,
       "schedule_type": "individual",
       "schedules": schedules,
     };
-
-    // Call API
+print("reee ${requestBody}");
     isLoading = true;
     notifyListeners();
+
     try {
       final val = await DoctorsRepo().saveIndividualSchedule(requestBody);
+
       isLoading = false;
+
       if (val.success == 1) {
         ToastService.showSuccess(val.msg);
-        // Refresh doctors list to show updated schedule
-        getDoctorsList();
+        await getDoctorsList();
         notifyListeners();
         return true;
       } else {

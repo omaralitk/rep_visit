@@ -21,6 +21,8 @@ class HomeProvider extends ChangeNotifier {
   String address = "";
   double lng = 0.0;
   String phone = "";
+  bool isStarted=false;
+  String startTime="";
 
   /// Today's Visit Section
   List<TodaysVisit> visits = [];
@@ -35,6 +37,8 @@ class HomeProvider extends ChangeNotifier {
       if (val?.status == 1) {
         title = val?.data?.greeting ?? "";
         subTitle = val?.data?.subgreeting ?? "";
+        isStarted=val?.data?.isStarted??false;
+        startTime=val?.data?.startTime??"";
         completedVisits = val?.data?.progress?.visitsCompleted ?? "";
         allVisits = val?.data?.progress?.totalVisits ?? 0;
         percentage = val?.data?.progress?.percentage ?? 0;

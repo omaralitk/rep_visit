@@ -29,7 +29,7 @@ class GetDailyVisitsRepo {
       endPoint: EndPoints.startVisit,
       payload: body,
     );
-print("ggggg ${response.response}");
+
     if (response.statusCode == 200) {
       return startVisitModelFromJson(response.response);
     } else {

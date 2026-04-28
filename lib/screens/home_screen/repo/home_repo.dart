@@ -14,6 +14,7 @@ class HomeRepo {
       final response = await httpClient.get(endPoint: EndPoints.summaryPi);
 
       if (response.statusCode == 200) {
+        print("summery model ${response.response}");
         return summaryModelFromJson(response.response);
       } else {
         return SummaryModel(

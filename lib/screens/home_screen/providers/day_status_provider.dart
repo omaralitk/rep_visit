@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
 import 'package:rep_visit/core/utilities/main_utilities.dart';
+import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
 import 'package:rep_visit/screens/home_screen/repo/home_repo.dart';
 
 class DayStatusProvider extends ChangeNotifier {
@@ -14,8 +15,6 @@ class DayStatusProvider extends ChangeNotifier {
   /// Keep history
   final List<DateTime> startHistory = [];
   final List<DateTime> endHistory = [];
-
-  bool get isDayStarted => startTime != null && endTime == null;
 
   String get formattedDate => DateFormat('EEEE, MMM d').format(DateTime.now());
 
@@ -28,8 +27,8 @@ class DayStatusProvider extends ChangeNotifier {
       : 'Not ended'.tr();
 
   /// Handle Start/End button logic
-  void handleDayAction() async {
-    if (isStart == false) {
+ void handleDayAction(bool isStarted,BuildContext context) async {
+    if (!isStarted) {
       // Start Day
       bool success = await startWork();
 
@@ -42,7 +41,7 @@ class DayStatusProvider extends ChangeNotifier {
     } else {
       // End Day
       bool success = await endWork();
-
+      await HomeProvider().getSummary(context);
       if (success) {
         isStart = false;
         endTime = DateTime.now();

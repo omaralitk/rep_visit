@@ -38,6 +38,9 @@ class SummaryData {
   List<TodaysVisit>? todaysVisits;
   Progress? progress;
   NextVisit? nextVisit;
+  bool? isStarted;
+  String? startTime;
+
 
   SummaryData({
     this.greeting,
@@ -45,6 +48,8 @@ class SummaryData {
     this.todaysVisits,
     this.progress,
     this.nextVisit,
+    this.isStarted,
+    this.startTime
   });
 
   factory SummaryData.fromJson(Map<String, dynamic> json) => SummaryData(
@@ -53,6 +58,8 @@ class SummaryData {
     todaysVisits: json["todaysVisits"] == null ? [] : List<TodaysVisit>.from(json["todaysVisits"]!.map((x) => TodaysVisit.fromJson(x))),
     progress: json["progress"] == null ? null : Progress.fromJson(json["progress"]),
     nextVisit: json["nextVisit"] == null ? null : NextVisit.fromJson(json["nextVisit"]),
+    isStarted: json["is_started"],
+    startTime: json["start_time"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -61,6 +68,8 @@ class SummaryData {
     "todaysVisits": todaysVisits == null ? [] : List<dynamic>.from(todaysVisits!.map((x) => x.toJson())),
     "progress": progress?.toJson(),
     "nextVisit": nextVisit?.toJson(),
+    "is_started":isStarted,
+    "start_time":startTime
   };
 }
 
