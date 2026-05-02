@@ -11,6 +11,7 @@ import 'package:rep_visit/screens/login_screen/models/login_model.dart';
 import 'package:rep_visit/screens/tracking_screen/models/traking_model.dart';
 import 'package:rep_visit/screens/tracking_screen/repo/get_daily_visits_repo.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../base/ui/widgets/custom_toast.dart';
 import '../../../core/utilities/main_utilities.dart';
 
 class TrackingProvider extends ChangeNotifier {
@@ -197,16 +198,15 @@ class TrackingProvider extends ChangeNotifier {
 
   /// -------------------- START VISIT --------------------
   Future<void> startVisit(BuildContext context, int visitId) async {
-    // Check location permission first
     final hasPermission = await checkLocationPermission();
 
     if (!hasPermission) {
-      // Show permission denied dialog
       _showPermissionDeniedDialog(context);
       return;
     }
 
     LoadingWidget.show();
+
     try {
       EmpData userData = await UserCache.getEmpData();
       Position position = await MainUtilities.getPosition();
@@ -218,62 +218,91 @@ class TrackingProvider extends ChangeNotifier {
         "long": position.longitude
       };
 
-      GetDailyVisitsRepo().startVisit(body).then((val) {
-        LoadingWidget.hide();
+      final val = await GetDailyVisitsRepo().startVisit(body);
 
-        visitActive[visitId] = true;
-        visitStartTime[visitId] = DateTime.now();
-        visitElapsed[visitId] = Duration.zero;
+      LoadingWidget.hide();
 
-        notesControllerFor(visitId);
-        _ensureTimerRunning();
-        notifyListeners();
-      });
+      /// 🔥 هون الحل
+      if (val.status != 1) {
+
+        ToastService.showError(val.msg);
+
+        return;
+      }
+
+      /// ✅ فقط إذا نجح
+      visitActive[visitId] = true;
+      visitStartTime[visitId] = DateTime.now();
+      visitElapsed[visitId] = Duration.zero;
+
+      notesControllerFor(visitId);
+      _ensureTimerRunning();
+      notifyListeners();
+
     } catch (e) {
       LoadingWidget.hide();
-      // If permission was denied during getPosition, show dialog
+
       if (e.toString().contains('denied')) {
         _showPermissionDeniedDialog(context);
+      } else {
+        ToastService.showError("Unexpected error");
       }
     }
   }
-
   /// -------------------- END VISIT --------------------
   Future<void> endVisit(BuildContext context, int visitId) async {
     LoadingWidget.show();
 
-    Position position = await MainUtilities.getPosition();
+    try {
+      Position position = await MainUtilities.getPosition();
 
-    final body = {
-      "daily_visit_id": visitId,
-      "lat": position.latitude,
-      "long": position.longitude,
-      "rate": visitRating[visitId] ?? 0,
-      "feedback": visitNotes[visitId] ?? "",
-    };
-    print("salah ${body}");
-    GetDailyVisitsRepo().endVisit(body).then((val) {
+      final body = {
+        "daily_visit_id": visitId,
+        "lat": position.latitude,
+        "long": position.longitude,
+        "rate": visitRating[visitId] ?? 0,
+        "feedback": visitNotes[visitId] ?? "",
+      };
+
+      print("salah $body");
+
+      final val = await GetDailyVisitsRepo().endVisit(body);
+
       LoadingWidget.hide();
 
-      if (val.status == 1) {
-        visitActive[visitId] = false;
-
-        final start = visitStartTime[visitId];
-        if (start != null) {
-          visitElapsed[visitId] = DateTime.now().difference(start);
-        }
-
-        visitStartTime[visitId] = null;
-
-        _moveToCompleted(visitId);
-        _cleanupVisitState(visitId);
-
-        _ensureTimerRunning();
-        getVisits();
-
-        notifyListeners();
+      /// ❌ فشل من السيرفر
+      if (val.status != 1) {
+        ToastService.showError(val.msg ?? "Failed to end visit");
+        return;
       }
-    });
+
+      /// ✅ نجاح
+      visitActive[visitId] = false;
+
+      final start = visitStartTime[visitId];
+      if (start != null) {
+        visitElapsed[visitId] = DateTime.now().difference(start);
+      }
+
+      visitStartTime[visitId] = null;
+
+      _moveToCompleted(visitId);
+      _cleanupVisitState(visitId);
+
+      _ensureTimerRunning();
+      await getVisits();
+
+      notifyListeners();
+
+    } catch (e) {
+      LoadingWidget.hide();
+
+      if (e.toString().contains('denied')) {
+        _showPermissionDeniedDialog(context);
+      } else {
+        ToastService.showError("Unexpected error");
+      }
+    }
   }
 
   /// Move visit to completed list
@@ -365,4 +394,5 @@ class TrackingProvider extends ChangeNotifier {
     _notesControllers.clear();
     super.dispose();
   }
+
 }

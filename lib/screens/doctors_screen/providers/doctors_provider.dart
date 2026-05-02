@@ -291,7 +291,6 @@ class DoctorsProvider extends ChangeNotifier {
       "schedule_type": "individual",
       "schedules": schedules,
     };
-print("reee ${requestBody}");
     isLoading = true;
     notifyListeners();
 

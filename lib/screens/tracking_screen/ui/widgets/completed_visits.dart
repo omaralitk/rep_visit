@@ -163,7 +163,6 @@ class _CompletedVisitsState extends State<CompletedVisits> {
               Row(
                 children: List.generate(5, (i) {
                   final starIndex = i + 1;
-
                   final ratingString =
                       provider.completedVisits[index].doctor.rating;
                   final rating = ratingString != null && ratingString.isNotEmpty

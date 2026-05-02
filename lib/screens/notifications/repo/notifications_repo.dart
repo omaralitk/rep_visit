@@ -11,7 +11,6 @@ class NotificationsRepo {
         NotificationsModel(success: 0, msg: "", data: null);
 
     final response = await httpClient.get(endPoint: EndPoints.notifications);
-    print("omaaar ${response.response}");
     if (response.statusCode == 200) {
       notificationsModel = notificationsModelFromJson(response.response);
       return notificationsModel;

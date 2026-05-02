@@ -80,8 +80,7 @@ class HttpClient {
       NavigationService.pushAndRemoveUntil(const LoginScreen());
       ToastService.showError("Session Expired");
     } else {
-      return Exception(response.body);
-    }
+return response.body;    }
   }
 }
 

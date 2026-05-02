@@ -96,7 +96,7 @@ class _MainHeaderState extends State<MainHeader> {
                               : const SizedBox();
                         },
                         selector: (context, selector) =>
-                            selector.notifications.isNotEmpty)
+                            selector.unreadCount != 0)
                   ],
                 ),
                 widget.isProfile == true

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:rep_visit/screens/tracking_screen/models/end_visit_model.dart';
 import 'package:rep_visit/screens/tracking_screen/models/start_visit_model.dart';
@@ -13,6 +15,7 @@ class GetDailyVisitsRepo {
         GetDailyVisitsModel(success: 0, msg: "", data: []);
     final response = await httpClient.get(endPoint: EndPoints.dailyVisits);
     if (response.statusCode == 200) {
+      print("visits ${response.response}");
       getDailyVisitsModel = getDailyVisitsModelFromJson(response.response);
       return getDailyVisitsModel;
     } else {
@@ -24,33 +27,31 @@ class GetDailyVisitsRepo {
   /// To start visit
   Future<StartVisitModel> startVisit(Map<String, dynamic> body) async {
     StartVisitModel fallback =
-        StartVisitModel(status: 0, msg: "Something went wrong", data: null);
-    final response = await httpClient.post(
+    StartVisitModel(status: 0, msg: "Something went wrong", data: null);
+
+    final responseFuture = httpClient.post(
       endPoint: EndPoints.startVisit,
       payload: body,
     );
 
-    if (response.statusCode == 200) {
-      return startVisitModelFromJson(response.response);
-    } else {
-      /// Server responded but with error status
-      return startVisitModelFromJson(response.response);
-    }
     try {
+      final response = await responseFuture;
+     if(response.statusCode ==200){
+       return startVisitModelFromJson(response.response);
+     }else{
+       return startVisitModelFromJson(response.response);
+     }
 
+    } catch (e) {
 
-    } catch (e, stacktrace) {
-      /// Log error only in debug mode
-      if (kDebugMode) {
-        print("❌ startVisit() ERROR: $e");
-        print(stacktrace);
+      try {
+        final raw = e.toString().replaceFirst("Exception:", "").trim();
+        return startVisitModelFromJson(raw);
+      } catch (_) {
+        return fallback;
       }
-
-      /// Return safe fallback model
-      return fallback;
     }
   }
-
   /// To end visit
   Future<EndVisitModel> endVisit(Map<String, dynamic> body) async {
     EndVisitModel fallback =
@@ -61,12 +62,13 @@ class GetDailyVisitsRepo {
         endPoint: EndPoints.endVisit,
         payload: body,
       );
-
+      final jsonData = jsonDecode(response.response);
       if (response.statusCode == 200) {
         return endVisitModelFromJson(response.response);
       } else {
         /// Server responded but with error status
-        return endVisitModelFromJson(response.response);
+
+        return endVisitModelFromJson(jsonData);
       }
     } catch (e, stacktrace) {
       if (kDebugMode) {
@@ -78,4 +80,5 @@ class GetDailyVisitsRepo {
       return fallback;
     }
   }
+
 }

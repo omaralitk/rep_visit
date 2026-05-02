@@ -80,6 +80,7 @@ class Notification {
   dynamic rejectionReason;
   DateTime? decisionDate;
   dynamic readAt;
+  dynamic isRead;
 
   Notification({
     required this.id,
@@ -100,6 +101,7 @@ class Notification {
     this.rejectionReason,
     this.decisionDate,
     this.readAt,
+    this.isRead,
   });
 
   factory Notification.fromJson(Map<String, dynamic> json) => Notification(
@@ -125,6 +127,7 @@ class Notification {
             ? null
             : DateTime.parse(json["decision_date"]),
         readAt: json["read_at"],
+        isRead: json["is_read"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -147,5 +150,6 @@ class Notification {
         "rejection_reason": rejectionReason,
         "decision_date": decisionDate?.toIso8601String(),
         "read_at": readAt,
+        "is_read": readAt,
       };
 }

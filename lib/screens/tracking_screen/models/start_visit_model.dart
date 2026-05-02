@@ -22,8 +22,7 @@ class StartVisitModel {
   factory StartVisitModel.fromJson(Map<String, dynamic> json) => StartVisitModel(
     status: json["status"],
     msg: json["msg"],
-    data: Data.fromJson(json["data"]),
-  );
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),  );
 
   Map<String, dynamic> toJson() => {
     "status": status,
