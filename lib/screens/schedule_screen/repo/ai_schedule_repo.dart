@@ -25,8 +25,7 @@ class AiScheduleRepo {
     AiSchedulModel aiSchedulModel = AiSchedulModel(success: 0, data: []);
     GeneralResponseModel generalResponseModel =
         GeneralResponseModel(data: null, msg: "", status: 0);
-    print("----------------------");
-    print("Request ${body}");
+
 
     final response =
         await httpClient.post(endPoint: EndPoints.letAiSchedule, payload: body);

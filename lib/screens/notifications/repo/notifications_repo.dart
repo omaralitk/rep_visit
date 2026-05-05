@@ -12,6 +12,7 @@ class NotificationsRepo {
 
     final response = await httpClient.get(endPoint: EndPoints.notifications);
     if (response.statusCode == 200) {
+      print("notifications model ${response.response}");
       notificationsModel = notificationsModelFromJson(response.response);
       return notificationsModel;
     } else {
@@ -26,9 +27,7 @@ class NotificationsRepo {
     ReadNotificationModel(success: 0, msg: "", data: null);
     final response = await httpClient
         .post(endPoint: EndPoints.readNotification, payload: {"id": id});
-    print("salah ${response.response}");
     if (response.statusCode == 200) {
-      print("salah ${response.response}");
       readNotificationModel = readNotificationModelFromJson(response.response);
       return readNotificationModel;
     } else {

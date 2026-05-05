@@ -34,10 +34,6 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("🔔 Handling a background message: ${message.messageId}");
-  print("🔔 Title: ${message.notification?.title}");
-  print("🔔 Body: ${message.notification?.body}");
-  print("🔔 Data: ${message.data}");
 
   // Initialize local notifications plugin for background isolate
   final FlutterLocalNotificationsPlugin localNotifications =

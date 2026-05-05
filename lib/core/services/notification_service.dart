@@ -33,10 +33,6 @@ class NotificationService {
       debugPrint("🔔 FCM TOKEN FOR THIS DEVICE:");
       debugPrint("🔔 $token");
       debugPrint("🔔 ========================================");
-      print("🔔 ========================================");
-      print("🔔 FCM TOKEN FOR THIS DEVICE:");
-      print("🔔 $token");
-      print("🔔 ========================================");
     } catch (e) {
       debugPrint("❌ Error initializing NotificationService: $e");
     }

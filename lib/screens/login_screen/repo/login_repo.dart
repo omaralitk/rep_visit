@@ -7,7 +7,7 @@ class LoginRepo {
   Future<LoginModel> makeLogin(Map<String, dynamic> body) async {
     LoginModel loginModel =
         LoginModel(status: 0, msg: "", token: "", data: null);
-    print("ddddf ${body}");
+
 
     try {
       final response =
@@ -23,6 +23,7 @@ class LoginRepo {
         }
       } else {
         try {
+
           GeneralResponseModel generalResponseModel =
               generalResponseModelFromJson(response.response);
 

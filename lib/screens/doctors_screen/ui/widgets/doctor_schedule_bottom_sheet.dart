@@ -425,7 +425,7 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
   }
 
   Widget _buildIndividualSchedules() {
-    if (_individualDayTimes.isEmpty) {
+    if (_individualDayTimes.isEmpty || _individualDayDates.isEmpty) {
       return Container(
         width: double.maxFinite,
         padding: const EdgeInsets.all(16),
@@ -449,9 +449,12 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
     ];
 
     for (final index in sortedKeys) {
-      final String dayName = _days[index];
-      final String time = _individualDayTimes[index] ?? _selectedTime;
-      final DateTime date = _individualDayDates[index] ?? DateTime.now();
+      final DateTime date =
+          _individualDayDates[index] ?? DateTime.now();
+
+      final String dayName = DateFormat('EEEE').format(date);
+      final String time =
+          _individualDayTimes[index] ?? _selectedTime;
 
       children.add(
         Container(
@@ -465,6 +468,7 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// 🔹 Day + Remove
               Row(
                 children: [
                   Expanded(
@@ -491,49 +495,50 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
                   ),
                 ],
               ),
+
               const SizedBox(height: 12),
+
               Row(
                 children: [
-                  // Date picker
+                  /// 📅 Date
                   Expanded(
-                    child: InkWell(
-
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Expanded(
-                            child: TextWidget(
-                              DateFormat('yyyy-MM-dd').format(date),
-                              textSize: 14,
-                              fontWeight: FontWeight.w600,
-                              textColor: AppColors.typography700,
-                            ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextWidget(
+                            DateFormat('yyyy-MM-dd').format(date),
+                            textSize: 14,
+                            fontWeight: FontWeight.w600,
+                            textColor: AppColors.typography700,
                           ),
-                          // const SizedBox(width: 4),
-                          // const Icon(
-                          //   Icons.calendar_today,
-                          //   size: 16,
-                          // ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(width: 8),
-                  // Time picker
+
+                  /// ⏰ Time Picker
                   Expanded(
                     child: InkWell(
                       onTap: () async {
-                        final TimeOfDay initial = _parseTimeOfDay(time);
-                        final TimeOfDay? picked = await showTimePicker(
+                        final TimeOfDay initial =
+                        _parseTimeOfDay(time);
+
+                        final TimeOfDay? picked =
+                        await showTimePicker(
                           context: context,
                           initialTime: initial,
                         );
+
                         if (picked != null) {
                           final String formatted =
-                              MaterialLocalizations.of(context).formatTimeOfDay(
+                          MaterialLocalizations.of(context)
+                              .formatTimeOfDay(
                             picked,
                             alwaysUse24HourFormat: false,
                           );
+
                           setState(() {
                             _individualDayTimes[index] = formatted;
                           });
@@ -548,14 +553,14 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
                           color: AppColors.whiteColor,
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Expanded(
                               child: TextWidget(
                                 time,
                                 textSize: 14,
                                 fontWeight: FontWeight.w500,
-                                textColor: AppColors.typography700,
+                                textColor:
+                                AppColors.typography700,
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -577,8 +582,7 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
     }
 
     return Column(children: children);
-  }
-  Future<void> _handleSaveSchedule() async {
+  }  Future<void> _handleSaveSchedule() async {
     final provider = Provider.of<DoctorsProvider>(context, listen: false);
     bool success = false;
 
@@ -616,7 +620,6 @@ class _DoctorScheduleBottomSheetState extends State<DoctorScheduleBottomSheet> {
       // Individual schedule
       LoadingWidget.show();
 
-      /// ✅ تحويل الـ Map<DateTime> إلى Map<String> مع الحفاظ على الـ index
       final Map<int, String> datesMap = {};
 
       _individualDayDates.forEach((index, date) {

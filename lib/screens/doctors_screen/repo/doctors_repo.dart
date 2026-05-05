@@ -49,7 +49,6 @@ class DoctorsRepo {
     }).toString();
 
     final response = await httpClient.get(endPoint: url);
-    print("doctors omar ${response.response}");
     if (response.statusCode == 200) {
       doctorsModel = doctorsModelFromJson(response.response);
     }
@@ -66,12 +65,9 @@ class DoctorsRepo {
 
     final response = await httpClient.post(
         endPoint: EndPoints.saveDoctorSchedule, payload: body);
-    print("omar bulk response ${response.response}");
-    print("omar bulk response ${response.statusCode}");
+
     if (response.statusCode == 200) {
-      print("omar bulk response ${bulkResponse.success}");
-      print("omar bulk response ${bulkResponse.msg}");
-      print("omar bulk response ${bulkResponse.data}");
+
       bulkResponse = bulkResponseFromJson(response.response);
     } else {
       bulkResponse.msg = "Error in save doctor schedule".tr();
@@ -95,12 +91,8 @@ class DoctorsRepo {
 
     final response = await httpClient.post(
         endPoint: EndPoints.saveDoctorSchedule, payload: body);
-    print("omar individual response ${response.response}");
-    print("omar individual response ${response.statusCode}");
     if (response.statusCode == 200) {
-      print("omar individual response ${individualModel.success}");
-      print("omar individual response ${individualModel.msg}");
-      print("omar individual response ${individualModel.data}");
+
       individualModel = individual.individualModelFromJson(response.response);
     } else {
       individualModel.msg = "Error in save individual schedule".tr();
@@ -172,8 +164,7 @@ class DoctorsRepo {
       msg: "",
       data: null,
     );
-    print("omar add to my list body ${jsonEncode(body)}");
-    print("omar add to my list body ${body}");
+
     LoadingWidget.show();
 
     // Format request body as readable string

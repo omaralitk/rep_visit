@@ -113,13 +113,13 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextWidget(
-                        provider.completedVisits[index].doctor.name ?? "",
+                        provider.completedVisits[index].doctor?.name ?? "",
                         textSize: 16,
                         fontWeight: FontWeight.w700,
                         textColor: AppColors.fontColor,
                       ),
                       TextWidget(
-                        provider.completedVisits[index].doctor.hospitalName,
+                        provider.completedVisits[index].doctor?.hospitalName??"",
                         textSize: 12,
                         fontWeight: FontWeight.w500,
                         textColor: AppColors.typography500,
@@ -149,7 +149,7 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                   ),
                   Expanded(
                     child: TextWidget(
-                      provider.completedVisits[index].doctor.address,
+                      provider.completedVisits[index].doctor?.address??"",
                       textSize: 12,
                       fontWeight: FontWeight.w300,
                       textColor: AppColors.typography500,
@@ -164,7 +164,7 @@ class _CompletedVisitsState extends State<CompletedVisits> {
                 children: List.generate(5, (i) {
                   final starIndex = i + 1;
                   final ratingString =
-                      provider.completedVisits[index].doctor.rating;
+                      provider.completedVisits[index].doctor?.rating;
                   final rating = ratingString != null && ratingString.isNotEmpty
                       ? (double.tryParse(ratingString) ?? 0.0)
                       : 0.0;

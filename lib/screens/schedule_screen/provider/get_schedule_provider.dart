@@ -142,7 +142,6 @@ class ScheduleProvider extends ChangeNotifier {
 
     AiScheduleRepo().addVisits(body).then((val) {
       LoadingWidget.hide();
-      print("hhhh ${val.msg}");
       if (val.success == 1) {
         ToastService.showSuccess(val.msg);
         listOfAddedSchedule.clear();

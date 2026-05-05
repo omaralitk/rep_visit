@@ -40,10 +40,12 @@ class LoginProvider extends ChangeNotifier {
 
   Future makeLogin(String email, String pass, BuildContext context) async {
     LoadingWidget.show();
+    FocusScope.of(context).unfocus();
     Map<String, dynamic> body = {"email": email, "password": pass};
     _loginRepo.makeLogin(body).then((val) {
       LoadingWidget.hide();
       if (val.status == 1) {
+
         UserCache.setIsLogin(isRememberMe?true:false);
         UserCache.setToken(val.token);
         UserCache.setEmpData(val.data);
@@ -51,7 +53,7 @@ class LoginProvider extends ChangeNotifier {
         empCodeController.text="";
         passController.text="";
       } else {
-        ToastService.showError( "Wrong email or password");
+        ToastService.showError(val.msg);
       }
     });
   }

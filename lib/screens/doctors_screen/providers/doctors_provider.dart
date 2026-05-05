@@ -187,7 +187,6 @@ class DoctorsProvider extends ChangeNotifier {
   Future<void> saveDoctorSchedule(Map<String, dynamic> body) async {
     isLoading = true;
     notifyListeners();
-    print("request ${jsonDecode(body.toString())}");
     try {
       final val = await DoctorsRepo().saveDoctorSchedule(body);
       isLoading = false;
@@ -468,7 +467,6 @@ class DoctorsProvider extends ChangeNotifier {
     };
     try {
       final response = await DoctorsRepo().addToMyList(requestBody);
-      print("add to list api ${response.msg}");
       isLoading = false;
 
       if (response.status == 1) {

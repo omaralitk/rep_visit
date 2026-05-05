@@ -9,15 +9,19 @@ class ToastService {
   static OverlayEntry? _currentToast;
 
   static void showToast(
-    String message, {
-    Color backgroundColor = Colors.black87,
-    Color textColor = Colors.white,
-    Duration duration = const Duration(seconds: 3),
-  }) {
+      String message, {
+        Color backgroundColor = Colors.black87,
+        Color textColor = Colors.white,
+        Duration duration = const Duration(seconds: 3),
+      }) {
     if (message.isEmpty) return;
 
-    // Remove any active toast first
-    _currentToast?.remove();
+    /// ✅ احذف القديم بشكل آمن
+    try {
+      _currentToast?.remove();
+    } catch (_) {}
+
+    _currentToast = null;
 
     final overlay = NavigationService.navigatorKey.currentState?.overlay;
     if (overlay == null) return;
@@ -33,9 +37,9 @@ class ToastService {
             child: Material(
               color: Colors.transparent,
               child: AnimatedContainer(
-                duration: const Duration(seconds: 1),
+                duration: const Duration(milliseconds: 300),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 width: Dimensions.fullWidth(context) * 0.7,
                 decoration: BoxDecoration(
                   color: backgroundColor,
@@ -65,10 +69,14 @@ class ToastService {
     overlay.insert(overlayEntry);
     _currentToast = overlayEntry;
 
-    // Remove after duration
+    /// ✅ إزالة آمنة
     Future.delayed(duration, () {
-      _currentToast?.remove();
-      _currentToast = null;
+      try {
+        if (_currentToast == overlayEntry) {
+          _currentToast?.remove();
+          _currentToast = null;
+        }
+      } catch (_) {}
     });
   }
 

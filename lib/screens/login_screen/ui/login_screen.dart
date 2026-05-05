@@ -134,7 +134,6 @@ class _LoginPageState extends State<LoginPage> {
                             text: "sign_in".tr(),
                             onTap: provider
                                 ? () {
-                              FocusScope.of(context).unfocus();
                                     loginProvider.makeLogin(
                                         loginProvider.empCodeController.text,
                                         loginProvider.passController.text,

@@ -66,8 +66,9 @@ class TrackingProvider extends ChangeNotifier {
         completedVisits.clear();
         allVisits = val.data;
 
+
         pendingVisits = allVisits
-            .where((v) => v.status == "Pending" || v.status == "Started")
+            .where((v) => v.status == "Pending" || v.status == "Started" || v.status=="Available")
             .toList();
 
         completedVisits =
@@ -98,10 +99,10 @@ class TrackingProvider extends ChangeNotifier {
     // Preserve start times and elapsed times for visits that are still pending
     for (var visitId in pendingIds) {
       if (visitActive[visitId] == true && visitStartTime[visitId] != null) {
-        preservedStartTimes[visitId] = visitStartTime[visitId];
+        preservedStartTimes[visitId??0] = visitStartTime[visitId];
         // Calculate current elapsed time before clearing
         if (visitStartTime[visitId] != null) {
-          preservedElapsed[visitId] = DateTime.now().difference(visitStartTime[visitId]!);
+          preservedElapsed[visitId??0] = DateTime.now().difference(visitStartTime[visitId]!);
         }
       }
     }
@@ -113,29 +114,38 @@ class TrackingProvider extends ChangeNotifier {
     visitNotes.removeWhere((id, _) => !pendingIds.contains(id));
 
     for (var v in pendingVisits) {
-      visitRating.putIfAbsent(v.id, () => 0);
+      visitRating.putIfAbsent(v.id??0, () => 0);
       
       // *** IMPORTANT ***
       // Auto-activate visits backend marked as "Started"
       if (v.status == "Started") {
-        visitActive[v.id] = true;
+        visitActive[v.id??0] = true;
 
         // Preserve existing start time if visit was already active
         // Otherwise, set new start time
         if (preservedStartTimes.containsKey(v.id) && preservedStartTimes[v.id] != null) {
           // Restore preserved start time to continue timer
-          visitStartTime[v.id] = preservedStartTimes[v.id];
+          visitStartTime[v.id??0] = preservedStartTimes[v.id];
           // Restore preserved elapsed time
-          visitElapsed[v.id] = preservedElapsed[v.id] ?? Duration.zero;
+          visitElapsed[v.id??0] = preservedElapsed[v.id] ?? Duration.zero;
         } else {
           // New visit being started - set start time to now
-          visitStartTime[v.id] = DateTime.now();
-          visitElapsed[v.id] = Duration.zero;
+          final now = DateTime.now();
+
+          if (v.elapsedTime != null && v.elapsedTime!.isNotEmpty) {
+            final elapsed = parseElapsedTime(v.elapsedTime!);
+
+            visitStartTime[v.id ?? 0] = now.subtract(elapsed);
+            visitElapsed[v.id ?? 0] = elapsed;
+          } else {
+            visitStartTime[v.id ?? 0] = now;
+            visitElapsed[v.id ?? 0] = Duration.zero;
+          }
         }
       } else {
-        visitActive.putIfAbsent(v.id, () => false);
-        visitElapsed.putIfAbsent(v.id, () => Duration.zero);
-        visitStartTime.putIfAbsent(v.id, () => null);
+        visitActive.putIfAbsent(v.id??0, () => false);
+        visitElapsed.putIfAbsent(v.id??0, () => Duration.zero);
+        visitStartTime.putIfAbsent(v.id??0, () => null);
       }
     }
   }
@@ -264,7 +274,6 @@ class TrackingProvider extends ChangeNotifier {
         "feedback": visitNotes[visitId] ?? "",
       };
 
-      print("salah $body");
 
       final val = await GetDailyVisitsRepo().endVisit(body);
 
@@ -364,7 +373,21 @@ class TrackingProvider extends ChangeNotifier {
       _tickTimer = null;
     }
   }
+  Duration parseElapsedTime(String time) {
+    final parts = time.split(':');
 
+    if (parts.length != 3) return Duration.zero;
+
+    final hours = int.tryParse(parts[0]) ?? 0;
+    final minutes = int.tryParse(parts[1]) ?? 0;
+    final seconds = int.tryParse(parts[2]) ?? 0;
+
+    return Duration(
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+    );
+  }
   /// Clear all state (for logout)
   void clearAllState() {
     _tickTimer?.cancel();

@@ -44,6 +44,7 @@ class ScheduleVisits {
   dynamic notes;
   DateTime createdAt;
   DateTime updatedAt;
+  String? elapsedTime;
   Doctor doctor;
 
   ScheduleVisits({
@@ -54,6 +55,7 @@ class ScheduleVisits {
     required this.status,
     this.visitTime,
     this.endTime,
+    this.elapsedTime,
     required this.totalDuration,
     required this.notes,
     required this.createdAt,
@@ -71,6 +73,7 @@ class ScheduleVisits {
     endTime: json["end_time"],
     totalDuration: json["total_duration"],
     notes: json["feedback"],
+    elapsedTime: json["elapsed_time"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     doctor: Doctor.fromJson(json["doctor"]),
@@ -86,6 +89,7 @@ class ScheduleVisits {
     "end_time": endTime,
     "total_duration": totalDuration,
     "feedback": notes,
+    "elapsed_time": elapsedTime,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "doctor": doctor.toJson(),

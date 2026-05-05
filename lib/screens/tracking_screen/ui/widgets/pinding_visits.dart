@@ -137,14 +137,14 @@ class _PendingVisitsState extends State<PendingVisits> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        visit.doctor.name,
+                        visit.doctor?.name??"",
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppColors.fontColor),
                       ),
                       Text(
-                        visit.doctor.hospitalName,
+                        visit.doctor?.hospitalName??"",
                         style: TextStyle(
                             fontSize: 12, color: AppColors.typography500),
                       ),
@@ -175,7 +175,7 @@ class _PendingVisitsState extends State<PendingVisits> {
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
-                      visit.doctor.address,
+                      visit.doctor?.address??"",
                       style: TextStyle(
                           fontSize: 12, color: AppColors.typography500),
                     ),
@@ -191,7 +191,7 @@ class _PendingVisitsState extends State<PendingVisits> {
                 GestureDetector(
                   onTap: () => provider.startVisit(
                     context,
-                    visit.id,
+                    visit.id??0,
                   ),
                   child: Container(
                     height: 48,
@@ -233,9 +233,9 @@ class _PendingVisitsState extends State<PendingVisits> {
                 // Navigate and Call buttons
                 Row(
                   children: [
-                    Expanded(
+                     Expanded(
                       child: InkWell(
-                        onTap: () => _openGoogleMap(visit.doctor.latitude, visit.doctor.longitude),
+                        onTap: () => _openGoogleMap(visit.doctor?.latitude??"", visit.doctor?.longitude??""),
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
@@ -263,10 +263,11 @@ class _PendingVisitsState extends State<PendingVisits> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
+
+                    visit.doctor?.phone != ""? const SizedBox(width: 8):const SizedBox(),
+                    visit.doctor?.phone != ""?Expanded(
                       child: InkWell(
-                        onTap: () => _makePhoneCall(visit.doctor.phone ?? ""),
+                        onTap: () => _makePhoneCall(visit.doctor?.phone ?? ""),
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
@@ -293,7 +294,7 @@ class _PendingVisitsState extends State<PendingVisits> {
                           ),
                         ),
                       ),
-                    ),
+                    ):const SizedBox(),
                   ],
                 ),
               ],
@@ -307,7 +308,7 @@ class _PendingVisitsState extends State<PendingVisits> {
                     final filled = starIndex <= rating;
                     return GestureDetector(
                       onTap: () {
-                        provider.setRating(visit.id, starIndex);
+                        provider.setRating(visit.id??0, starIndex);
                       },
                       child: Container(
                         margin: const EdgeInsets.only(right: 8),
@@ -351,7 +352,7 @@ class _PendingVisitsState extends State<PendingVisits> {
                   child: TextField(
                     controller: notesController,
                     maxLines: null,
-                    onChanged: (v) => provider.setNotes(visit.id, v),
+                    onChanged: (v) => provider.setNotes(visit.id??0, v),
                     decoration: const InputDecoration.collapsed(
                         hintText: "Write notes..."),
                   ),
@@ -361,7 +362,7 @@ class _PendingVisitsState extends State<PendingVisits> {
 
                 /// ---------- END VISIT ----------
                 GestureDetector(
-                  onTap: () => provider.endVisit(context, visit.id),
+                  onTap: () => provider.endVisit(context, visit.id??0),
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
@@ -397,11 +398,17 @@ class _PendingVisitsState extends State<PendingVisits> {
 
   /// Format timer
   String _formatDuration(Duration d) {
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$m:$s";
+    if (d.inHours > 0) {
+      final h = d.inHours;
+      final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+      final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+      return "$h:$m:$s";
+    } else {
+      final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+      final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+      return "$m:$s";
+    }
   }
-
   /// Format visit time
   String _formatVisitTime(DateTime visitDate) {
     return DateFormat('h:mm a').format(visitDate);
