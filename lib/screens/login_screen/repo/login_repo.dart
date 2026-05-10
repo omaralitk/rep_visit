@@ -12,15 +12,13 @@ class LoginRepo {
     try {
       final response =
           await httpClient.post(endPoint: EndPoints.login, payload: body);
+      print("dddddd ${response.response}");
       // --- SUCCESS CASE ---
       if (response.statusCode == 200) {
-        try {
-          loginModel = loginModelFromJson(response.response);
-          return loginModel;
-        } catch (e) {
-          loginModel.msg = "Invalid server response";
-          return loginModel;
-        }
+        print("gggggggg");
+        loginModel = loginModelFromJson(response.response);
+        print("gggggggg2");
+        return loginModel;
       } else {
         try {
 

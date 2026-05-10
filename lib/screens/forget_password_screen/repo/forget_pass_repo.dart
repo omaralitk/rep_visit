@@ -11,6 +11,7 @@ class ForgetPassRepo {
     print("----------------------");
     final response =
         await httpClient.post(endPoint: EndPoints.forgetPass, payload: body);
+    print("forget response ${response.response}");
     if (response.statusCode == 200) {
       forgetPass = forgetPassModelFromJson(response.response);
       return forgetPass;

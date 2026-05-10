@@ -37,20 +37,20 @@ class LoginModel {
 }
 
 class EmpData {
-  String empcode;
-  String name;
-  String email;
-  String phoneNumber;
+  String? empcode;
+  String? name;
+  String? email;
+  String? phoneNumber;
   dynamic image;
-  String companyCode;
+  String? companyCode;
 
   EmpData({
-    required this.empcode,
-    required this.name,
-    required this.email,
-    required this.phoneNumber,
-    required this.image,
-    required this.companyCode,
+     this.empcode,
+     this.name,
+     this.email,
+     this.phoneNumber,
+     this.image,
+     this.companyCode,
   });
 
   factory EmpData.fromJson(Map<String, dynamic> json) => EmpData(

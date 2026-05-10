@@ -23,8 +23,8 @@ class ProfileProvider extends ChangeNotifier {
   void fillFieldsFromUser() {
     if (user == null) return;
 
-    fullNameController.text = user!.name;
-    phoneController.text = user!.phoneNumber;
+    fullNameController.text = user?.name??"";
+    phoneController.text = user?.phoneNumber??"";
 
     fieldsInitialized = true;
     notifyListeners();

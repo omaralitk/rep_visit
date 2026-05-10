@@ -135,11 +135,21 @@ class ScheduleProvider extends ChangeNotifier {
   saveScheduleVisits(BuildContext context) {
     LoadingWidget.show();
 
+    final now = DateTime.now();
+
+    final selectedDate = selectedIndex == 0
+        ? now
+        : now.add(const Duration(days: 1));
+
+
+    final formattedDate =
+        "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+
     Map<String, dynamic> body = {
-      "day": selectedIndex.toString(),
+      "day": formattedDate,
       "doctor_visits": listOfAddedSchedule,
     };
-
+print("fffff ${body}");
     AiScheduleRepo().addVisits(body).then((val) {
       LoadingWidget.hide();
       if (val.success == 1) {
