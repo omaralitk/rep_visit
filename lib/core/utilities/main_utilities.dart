@@ -41,8 +41,7 @@ class MainUtilities {
   }
 
   static Future<void> openFileSmart(String url,
-      {String? originalFileName}) async
-  {
+      {String? originalFileName}) async {
     try {
       LoadingWidget.show();
 
@@ -233,6 +232,7 @@ class MainUtilities {
       }
     }
   }
+
   static Future<void> openFileUrl(String url) async {
     final uri = Uri.parse(url);
 
