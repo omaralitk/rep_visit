@@ -1,0 +1,73 @@
+// To parse this JSON data, do
+//
+//     final loginModel = loginModelFromJson(jsonString);
+
+import 'dart:convert';
+
+LoginModel loginModelFromJson(String str) => LoginModel.fromJson(json.decode(str));
+
+String loginModelToJson(LoginModel data) => json.encode(data.toJson());
+
+class LoginModel {
+  int status;
+  String msg;
+  String token;
+  dynamic data;
+
+  LoginModel({
+    required this.status,
+    required this.msg,
+    required this.token,
+    required this.data,
+  });
+
+  factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
+    status: json["status"],
+    msg: json["msg"],
+    token: json["token"],
+    data: EmpData.fromJson(json["data"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "status": status,
+    "msg": msg,
+    "token": token,
+    "data": data.toJson(),
+  };
+}
+
+class EmpData {
+  String? empcode;
+  String? name;
+  String? email;
+  String? phoneNumber;
+  dynamic image;
+  String? companyCode;
+
+  EmpData({
+     this.empcode,
+     this.name,
+     this.email,
+     this.phoneNumber,
+     this.image,
+     this.companyCode,
+  });
+
+  factory EmpData.fromJson(Map<String, dynamic> json) => EmpData(
+    empcode: json["empcode"],
+    name: json["name"],
+    email: json["email"],
+    phoneNumber: json["phone_number"],
+    image: json["image"],
+    companyCode: json["CompanyCode"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "empcode": empcode,
+    "name": name,
+    "email": email,
+    "phone_number": phoneNumber,
+    "image": image,
+    "CompanyCode": companyCode,
+  };
+}

@@ -1,0 +1,87 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
+import 'package:rep_visit/core/cach/cach_manager.dart';
+import 'package:rep_visit/core/navigation_service/navigation_service.dart';
+import 'package:rep_visit/core/network/constants/network_constants.dart';
+import 'package:rep_visit/screens/login_screen/ui/login_screen.dart';
+
+import 'models/api_response_handler.dart';
+
+class HttpClient {
+  static final http.Response _timeoutResponse =
+      http.Response('Timeout', HttpStatus.networkConnectTimeoutError);
+
+  Future<ApiResponseHandler> get({required String endPoint}) async {
+    try {
+      var header = await NetworkConstants.getHeaders();
+
+      final response = await http
+          .get(Uri.parse(endPoint), headers: header)
+          .timeout(const Duration(minutes: 1),
+              onTimeout: () => _responseHandler(_timeoutResponse));
+
+      return _responseHandler(response);
+    } on TimeoutException catch (_) {
+      return _responseHandler(_timeoutResponse);
+    } catch (ex) {
+      return _responseHandler(http.Response(ex.toString(), 9999));
+    }
+  }
+
+  Future<ApiResponseHandler> post({
+    required String endPoint,
+    dynamic payload,
+  }) async {
+    try {
+      var header = await NetworkConstants.getHeaders();
+
+      final response = await http
+          .post(
+            Uri.parse(endPoint),
+            headers: header,
+            body: jsonEncode(payload),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => _responseHandler(_timeoutResponse),
+          );
+
+      return _responseHandler(response);
+    } on TimeoutException catch (_) {
+      return _responseHandler(_timeoutResponse);
+    } catch (ex) {
+      return _responseHandler(http.Response(ex.toString(), 9999));
+    }
+  }
+
+  _responseHandler(http.Response response) {
+    log('____________________________________________________');
+    log('${response.request?.headers}');
+    log('${response.request?.url.toString()}: ${response.statusCode.toString()}');
+    // log(response.body);
+    log('____________________________________________________');
+
+    return ApiResponseHandler(
+        statusCode: response.statusCode, response: _handleBody(response));
+  }
+
+  _handleBody(http.Response response) {
+    if (response.statusCode == HttpStatus.ok || response.statusCode == HttpStatus.created) {
+      return response.body;
+    } else if (response.statusCode == HttpStatus.unauthorized &&
+        response.request?.url.toString().contains("login") == false) {
+      // final context = NavigationService.navigatorKey.currentContext;
+      // ToastService.showError(context!, "Session Expired");
+      UserCache.clearAll();
+      NavigationService.pushAndRemoveUntil(const LoginScreen());
+      ToastService.showError("Session Expired");
+    } else {
+return response.body;    }
+  }
+}
+
+HttpClient httpClient = HttpClient();

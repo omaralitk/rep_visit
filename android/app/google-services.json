@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81415529499",
+    "project_id": "repvisit",
+    "storage_bucket": "repvisit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81415529499:android:8b34ac0bf6e980e03984be",
+        "android_client_info": {
+          "package_name": "com.repvisit.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPdIBkWZZF934DkfqqBpFC_8NwlCoYOAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

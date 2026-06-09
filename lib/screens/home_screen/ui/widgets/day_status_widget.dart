@@ -1,0 +1,163 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:rep_visit/base/constants/app_colors.dart';
+import 'package:rep_visit/base/ui/widgets/text_widget.dart';
+import 'package:rep_visit/screens/home_screen/providers/home_provider.dart';
+
+import '../../providers/day_status_provider.dart';
+
+class DayStatusWidget extends StatefulWidget {
+  const DayStatusWidget({super.key});
+
+  @override
+  State<DayStatusWidget> createState() => _DayStatusWidgetState();
+}
+
+class _DayStatusWidgetState extends State<DayStatusWidget> {
+  @override
+  Widget build(BuildContext context) {
+    // ✅ لازم يسمع للتغييرات
+    final provider = Provider.of<DayStatusProvider>(context);
+    final homeProvider = Provider.of<HomeProvider>(context);
+
+    final now = DateTime.now();
+    final formattedDate = DateFormat('EEEE, MMM d').format(now);
+
+    // ✅ المنطق الصحيح
+    final bool isStarted =
+        provider.isStart || homeProvider.isStarted;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.mainColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// Title + Date
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextWidget(
+                "Day Status".tr(),
+                fontWeight: FontWeight.bold,
+                textColor: AppColors.whiteColor,
+                textSize: 16,
+              ),
+              TextWidget(
+                formattedDate,
+                textColor: AppColors.whiteColor,
+                textSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          /// Start Time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextWidget(
+                "Start Time:".tr(),
+                textSize: 14,
+                style: TextStyle(
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                ),
+              ),
+              Text(
+                (homeProvider.startTime.isEmpty)
+                    ? provider.formattedStartTime
+                    : homeProvider.startTime,
+                style: TextStyle(
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 5),
+
+          /// End Time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "End Time:".tr(),
+                style: TextStyle(
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                provider.formattedEndTime,
+                style: TextStyle(
+                  color: AppColors.whiteColor.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          /// Button
+          GestureDetector(
+            onTap: (){
+              provider.handleDayAction(isStarted,context);
+            },
+            child: Container(
+              height: 48,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: !isStarted
+                    ? AppColors.primary900
+                    : AppColors.endDayButton,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 28,
+                    width: 28,
+                    decoration: BoxDecoration(
+                      color: !isStarted
+                          ? AppColors.primary700
+                          : AppColors.endDayIcon,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      !isStarted
+                          ? Icons.play_arrow_outlined
+                          : Icons.stop_outlined,
+                      color: AppColors.whiteColor,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    !isStarted
+                        ? "Start Day".tr()
+                        : "End Day".tr(),
+                    style: TextStyle(
+                      color: AppColors.whiteColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
