@@ -233,7 +233,6 @@ class MainUtilities {
       }
     }
   }
-
   static Future<void> openFileUrl(String url) async {
     final uri = Uri.parse(url);
 
