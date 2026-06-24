@@ -163,9 +163,11 @@
   "Tap on the map to select address": "اضغط على الخريطة لاختيار الموقع",
   "Select address": "اختر الموقع",
   "Search location": "ابحث عن الموقع",
-  "Use this address": "استخدم هذا الموقع"
-
-
-
+  "Use this address": "استخدم هذا الموقع",
+  "Legal & Support": "الشؤون القانونية والدعم",
+  "Privacy Policy": "سياسة الخصوصية",
+  "Terms & Conditions": "الشروط والأحكام",
+  "Request Data Deletion": "طلب حذف البيانات",
+  "Could not open link": "تعذر فتح الرابط"
 
 }

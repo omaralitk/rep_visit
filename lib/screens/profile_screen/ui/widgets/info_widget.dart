@@ -1,4 +1,6 @@
 // import 'package:country_code_picker/country_code_picker.dart';
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +16,7 @@ import 'package:rep_visit/base/ui/widgets/text_widget.dart';
 import 'package:rep_visit/core/services/notification_service.dart';
 import 'package:rep_visit/screens/profile_screen/provider/profile_provider.dart';
 import 'package:rep_visit/screens/profile_screen/ui/widgets/change_pass_widget.dart';
+import 'package:rep_visit/screens/profile_screen/ui/widgets/legal_links_widget.dart';
 import 'package:flutter/services.dart';
 
 class InfoWidget extends StatefulWidget {
@@ -47,7 +50,7 @@ class _InfoWidgetState extends State<InfoWidget> {
             provider.fillFieldsFromUser();
           });
         }
-
+        log("dldldldlldllddddddd ${provider.user?.image}");
         return provider.isChangePassword
             ? ChangePassWidget()
             : Column(
@@ -302,6 +305,11 @@ class _InfoWidgetState extends State<InfoWidget> {
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 20),
+
+                  /// Legal & Support (Privacy Policy, Terms, Data deletion)
+                  const LegalLinksWidget(),
 
                   const SizedBox(height: 10),
                   Divider(color: AppColors.grey200),

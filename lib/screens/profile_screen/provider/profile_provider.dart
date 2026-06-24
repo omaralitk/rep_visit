@@ -1,9 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rep_visit/base/ui/widgets/custom_toast.dart';
 import 'package:rep_visit/base/ui/widgets/loading_widget.dart';
 import 'package:rep_visit/core/navigation_service/navigation_service.dart';
@@ -169,44 +169,8 @@ class ProfileProvider extends ChangeNotifier {
     });
   }
 
-  Future<bool> _checkPhotoPermission() async {
-    if (Platform.isAndroid) {
-      PermissionStatus status = await Permission.photos.status;
-
-      if (status.isDenied) {
-        status = await Permission.photos.request();
-      }
-
-      if (status.isPermanentlyDenied) {
-        ToastService.showError(
-          "Photo permission is permanently denied. Please enable it in settings.",
-        );
-        await openAppSettings();
-        return false;
-      }
-
-      return status.isGranted;
-    }
-    if (Platform.isIOS) {
-      final status = await Permission.photos.status;
-
-      if (status.isDenied) {
-        final result = await Permission.photos.request();
-        return result.isGranted || result.isLimited;
-      }
-
-      return status.isGranted || status.isLimited;
-    }
-    return true;
-  }
-
   Future<void> pickImage() async {
     try {
-      if (Platform.isAndroid) {
-        final hasPermission = await _checkPhotoPermission();
-        if (!hasPermission) return;
-      }
-
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: ImageSource.gallery,
